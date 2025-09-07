@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=3 format=3 uid="uid://c2gmf44yxr3pt"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_wblf3"]
+[ext_resource type="AudioStream" uid="uid://c4lkmiumkvgx1" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Projectiles/Bombs/Beep001a.ogg" id="2_sp2bb"]
+
+[resource]
+script = ExtResource("1_wblf3")
+name = "Beep001"
+bus = "World_Reverb"
+volume = 0.0
+pitch = 0.9
+streams = Array[AudioStream]([ExtResource("2_sp2bb")])

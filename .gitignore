@@ -1,0 +1,31 @@
+# Godot-specific ignores
+.godot/
+export.cfg
+export_presets.cfg
+
+# Exported builds / temp
+.export/
+/android/build/
+*.pck
+*.zip
+*.log
+*.tmp
+
+# C# (Mono)
+.mono/
+data_*/
+obj/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IMPORTANT:
+# Do NOT ignore these — keep them tracked:
+#   *.import  (asset import settings)
+#   *.uid     (resource UIDs)

@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1suwdg50ajg8"]
+
+[ext_resource type="Material" uid="uid://bdr8fpexgwbu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001_Material.tres" id="1_sfj1y"]
+[ext_resource type="Material" uid="uid://c16uka4oie1yy" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001a.tres" id="3_e5uc6"]
+[ext_resource type="Texture2D" uid="uid://usjo5eqyqwpu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001.png" id="3_gbx5r"]
+[ext_resource type="Script" uid="uid://dvlmq0jrtnpfm" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticleSystem.gd" id="4_fu1r5"]
+[ext_resource type="Material" uid="uid://bd3cf7igwk1lu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001a_Motes.tres" id="4_so5qb"]
+
+[node name="Fire" type="GPUParticles2D"]
+material = ExtResource("1_sfj1y")
+texture = ExtResource("3_gbx5r")
+visibility_rect = Rect2(-32, -24, 64, 32)
+draw_order = 0
+process_material = ExtResource("3_e5uc6")
+script = ExtResource("4_fu1r5")
+
+[node name="Motes" type="GPUParticles2D" parent="."]
+speed_scale = 0.4
+visibility_rect = Rect2(-16, -24, 32, 32)
+process_material = ExtResource("4_so5qb")

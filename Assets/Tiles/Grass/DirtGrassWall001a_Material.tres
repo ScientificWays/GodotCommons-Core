@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://dj7t8w41q2ar2"]
+
+[ext_resource type="Shader" uid="uid://fniqj2wpp2oi" path="res://addons/GodotCommons-Core/Assets/Tiles/Grass/LevelTileShader_DirtGrass.gdshader" id="1_hoig3"]
+[ext_resource type="Texture2D" uid="uid://bwumdj7f4fj0h" path="res://addons/GodotCommons-Core/Assets/Tiles/Dirt001_Wall.png" id="2_nhh1g"]
+[ext_resource type="Texture2D" uid="uid://c6fhetfjpqvgc" path="res://addons/GodotCommons-Core/Assets/Tiles/Grass/TileSet_Grass001a.png" id="2_tx433"]
+
+[resource]
+shader = ExtResource("1_hoig3")
+shader_parameter/Tile = ExtResource("2_nhh1g")
+shader_parameter/GrassOverlay_Dirt = ExtResource("2_tx433")
+shader_parameter/GrassOverlay_EmissiveMul = Vector2(0, 0)

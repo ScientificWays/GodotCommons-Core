@@ -1,0 +1,51 @@
+[gd_resource type="TileSet" script_class="LevelTileSet" load_steps=5 format=3 uid="uid://pu6jgdccm56b"]
+
+[ext_resource type="Script" uid="uid://csxcu53w5isdb" path="res://addons/GodotCommons-Core/Scripts/Tiles/LeveTileSet_TerrainData.gd" id="1_f7mb5"]
+[ext_resource type="Script" uid="uid://dvpvvx8dt0r8c" path="res://addons/GodotCommons-Core/Scripts/Tiles/LevelTileSet.gd" id="2_f7mb5"]
+[ext_resource type="Texture2D" uid="uid://ct46l0wjnlydu" path="res://addons/GodotCommons-Core/Assets/Tiles/TileDamage001.png" id="3_f7mb5"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_dh3mp"]
+resource_name = "Damage"
+texture = ExtResource("3_f7mb5")
+0:0/next_alternative_id = 3
+0:0/0 = 0
+0:0/0/z_index = 100
+0:0/1 = 1
+0:0/1/transpose = true
+0:0/1/z_index = 100
+0:0/2 = 2
+0:0/2/flip_v = true
+0:0/2/z_index = 100
+1:0/next_alternative_id = 3
+1:0/0 = 0
+1:0/0/z_index = 100
+1:0/1 = 1
+1:0/1/transpose = true
+1:0/1/z_index = 100
+1:0/2 = 2
+1:0/2/flip_v = true
+1:0/2/z_index = 100
+2:0/next_alternative_id = 3
+2:0/0 = 0
+2:0/0/z_index = 100
+2:0/1 = 1
+2:0/1/transpose = true
+2:0/1/z_index = 100
+2:0/2 = 2
+2:0/2/flip_v = true
+2:0/2/z_index = 100
+3:0/next_alternative_id = 3
+3:0/0 = 0
+3:0/0/z_index = 100
+3:0/1 = 1
+3:0/1/transpose = true
+3:0/1/z_index = 100
+3:0/2 = 2
+3:0/2/flip_v = true
+3:0/2/z_index = 100
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_dh3mp")
+script = ExtResource("2_f7mb5")
+TerrainData = Dictionary[String, ExtResource("1_f7mb5")]({})
+metadata/_custom_type_script = "uid://dvpvvx8dt0r8c"

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=4 format=3 uid="uid://csg072470wnic"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_vfbi7"]
+[ext_resource type="AudioStream" uid="uid://dnxoejnt28oim" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Wood/ImpactMedium001a.ogg" id="2_l7jft"]
+[ext_resource type="AudioStream" uid="uid://j1lvg3qwi65m" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Stone/ImpactMedium001a.ogg" id="3_mf14h"]
+
+[resource]
+script = ExtResource("1_vfbi7")
+name = "Damage"
+bus = "World"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_l7jft"), ExtResource("3_mf14h")])

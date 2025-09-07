@@ -1,0 +1,11 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://dxujdjc1h2upl"]
+
+[ext_resource type="Texture2D" uid="uid://p1x36roh3o7y" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button002c.png" id="1_lub48"]
+
+[resource]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+texture = ExtResource("1_lub48")
+modulate_color = Color(0.074, 0.1769, 0.2, 0.784314)

@@ -1,0 +1,47 @@
+[gd_scene load_steps=11 format=3 uid="uid://hlc6fmvmjeov"]
+
+[ext_resource type="Script" uid="uid://ddkdtcqhoamab" path="res://addons/GodotCommons-Core/Scripts/Explosions/Explosion2D.gd" id="1_81vfb"]
+[ext_resource type="Script" uid="uid://uyphv3t30fur" path="res://addons/GodotCommons-Core/Scripts/Explosions/Explosion2D_Impact.gd" id="2_jpy1t"]
+[ext_resource type="SpriteFrames" uid="uid://ml0o7h8biif3" path="res://addons/GodotCommons-Core/Assets/Explosions/Default001a_Frames.tres" id="3_a5epa"]
+[ext_resource type="Resource" uid="uid://c5csxtfy2oxlb" path="res://addons/GodotCommons-Core/Assets/Audio/Events/Explosions/Default002.tres" id="3_iwfwy"]
+[ext_resource type="Script" uid="uid://ccl7awodegpjh" path="res://addons/GodotCommons-Core/Scripts/Explosions/Explosion2D_Sprite.gd" id="4_iwfwy"]
+[ext_resource type="Texture2D" uid="uid://nm65nh6a5o2s" path="res://addons/GodotCommons-Core/Assets/Lights/Light002b.png" id="5_s2qk7"]
+[ext_resource type="Script" uid="uid://b1qk55nrxrbva" path="res://addons/GodotCommons-Core/Scripts/Explosions/Explosion2D_Light.gd" id="6_eta25"]
+[ext_resource type="Script" uid="uid://dbq3atk50dwwy" path="res://addons/resonate/sound_manager/sound_bank.gd" id="7_iwfwy"]
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="8_s2qk7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_asfgq"]
+
+[node name="Explosion" type="Area2D"]
+collision_layer = 0
+collision_mask = 4096
+monitorable = false
+script = ExtResource("1_81vfb")
+
+[node name="Collision" type="CollisionShape2D" parent="." node_paths=PackedStringArray("OwnerExplosion", "OwnerSprite", "OwnerSoundBank")]
+shape = SubResource("CircleShape2D_asfgq")
+script = ExtResource("2_jpy1t")
+OwnerExplosion = NodePath("..")
+OwnerSprite = NodePath("../Sprite")
+_ImpactSoundEvent = ExtResource("3_iwfwy")
+OwnerSoundBank = NodePath("../SoundBank")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="." node_paths=PackedStringArray("OwnerExplosion")]
+sprite_frames = ExtResource("3_a5epa")
+script = ExtResource("4_iwfwy")
+OwnerExplosion = NodePath("..")
+
+[node name="Light" type="PointLight2D" parent="Sprite" node_paths=PackedStringArray("OwnerExplosion", "OwnerSprite")]
+color = Color(1, 0.588235, 0, 1)
+texture = ExtResource("5_s2qk7")
+height = 8.0
+script = ExtResource("6_eta25")
+OwnerExplosion = NodePath("../..")
+OwnerSprite = NodePath("..")
+metadata/_custom_type_script = "uid://b1qk55nrxrbva"
+
+[node name="SoundBank" type="Node" parent="."]
+script = ExtResource("7_iwfwy")
+label = "Explosion"
+events = Array[ExtResource("8_s2qk7")]([ExtResource("3_iwfwy")])
+metadata/_custom_type_script = "uid://dbq3atk50dwwy"

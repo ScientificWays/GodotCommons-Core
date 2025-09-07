@@ -1,0 +1,9 @@
+[gd_resource type="CanvasTexture" load_steps=3 format=3 uid="uid://s5gyd0myxp78"]
+
+[ext_resource type="Texture2D" uid="uid://bayj7svx88ac4" path="res://addons/GodotCommons-Core/Assets/Tiles/TileSet_Mask001a.png" id="1_qea4o"]
+[ext_resource type="Texture2D" uid="uid://r282skpr46aa" path="res://addons/GodotCommons-Core/Assets/Tiles/TileSet_Normal001a.png" id="2_y2rgh"]
+
+[resource]
+diffuse_texture = ExtResource("1_qea4o")
+normal_texture = ExtResource("2_y2rgh")
+texture_filter = 1

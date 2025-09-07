@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dfhn3s3v7fm37"]
+
+[ext_resource type="Shader" uid="uid://b1ln07u2x6dgv" path="res://addons/GodotCommons-Core/Assets/Common/EmissiveMaterial.gdshader" id="1_4o20t"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_4o20t")
+shader_parameter/Mul = 10.0

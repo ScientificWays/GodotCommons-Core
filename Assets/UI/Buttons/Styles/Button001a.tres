@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="OutlineButtonData" load_steps=5 format=3 uid="uid://coptqwqoh8haj"]
+
+[ext_resource type="StyleBox" uid="uid://dekd28viqdmle" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button001a_Focus.tres" id="1_rn5b5"]
+[ext_resource type="StyleBox" uid="uid://bthnypnfk13sy" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button001a_Hover.tres" id="2_wtpjr"]
+[ext_resource type="StyleBox" uid="uid://5vqwupe7xgok" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button001a_Normal.tres" id="3_yam0a"]
+[ext_resource type="Script" uid="uid://c27qdm4clnfa0" path="res://addons/GodotCommons-Core/Scripts/UI/Buttons/OutlineButtonData.gd" id="4_pdw4k"]
+
+[resource]
+script = ExtResource("4_pdw4k")
+Normal = ExtResource("3_yam0a")
+Hover = ExtResource("2_wtpjr")
+FocusVariants = Array[StyleBox]([ExtResource("1_rn5b5")])

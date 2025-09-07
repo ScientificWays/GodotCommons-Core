@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=3 format=3 uid="uid://css4chnd7wcsp"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_en6my"]
+[ext_resource type="AudioStream" uid="uid://bnjg3co1olq0f" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Explosions/Light001a.ogg" id="2_710eo"]
+
+[resource]
+script = ExtResource("1_en6my")
+name = "Light001"
+bus = "World_Reverb"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_710eo")])

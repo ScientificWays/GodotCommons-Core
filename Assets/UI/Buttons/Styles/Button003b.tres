@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="OutlineButtonData" load_steps=6 format=3 uid="uid://b1bqm88oipxi2"]
+
+[ext_resource type="StyleBox" uid="uid://dykyrssprv1de" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button003b_FocusA.tres" id="1_o288m"]
+[ext_resource type="StyleBox" uid="uid://xuhtm0u27q1w" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button003b_FocusB.tres" id="2_c1ktx"]
+[ext_resource type="StyleBox" uid="uid://8a7adl10u272" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button003b_Hover.tres" id="3_nvehs"]
+[ext_resource type="StyleBox" uid="uid://b0hwyj7ag1eqp" path="res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button003b_Normal.tres" id="4_x2m07"]
+[ext_resource type="Script" uid="uid://c27qdm4clnfa0" path="res://addons/GodotCommons-Core/Scripts/UI/Buttons/OutlineButtonData.gd" id="5_g8k23"]
+
+[resource]
+script = ExtResource("5_g8k23")
+Normal = ExtResource("4_x2m07")
+Hover = ExtResource("3_nvehs")
+FocusVariants = Array[StyleBox]([ExtResource("1_o288m"), ExtResource("2_c1ktx")])

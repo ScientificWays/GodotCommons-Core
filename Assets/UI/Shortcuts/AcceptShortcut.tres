@@ -1,0 +1,6 @@
+[gd_resource type="Shortcut" load_steps=2 format=3 uid="uid://bb0lpktxy7ems"]
+
+[ext_resource type="InputEventAction" uid="uid://dg16mvb6r002k" path="res://addons/GodotCommons-Core/Assets/UI/Shortcuts/AcceptAction.tres" id="1_42rwr"]
+
+[resource]
+events = [ExtResource("1_42rwr")]

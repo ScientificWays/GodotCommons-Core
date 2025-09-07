@@ -1,0 +1,5 @@
+[gd_resource type="InputEventAction" format=3 uid="uid://cgvrwoo5484mt"]
+
+[resource]
+action = &"2"
+pressed = true

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=4 format=3 uid="uid://c4sebftui06te"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_7lu2k"]
+[ext_resource type="AudioStream" uid="uid://b3is14tfwmcjj" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Wood/ImpactMedium002a.ogg" id="2_70ed8"]
+[ext_resource type="AudioStream" uid="uid://4lyq34h78bfp" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Wood/ImpactMedium002b.ogg" id="3_6e6qa"]
+
+[resource]
+script = ExtResource("1_7lu2k")
+name = "Hit"
+bus = "World"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_70ed8"), ExtResource("3_6e6qa")])

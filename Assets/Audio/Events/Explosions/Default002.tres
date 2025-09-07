@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=5 format=3 uid="uid://c5csxtfy2oxlb"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_7syin"]
+[ext_resource type="AudioStream" uid="uid://g1ylpb7sbmap" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Explosions/Default002a.ogg" id="2_5krcg"]
+[ext_resource type="AudioStream" uid="uid://b1jfupb5n0wl3" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Explosions/Default002b.ogg" id="3_fopt0"]
+[ext_resource type="AudioStream" uid="uid://wmw26stxmeb4" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Explosions/Default002c.ogg" id="4_u2g3l"]
+
+[resource]
+script = ExtResource("1_7syin")
+name = "Default002"
+bus = "World_Reverb"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_5krcg"), ExtResource("3_fopt0"), ExtResource("4_u2g3l")])

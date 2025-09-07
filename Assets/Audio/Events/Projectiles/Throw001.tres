@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=3 format=3 uid="uid://c51up7q1ldyvv"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_6sai8"]
+[ext_resource type="AudioStream" uid="uid://dfm1wjkawm405" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Projectiles/Throw001a.ogg" id="2_lte3g"]
+
+[resource]
+script = ExtResource("1_6sai8")
+name = "Throw001"
+bus = ""
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_lte3g")])

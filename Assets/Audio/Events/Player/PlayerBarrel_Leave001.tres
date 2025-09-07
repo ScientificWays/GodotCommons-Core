@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=3 format=3 uid="uid://b6easkdr3qbe7"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_4hrc3"]
+[ext_resource type="AudioStream" uid="uid://bm52o24op64bp" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Wood/DoorClose001b.ogg" id="2_7mo46"]
+
+[resource]
+script = ExtResource("1_4hrc3")
+name = "Leave"
+bus = "World"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_7mo46")])

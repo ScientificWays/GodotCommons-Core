@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=3 format=3 uid="uid://y8ixromtu4hm"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_sl2nl"]
+[ext_resource type="AudioStream" uid="uid://djy3oja0ng86h" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/UI/Player/NoAmmo001a.ogg" id="2_82061"]
+
+[resource]
+script = ExtResource("1_sl2nl")
+name = "NoAmmo"
+bus = "UI"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_82061")])

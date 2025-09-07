@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundEventResource" load_steps=4 format=3 uid="uid://cgtae4ceoe66g"]
+
+[ext_resource type="Script" uid="uid://xbxs1g7f5nk3" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="1_fepm7"]
+[ext_resource type="AudioStream" uid="uid://de3xi6r2ji0tu" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Wood/ImpactWeak001a.wav" id="2_wqxvi"]
+[ext_resource type="AudioStream" uid="uid://cjoq076b4xijq" path="res://addons/GodotCommons-Core/Assets/Audio/Sound/World/Wood/ImpactWeak001b.wav" id="3_a0x5c"]
+
+[resource]
+script = ExtResource("1_fepm7")
+name = "Roll001"
+bus = "World"
+volume = 0.0
+pitch = 1.0
+streams = Array[AudioStream]([ExtResource("2_wqxvi"), ExtResource("3_a0x5c")])

@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dfwgfq42f8ukh"]
+
+[ext_resource type="Script" uid="uid://bg5ruveo6c1jm" path="res://addons/GodotCommons-Core/Scripts/Shake/ShakeSource2D.gd" id="1_1bdc1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6enp0"]
+resource_local_to_scene = true
+radius = 64.0
+
+[node name="ShakeSource" type="Area2D"]
+process_physics_priority = -1
+collision_layer = 0
+collision_mask = 16384
+input_pickable = false
+monitorable = false
+script = ExtResource("1_1bdc1")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_6enp0")
+debug_color = Color(0.699471, 0.482713, 0.275979, 0.42)

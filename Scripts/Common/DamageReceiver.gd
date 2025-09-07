@@ -1,0 +1,114 @@
+extends Node
+class_name DamageReceiver
+
+const BoundsRadiusMeta: StringName = &"DamageReceiver_BoundsRadius"
+
+static func TryGetFrom(InNode: Node) -> DamageReceiver:
+	return ModularGlobals.TryGetFrom(InNode, DamageReceiver)
+
+@export_category("Health")
+@export var HealthAttributes: AttributeSet
+
+@export_category("Damage")
+const DamageType_Any: int = 0
+const DamageType_MeleeHit: int = 1
+const DamageType_RangedHit: int = 2
+const DamageType_Explosion: int = 4
+const DamageType_Fire: int = 8
+const DamageType_Poison: int = 16
+const DamageType_Impact: int = 32
+@export_flags("MeleeHit", "RangedHit", "Explosion", "Fire", "Poison", "Impact") var DamageImmunityMask: int = 0
+
+@export var SpawnDamageImmunityDuration: float = 0.0
+@export var PostDamageImmunityDuration: float = 0.0
+
+var LastDamage: float
+var LastDamageTime: float
+var LastDamageSource: Node
+var LastDamageInstigator: Node
+var LastDamageType: int
+
+func TryGetLastDamagePosition(InPrioritiseInstigator: bool) -> Vector2:
+	if InPrioritiseInstigator and is_instance_valid(LastDamageInstigator) and LastDamageInstigator is Node2D:
+		return LastDamageInstigator.global_position
+	elif is_instance_valid(LastDamageSource):
+		return LastDamageSource.global_position
+	elif is_inside_tree() and get_parent() is Node:
+		return get_parent().global_position
+	return Vector2.ZERO
+
+var DamageImmunityEndTime: float = 0.0
+var ReceivedLethalDamage: bool = false
+
+signal ReceiveDamage(InSource: Node, InDamage: float, InIgnoredImmunityTime: bool)
+signal ReceiveLethalDamage(InSource: Node, InDamage: float, InIgnoredImmunityTime: bool)
+
+func _ready():
+	
+	assert(HealthAttributes)
+	
+	if SpawnDamageImmunityDuration > 0.0:
+		DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
+
+func _enter_tree():
+	ModularGlobals.InitModularNode(self)
+
+func _exit_tree():
+	ModularGlobals.DeInitModularNode(self)
+
+func GetHealth() -> float:
+	return HealthAttributes.GetAttributeCurrentValue(AttributeSet.Health)
+
+func GetMaxHealth() -> float:
+	return HealthAttributes.GetAttributeCurrentValue(AttributeSet.MaxHealth)
+
+func IsDamageLethal(InDamage: float) -> bool:
+	return GetHealth() <= InDamage
+
+func CanReceiveDamage(InSource: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+	
+	var CurrentTime := Time.get_unix_time_from_system()
+	if not InShouldIgnoreImmunityTime and CurrentTime < DamageImmunityEndTime:
+		return false
+	else:
+		return InDamageType & DamageImmunityMask == 0
+
+func AdjustReceivedDamage(InSource: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> float:
+	return InDamage
+
+## Can be called in physics frame in BarrelPawn.HandleImpactWith()
+func TryReceiveDamage(InSource: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+	
+	InDamage = AdjustReceivedDamage(InSource, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime)
+	assert(InDamage > 0.0)
+	
+	if CanReceiveDamage(InSource, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime):
+		
+		LastDamage = InDamage
+		LastDamageTime = Time.get_unix_time_from_system()
+		LastDamageSource = InSource
+		LastDamageInstigator = InInstigator
+		LastDamageType = InDamageType
+		DamageImmunityEndTime = LastDamageTime + PostDamageImmunityDuration
+		
+		HandleReceivedDamage(InShouldIgnoreImmunityTime)
+		ReceiveDamage.emit(InSource, InDamage, InShouldIgnoreImmunityTime)
+		
+		if ReceivedLethalDamage:
+			ReceiveLethalDamage.emit(InSource, InDamage, InShouldIgnoreImmunityTime)
+		return true
+	return false
+
+func HandleReceivedDamage(InIgnoredImmunityTime: bool):
+	
+	ReceivedLethalDamage = IsDamageLethal(LastDamage)
+	
+	var Health := GetHealth()
+	var MaxHealth := GetMaxHealth()
+	Health = clampf(Health - LastDamage, 0.0, MaxHealth)
+
+func AddDamageImmunityTo(InMask: int):
+	DamageImmunityMask |= InMask
+
+func RemoveDamageImmunityFrom(InMask: int):
+	DamageImmunityMask &= ~InMask

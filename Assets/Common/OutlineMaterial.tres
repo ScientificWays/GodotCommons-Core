@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://blxq0rbwgfnny"]
+
+[ext_resource type="Shader" uid="uid://bf5od5ra7ioeu" path="res://addons/GodotCommons-Core/Assets/Common/OutlineMaterial.gdshader" id="1_uyftn"]
+
+[resource]
+shader = ExtResource("1_uyftn")
+shader_parameter/Color = Color(1, 1, 0, 1)
+shader_parameter/AlphaMul = 1.0
+shader_parameter/DefaultColorMul = 1.0
