@@ -59,3 +59,9 @@ func OnReceiveLethalDamage(InSource: Node, InDamage: float, InIgnoredImmunityTim
 
 func HandleLethalDamage():
 	queue_free()
+
+func TeleportTo(InPosition: Vector2) -> bool:
+	var NewTransform := global_transform
+	NewTransform.origin = InPosition
+	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, NewTransform)
+	return true

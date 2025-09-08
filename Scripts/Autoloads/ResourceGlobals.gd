@@ -8,14 +8,14 @@ func _ready() -> void:
 
 func UtilGetOrCreate(InKeyArray: Array, InInitCallable: Callable) -> Variant:
 	
-	if not Pools.has(InKeyArray[0]):
+	if not Pools.has(InKeyArray[0]) or not is_instance_valid(Pools[InKeyArray[0]]):
 		Pools[InKeyArray[0]] = {}
 	var SubPool = Pools[InKeyArray[0]]
 	
 	for SampleIndex: int in range(1, InKeyArray.size() - 1):
 		
 		var SampleKey = InKeyArray[SampleIndex]
-		if not SubPool.has(SampleKey):
+		if not SubPool.has(SampleKey) or not is_instance_valid(SubPool[SampleKey]):
 			SubPool[SampleKey] = {}
 		SubPool = SubPool[SampleKey]
 	
@@ -117,7 +117,12 @@ func UtilInitSoundBankWithEvent(InCurrentKeyArray: Array) -> SoundBank:
 		SampleBank = SoundBank.new()
 		SampleBank.label = InCurrentKeyArray[0]
 		SampleBank.events = [InCurrentKeyArray[1]]
+		SampleBank.tree_exited.connect(UtilDeInitSoundBank.bind(SampleBank))
 		WorldGlobals._Level.add_child(SampleBank)
 		SoundBankByLabelDictionary[InCurrentKeyArray[0]] = SampleBank
 	SoundManager._event_table[SampleBank.label]["events"] = SoundManager._create_events(SampleBank.events)
 	return SampleBank
+
+func UtilDeInitSoundBank(InSoundBank: SoundBank) -> void:
+	SoundBankByLabelDictionary.erase(InSoundBank.label)
+	InSoundBank.queue_free()

@@ -1,10 +1,10 @@
 extends Node
 class_name PlayerController
 
-const CurrentPlayerStateMeta: StringName = &"CurrentPlayerState"
+const PlayerControllerMeta: StringName = &"PlayerController"
 
 static func TryGetFrom(InNode: Node) -> PlayerController:
-	return InNode.get_meta(CurrentPlayerStateMeta) if is_instance_valid(InNode) and InNode.has_meta(CurrentPlayerStateMeta) else null
+	return InNode.get_meta(PlayerControllerMeta) if is_instance_valid(InNode) and InNode.has_meta(PlayerControllerMeta) else null
 
 @export var _Camera: PlayerCamera2D
 @export var DefaultPawnScene: PackedScene
@@ -18,7 +18,7 @@ func _ready() -> void:
 	
 
 func _process(InDelta: float) -> void:
-	ProcessInputs(InDelta)
+	ProcessMovementInputs(InDelta)
 
 func _enter_tree() -> void:
 	PlayerGlobals.PlayerArray.append(self)
@@ -50,7 +50,7 @@ var DisableTapInputs: bool = false
 
 var MovementInput: Vector2
 
-func ProcessInputs(InDelta: float) -> void:
+func ProcessMovementInputs(InDelta: float) -> void:
 	
 	if DisableMovementInputs or _Camera.ShouldBlockMovementInputs():
 		MovementInput = Vector2.ZERO
@@ -72,24 +72,6 @@ func _unhandled_input(InEvent: InputEvent):
 		HandleNumberInput(3)
 	elif InEvent.is_action_pressed(&"LeaveBarrel"):
 		HandleLeaveBarrelInput()
-	elif InEvent.is_action_pressed(&"DebugAction"):
-		#DebugSpawnCreature()
-		#DebugSpawnExplosion()
-		#DebugTeleport()
-		#DebugSpawnItem()
-		#DebugApplyStatusEffect()
-		#DebugSelfDamage()
-		#DebugUnlock()
-		#DebugToggleVisibility()
-		pass
-	elif InEvent.is_action_pressed(&"DebugScrollUp"):
-		_Camera.PendingZoom *= 1.25
-		print("Set camera zoom to ", _Camera.PendingZoom)
-		pass
-	elif InEvent.is_action_pressed(&"DebugScrollDown"):
-		_Camera.PendingZoom *= 0.8
-		print("Set camera zoom to ", _Camera.PendingZoom)
-		pass
 
 var TapInputCallableArray: Array[Callable] = []
 

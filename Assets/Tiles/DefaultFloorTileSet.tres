@@ -9,8 +9,8 @@
 
 [sub_resource type="Resource" id="Resource_oq70q"]
 script = ExtResource("1_6u6vv")
-Health = 10.0
-IsUnbreakable = false
+Health = 50.0
+IsUnbreakable = true
 CanIgnite = false
 IgniteDamageThreshold = 20.0
 IgniteDamageProbabilityMul = 0.2
@@ -21,8 +21,8 @@ metadata/_custom_type_script = "uid://csxcu53w5isdb"
 
 [sub_resource type="Resource" id="Resource_rv5ds"]
 script = ExtResource("1_6u6vv")
-Health = 10.0
-IsUnbreakable = false
+Health = 50.0
+IsUnbreakable = true
 CanIgnite = false
 IgniteDamageThreshold = 20.0
 IgniteDamageProbabilityMul = 0.2
@@ -82,6 +82,10 @@ separation = Vector2i(2, 2)
 9:1/0/material = ExtResource("3_j01i7")
 10:1/0 = 0
 10:1/0/material = ExtResource("3_j01i7")
+10:1/0/metadata/_better_terrain = {
+&"symmetry": 7,
+&"type": 0
+}
 11:1/0 = 0
 11:1/0/material = ExtResource("3_j01i7")
 0:2/0 = 0
@@ -244,3 +248,12 @@ TerrainData = Dictionary[String, ExtResource("1_6u6vv")]({
 "Stone": SubResource("Resource_rv5ds")
 })
 metadata/_custom_type_script = "uid://dvpvvx8dt0r8c"
+metadata/_better_terrain = {
+&"decoration": ["Decoration", Color(0.411765, 0.411765, 0.411765, 1), 3, [], {
+&"path": "res://addons/better-terrain/icons/Decoration.svg"
+}],
+&"terrains": [["Dirt", Color(0.69912, 0.481201, 0.221114, 1), 0, [], {
+&"path": "res://addons/GodotCommons-Core/Assets/Tiles/Dirt001_Floor.png"
+}]],
+&"version": "0.2"
+}
