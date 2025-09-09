@@ -17,7 +17,8 @@ const DamageType_Explosion: int = 4
 const DamageType_Fire: int = 8
 const DamageType_Poison: int = 16
 const DamageType_Impact: int = 32
-@export_flags("MeleeHit", "RangedHit", "Explosion", "Fire", "Poison", "Impact") var DamageImmunityMask: int = 0
+const DamageType_Fall: int = 64
+@export_flags("MeleeHit", "RangedHit", "Explosion", "Fire", "Poison", "Impact", "Fall") var DamageImmunityMask: int = 0
 
 @export var SpawnDamageImmunityDuration: float = 0.0
 @export var PostDamageImmunityDuration: float = 0.0

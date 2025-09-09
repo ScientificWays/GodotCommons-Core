@@ -4,12 +4,12 @@ class_name LevelBase2D
 @export var DefaultGameMode: GameModeData
 @export var DefaultGameModeArgs: Array
 
+@export var DefaultPlayerSpawn: Node2D
+
 #const ForceMoodMeta: StringName = &"ForceMood"
 
 const WorldBankLabel: String = "World"
 #const MusicBankLabel: String = "Music"
-
-@export var PlayerStateScene: PackedScene
 
 var _YSorted: Node2D
 
@@ -89,5 +89,4 @@ func EndPlay():
 		MusicManager.stop(1.0)
 
 func GetPlayerSpawnPosition(InPlayer: PlayerController) -> Vector2:
-	assert(false, "GetPlayerSpawnPosition() was not implemented!")
-	return Vector2.INF
+	return DefaultPlayerSpawn.global_position if DefaultPlayerSpawn else Vector2.ZERO

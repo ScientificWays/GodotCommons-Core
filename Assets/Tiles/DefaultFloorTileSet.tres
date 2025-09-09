@@ -34,8 +34,7 @@ metadata/_custom_type_script = "uid://csxcu53w5isdb"
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t8ue2"]
 resource_name = "Dirt"
 texture = ExtResource("4_ibf4h")
-margins = Vector2i(1, 1)
-separation = Vector2i(2, 2)
+texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
 0:0/0/material = ExtResource("3_j01i7")
 1:0/0 = 0
@@ -83,7 +82,7 @@ separation = Vector2i(2, 2)
 10:1/0 = 0
 10:1/0/material = ExtResource("3_j01i7")
 10:1/0/metadata/_better_terrain = {
-&"symmetry": 7,
+&"symmetry": 8,
 &"type": 0
 }
 11:1/0 = 0
@@ -140,8 +139,7 @@ separation = Vector2i(2, 2)
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_422ie"]
 resource_name = "Stone"
 texture = ExtResource("6_k0wje")
-margins = Vector2i(1, 1)
-separation = Vector2i(2, 2)
+texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
 0:0/0/material = ExtResource("5_7q62e")
 1:0/0 = 0
@@ -188,6 +186,10 @@ separation = Vector2i(2, 2)
 9:1/0/material = ExtResource("5_7q62e")
 10:1/0 = 0
 10:1/0/material = ExtResource("5_7q62e")
+10:1/0/metadata/_better_terrain = {
+&"symmetry": 8,
+&"type": 1
+}
 11:1/0 = 0
 11:1/0/material = ExtResource("5_7q62e")
 0:2/0 = 0
@@ -254,6 +256,8 @@ metadata/_better_terrain = {
 }],
 &"terrains": [["Dirt", Color(0.69912, 0.481201, 0.221114, 1), 0, [], {
 &"path": "res://addons/GodotCommons-Core/Assets/Tiles/Dirt001_Floor.png"
+}], ["Stone", Color(0.59, 0.59, 0.59, 1), 0, [], {
+&"path": "res://addons/GodotCommons-Core/Assets/Tiles/Stone001_Floor.png"
 }]],
 &"version": "0.2"
 }
