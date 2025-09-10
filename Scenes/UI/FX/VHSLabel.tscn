@@ -14,6 +14,21 @@ shader_parameter/noise_strength = 0.05
 [sub_resource type="ViewportTexture" id="ViewportTexture_8p174"]
 viewport_path = NodePath("SubViewport")
 
+[sub_resource type="Animation" id="Animation_rgqcq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SubViewport/RestartLabelControl/RestartLabel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
 [sub_resource type="Animation" id="Animation_cguu5"]
 resource_name = "Show"
 length = 0.5
@@ -28,21 +43,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="Animation" id="Animation_rgqcq"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SubViewport/RestartLabelControl/RestartLabel:self_modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_5hon4"]
@@ -85,7 +85,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="RestartLabel" type="Label" parent="SubViewport/RestartLabelControl"]
-modulate = Color(1, 1, 1, 0.989474)
+modulate = Color(1, 1, 1, 0.962792)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -93,13 +93,13 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -240.0
-offset_top = -26.6229
+offset_top = -29.9588
 offset_right = 240.0
-offset_bottom = 29.377
+offset_bottom = 26.0411
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.0137711
-scale = Vector2(1.00207, 1.00207)
+rotation = -0.0195876
+scale = Vector2(1.01454, 1.01454)
 pivot_offset = Vector2(240, 28)
 theme_override_font_sizes/font_size = 64
 text = "Press any key to restart"

@@ -1,10 +1,13 @@
 extends Node2D
 class_name LevelBase2D
 
+@export_category("Game Mode")
 @export var DefaultGameMode: GameModeData
 @export var DefaultGameModeArgs: Array
 
+@export_category("Players")
 @export var DefaultPlayerSpawn: Node2D
+@export var RespawnAllPlayersOnBeginPlay: bool = true
 
 #const ForceMoodMeta: StringName = &"ForceMood"
 
@@ -77,6 +80,9 @@ func PrepareGameStateAndSaveData():
 func BeginPlay():
 	
 	_GameState.HandleBeginPlay(self)
+	
+	if RespawnAllPlayersOnBeginPlay:
+		PlayerGlobals.RespawnAllPlayers()
 	
 	#_LevelTileMap.UpdateUnbreakableCells()
 	#_LevelTileMap.InitNavigation()

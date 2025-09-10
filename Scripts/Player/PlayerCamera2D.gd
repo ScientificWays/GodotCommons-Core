@@ -2,11 +2,14 @@ extends Camera2D
 class_name PlayerCamera2D
 
 @export_category("Owner")
-@export var OwnerController: PlayerController
+@export var OwnerPlayerController: PlayerController
+@export var TriggerLagOnPawnChanged: bool = true
+@export var TriggerLagOnPawnTeleport: bool = true
 
 @export_category("Camera")
-@onready var DefaultSmoothingSpeed = position_smoothing_speed
+@export var CameraAnimationPlayer: AnimationPlayer
 @export var DefaultPendingZoomLerpSpeed: float = 10.0
+@onready var DefaultSmoothingSpeed = position_smoothing_speed
 
 var ConstantOffset: Vector2 = Vector2.ZERO
 var ConstantRotation: float = 0.0
@@ -26,10 +29,16 @@ signal ReachedPendingZoom()
 
 func _ready():
 	
-	assert(OwnerController)
+	assert(OwnerPlayerController)
 	
 	ResetZoom()
 	OnViewportSizeChanged()
+	
+	OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
+	OnOwnerControlledPawnChanged()
+	
+	OwnerPlayerController.ControlledPawnTeleport.connect(OnOwnerControlledPawnTeleport)
+	OnOwnerControlledPawnTeleport()
 
 func _enter_tree():
 	PlayerGlobals.ZoomOverridesChanged.connect(UpdateObservedTileMapAreaSize)
@@ -38,10 +47,6 @@ func _enter_tree():
 func _exit_tree():
 	PlayerGlobals.ZoomOverridesChanged.disconnect(UpdateObservedTileMapAreaSize)
 	get_viewport().size_changed.disconnect(OnViewportSizeChanged)
-
-func OnViewportSizeChanged():
-	if is_node_ready():
-		UpdateObservedTileMapAreaSize()
 
 func _physics_process(InDelta: float) -> void:
 	
@@ -53,20 +58,41 @@ func _physics_process(InDelta: float) -> void:
 	
 	if is_instance_valid(OverrideTarget):
 		global_position = OverrideTarget.global_position
-	elif is_instance_valid(OwnerController.ControlledPawn):
-		global_position = OwnerController.ControlledPawn.global_position
+	elif is_instance_valid(OwnerPlayerController.ControlledPawn):
+		global_position = OwnerPlayerController.ControlledPawn.global_position
 	
 	if not HasReachedPendingZoom():
 		zoom = zoom.lerp(PendingZoom, PendingZoomLerpSpeed * InDelta)
 		if HasReachedPendingZoom():
 			zoom = PendingZoom
 
+func OnViewportSizeChanged():
+	if is_node_ready():
+		UpdateObservedTileMapAreaSize()
+
+func OnOwnerControlledPawnChanged():
+	if TriggerLagOnPawnChanged:
+		TriggerLag()
+
+func OnOwnerControlledPawnTeleport():
+	if TriggerLagOnPawnTeleport:
+		TriggerLag()
+
+##
+## Lag
+##
 func SetSmoothingSpeed(InSpeed: float):
 	position_smoothing_speed = InSpeed
 
 func ResetSmoothingSpeed():
 	SetSmoothingSpeed(DefaultSmoothingSpeed)
 
+func TriggerLag(InDurationMul: float = 1.0):
+	CameraAnimationPlayer.play(&"Lag", -1.0, 1.0 / InDurationMul)
+
+##
+## Zoom
+##
 func HasReachedPendingZoom() -> bool:
 	return absf(PendingZoom.x - zoom.x) < 0.01 or absf(PendingZoom.y - zoom.y) < 0.01
 
@@ -79,6 +105,9 @@ func ResetPendingZoomLerpSpeed():
 func ResetZoom():
 	PendingZoom = PlayerGlobals.GetDefaultCameraZoom()
 
+##
+## Inputs
+##
 func ShouldBlockMovementInputs() -> bool:
 	return is_instance_valid(OverrideTarget) and OverrideTargetBlocksMovementInputs
 

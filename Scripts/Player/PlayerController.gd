@@ -43,6 +43,7 @@ var ControlledPawn: Pawn2D:
 		ControlledPawnChanged.emit()
 
 signal ControlledPawnChanged()
+signal ControlledPawnTeleport()
 
 func OnControlledPawnTreeExited():
 	ControlledPawn = null
