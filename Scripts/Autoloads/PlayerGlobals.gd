@@ -19,7 +19,7 @@ func _exit_tree():
 
 func RespawnAllPlayers():
 	for SampelPlayer: PlayerController in PlayerArray:
-		SampelPlayer.Respawn()
+		SampelPlayer.Restart()
 
 func GetDefaultCameraZoom() -> Vector2:
 	return get_meta(&"DefaultCameraZoom", DefaultCameraZoom_Const)

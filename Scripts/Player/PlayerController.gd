@@ -29,15 +29,31 @@ func _exit_tree() -> void:
 ##
 ## Pawn
 ##
-var ControlledPawn: Pawn2D
+var ControlledPawn: Pawn2D:
+	set(InPawn):
+		
+		if is_instance_valid(ControlledPawn):
+			ControlledPawn.tree_exited.disconnect(OnControlledPawnTreeExited)
+		
+		ControlledPawn = InPawn
+		
+		if is_instance_valid(ControlledPawn):
+			ControlledPawn.tree_exited.connect(OnControlledPawnTreeExited)
+		
+		ControlledPawnChanged.emit()
 
-func Respawn() -> void:
+signal ControlledPawnChanged()
+
+func OnControlledPawnTreeExited():
+	ControlledPawn = null
+
+func Restart() -> void:
 	
 	var _Level := WorldGlobals._Level as LevelBase2D
-	var RespawnPosition := _Level.GetPlayerSpawnPosition(self)
+	var RestartPosition := _Level.GetPlayerSpawnPosition(self)
 	
 	ControlledPawn = DefaultPawnScene.instantiate()
-	ControlledPawn.position = RespawnPosition
+	ControlledPawn.position = RestartPosition
 	_Level.add_child.call_deferred(ControlledPawn)
 	
 	ControlledPawn._Controller = self

@@ -1,0 +1,112 @@
+[gd_scene load_steps=8 format=3 uid="uid://d3o4fa5w0r7ao"]
+
+[ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="1_33je3"]
+[ext_resource type="Script" uid="uid://cn0tkuy8sxeyr" path="res://addons/GodotCommons-Core/Scripts/UI/FX/VHSFX.gd" id="2_33je3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vfhbj"]
+resource_local_to_scene = true
+shader = ExtResource("1_33je3")
+shader_parameter/time_speed = 1.0
+shader_parameter/split_amount = 1.5
+shader_parameter/flicker_intensity = 0.2
+shader_parameter/noise_strength = 0.05
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_8p174"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="Animation" id="Animation_cguu5"]
+resource_name = "Show"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SubViewport/RestartLabelControl/RestartLabel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_rgqcq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SubViewport/RestartLabelControl/RestartLabel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5hon4"]
+_data = {
+&"RESET": SubResource("Animation_rgqcq"),
+&"Show": SubResource("Animation_cguu5")
+}
+
+[node name="VHSLabel" type="Control" node_paths=PackedStringArray("target")]
+modulate = Color(1, 1, 1, 0.965203)
+material = SubResource("ShaderMaterial_vfhbj")
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_33je3")
+target = NodePath("SubViewport/RestartLabelControl/RestartLabel")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+use_parent_material = true
+texture = SubResource("ViewportTexture_8p174")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(512, 256)
+
+[node name="RestartLabelControl" type="Control" parent="SubViewport"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RestartLabel" type="Label" parent="SubViewport/RestartLabelControl"]
+modulate = Color(1, 1, 1, 0.989474)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -26.6229
+offset_right = 240.0
+offset_bottom = 29.377
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 0.0137711
+scale = Vector2(1.00207, 1.00207)
+pivot_offset = Vector2(240, 28)
+theme_override_font_sizes/font_size = 64
+text = "Press any key to restart"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_5hon4")
+}
