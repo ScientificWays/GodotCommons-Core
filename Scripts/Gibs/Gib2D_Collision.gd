@@ -1,4 +1,4 @@
-extends Sprite2D
+extends CollisionShape2D
 class_name Gib2D_Collision
 
 @export_category("Owner")

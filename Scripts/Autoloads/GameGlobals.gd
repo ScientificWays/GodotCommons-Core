@@ -16,6 +16,21 @@ func GetCanvasColor() -> Color:
 	return GetCanvasColorCallable.call()
 signal RequestSetCanvasColor(InColor: Color)
 
+enum GraphicsOption
+{
+	Minimal,
+	Low,
+	Average,
+	High,
+	Ultra
+}
+
+signal GibsSettingChanged()
+var GibsSetting: GraphicsOption = GraphicsOption.Average if OS.has_feature("mobile") else GraphicsOption.High:
+	set(InOption):
+		GibsSetting = InOption
+		GibsSettingChanged.emit()
+
 func _ready():
 	
 	#DebugMenu.style = DebugMenu.Style.VISIBLE_DETAILED

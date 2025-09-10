@@ -27,11 +27,13 @@ func _ready():
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
-		WorldGlobals._Level._OptimizationManager.RegisterGib(self)
+		#WorldGlobals._Level._OptimizationManager.RegisterGib(self)
+		pass
 
 func _exit_tree():
 	if not Engine.is_editor_hint():
-		WorldGlobals._Level._OptimizationManager.UnRegisterGib(self)
+		#WorldGlobals._Level._OptimizationManager.UnRegisterGib(self)
+		pass
 
 func OnSleepingStateChanged():
 	assert(ShouldFreezeOnSleep)

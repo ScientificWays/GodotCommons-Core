@@ -6,8 +6,9 @@ const BoundsRadiusMeta: StringName = &"DamageReceiver_BoundsRadius"
 static func TryGetFrom(InNode: Node) -> DamageReceiver:
 	return ModularGlobals.TryGetFrom(InNode, DamageReceiver)
 
-@export_category("Health")
-@export var HealthAttributes: AttributeSet
+@export_category("Owner")
+@export var OwnerBody2D: Node2D
+@export var OwnerAttributes: AttributeSet
 
 @export_category("Damage")
 const DamageType_Any: int = 0
@@ -19,6 +20,7 @@ const DamageType_Poison: int = 16
 const DamageType_Impact: int = 32
 const DamageType_Fall: int = 64
 @export_flags("MeleeHit", "RangedHit", "Explosion", "Fire", "Poison", "Impact", "Fall") var DamageImmunityMask: int = 0
+@export var DamageToImpulseMagnitudeMul: float = 1.0
 
 @export var SpawnDamageImmunityDuration: float = 0.0
 @export var PostDamageImmunityDuration: float = 0.0
@@ -46,7 +48,7 @@ signal ReceiveLethalDamage(InSource: Node, InDamage: float, InIgnoredImmunityTim
 
 func _ready():
 	
-	assert(HealthAttributes)
+	assert(OwnerAttributes)
 	
 	if SpawnDamageImmunityDuration > 0.0:
 		DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
@@ -58,10 +60,10 @@ func _exit_tree():
 	ModularGlobals.DeInitModularNode(self)
 
 func GetHealth() -> float:
-	return HealthAttributes.GetAttributeCurrentValue(AttributeSet.Health)
+	return OwnerAttributes.GetAttributeCurrentValue(AttributeSet.Health)
 
 func GetMaxHealth() -> float:
-	return HealthAttributes.GetAttributeCurrentValue(AttributeSet.MaxHealth)
+	return OwnerAttributes.GetAttributeCurrentValue(AttributeSet.MaxHealth)
 
 func IsDamageLethal(InDamage: float) -> bool:
 	return GetHealth() <= InDamage
@@ -99,6 +101,18 @@ func TryReceiveDamage(InSource: Node, InInstigator: Node, InDamage: float, InDam
 			ReceiveLethalDamage.emit(InSource, InDamage, InShouldIgnoreImmunityTime)
 		return true
 	return false
+
+func CalcLastDamageImpulse2D() -> Vector2:
+	
+	if not is_instance_valid(LastDamageSource):
+		return Vector2.ZERO
+	
+	var Source2D := LastDamageSource as Node2D
+	if not Source2D:
+		return Vector2.ZERO
+	
+	var FromSourceDirection := Source2D.global_position.direction_to(OwnerBody2D.global_position)
+	return FromSourceDirection * LastDamage * DamageToImpulseMagnitudeMul
 
 func HandleReceivedDamage(InIgnoredImmunityTime: bool):
 	

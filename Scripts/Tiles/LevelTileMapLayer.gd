@@ -210,7 +210,7 @@ func UtilHandleCellBreak(InCell: Vector2i, InImpulse: Vector2, InCanIgniteDebris
 		MarkedToFallWallCellWeights.erase(InCell)
 	
 	if CellTerrainData.GibsScene:
-		GibsTemplate.Spawn(map_to_local(InCell), CellTerrainData.GibsScene, InImpulse, InCanIgniteDebris, 0.5)
+		GibsTemplate2D.Spawn(map_to_local(InCell), CellTerrainData.GibsScene, InImpulse, InCanIgniteDebris, 0.5)
 
 func UtilHandleCellIgnite(InCell: Vector2i):
 	
