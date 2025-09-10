@@ -11,9 +11,11 @@ func _ready() -> void:
 	OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
 	OnOwnerControlledPawnChanged()
 
+var RestartEnableTicksMs: int = 0
+
 func _input(InEvent: InputEvent) -> void:
 	
-	if InEvent.is_pressed():
+	if InEvent.is_pressed() and Time.get_ticks_msec() > RestartEnableTicksMs:
 		OwnerPlayerController.Restart()
 
 func OnOwnerControlledPawnChanged():
@@ -24,8 +26,11 @@ func OnOwnerControlledPawnChanged():
 		ShowRestart()
 
 func ShowRestart():
+	
 	visible = true
 	set_process_input(true)
+	
+	RestartEnableTicksMs = Time.get_ticks_msec() + 500
 
 func HideRestart():
 	visible = false

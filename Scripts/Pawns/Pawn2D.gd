@@ -18,6 +18,7 @@ enum Type
 
 @export_category("Health")
 @export var HealthDamageReceiver: DamageReceiver
+@export var LethalDamageSoundEvent: SoundEventResource
 
 @export_category("Audio")
 @export var SoundBankLabel: String = "Pawn"
@@ -58,6 +59,10 @@ func OnReceiveLethalDamage(InSource: Node, InDamage: float, InIgnoredImmunityTim
 	HandleLethalDamage()
 
 func HandleLethalDamage():
+	
+	if LethalDamageSoundEvent:
+		AudioGlobals.TryPlaySound_AtGlobalPosition(SoundBankLabel, LethalDamageSoundEvent, global_position)
+	
 	queue_free()
 
 func TeleportTo(InPosition: Vector2) -> bool:
