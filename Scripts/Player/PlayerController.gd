@@ -45,7 +45,7 @@ var ControlledPawn: Pawn2D:
 signal ControlledPawnChanged()
 signal ControlledPawnTeleport()
 
-func OnControlledPawnTreeExited():
+func OnControlledPawnTreeExited() -> void:
 	ControlledPawn = null
 
 func Restart() -> void:
@@ -74,7 +74,7 @@ func ProcessMovementInputs(InDelta: float) -> void:
 	else:
 		MovementInput = Input.get_vector(&"Left", &"Right", &"Up", &"Down")
 
-func _unhandled_input(InEvent: InputEvent):
+func _unhandled_input(InEvent: InputEvent) -> void:
 	
 	if InEvent is InputEventScreenTouch:
 		if DisableTapInputs or _Camera.ShouldBlockTapInputs():
@@ -92,19 +92,25 @@ func _unhandled_input(InEvent: InputEvent):
 
 var TapInputCallableArray: Array[Callable] = []
 
-func HandleTapInput(InScreenPosition: Vector2, InReleased: bool):
+signal TapInputHandled(InScreenPosition: Vector2, InGlobalPosition: Vector2, InReleased: bool, InConsumedByPawn: bool)
+
+func HandleTapInput(InScreenPosition: Vector2, InReleased: bool) -> void:
 	
 	var GlobalPosition := get_viewport().get_canvas_transform().affine_inverse() * InScreenPosition
 	#DamageNumberUI.Spawn(GlobalPosition + Vector2(randf_range(-10.0, 10.0), 0.0), 1)
 	
+	var ConsumedByPawn := false
 	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, InReleased ]):
 		pass
 	elif is_instance_valid(ControlledPawn):
 		ControlledPawn.ControllerTapInput.emit(InScreenPosition, GlobalPosition, InReleased)
+		ConsumedByPawn = true
+	
+	TapInputHandled.emit(InScreenPosition, GlobalPosition, InReleased, ConsumedByPawn)
 
-func HandleNumberInput(InNumber: int):
+func HandleNumberInput(InNumber: int) -> void:
 	#_Inventory.TryUseActiveArtifactByIndex(InNumber - 1)
 	pass
 
-func HandleLeaveBarrelInput():
+func HandleLeaveBarrelInput() -> void:
 	pass

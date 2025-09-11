@@ -16,14 +16,14 @@ func GetOrCreateModularNodeData(InScript: Script) -> ModularNodeData:
 		ModularNodeDataDictionary[InScript] = ModularNodeData.new(InScript)
 	return ModularNodeDataDictionary[InScript]
 
-func TryGetFrom(InOwnerNode: Node, InModularNodeScript: Script) -> Node:
+func TryGetFrom(InOwner: Node, InModularNodeScript: Script) -> Node:
 	var Data := GetOrCreateModularNodeData(InModularNodeScript)
-	return InOwnerNode.get_meta(Data.TryGetFromMeta) if is_instance_valid(InOwnerNode) and InOwnerNode.has_meta(Data.TryGetFromMeta) else null
+	return InOwner.get_meta(Data.TryGetFromMeta) if is_instance_valid(InOwner) and InOwner.has_meta(Data.TryGetFromMeta) else null
 
-func InitModularNode(InNode: Node) -> void:
+func InitModularNode(InNode: Node, InOwner: Node = InNode.get_parent()) -> void:
 	var Data := GetOrCreateModularNodeData(InNode.get_script())
-	InNode.get_parent().set_meta(Data.TryGetFromMeta, InNode)
+	InOwner.set_meta(Data.TryGetFromMeta, InNode)
 
-func DeInitModularNode(InNode: Node) -> void:
+func DeInitModularNode(InNode: Node, InOwner: Node = InNode.get_parent()) -> void:
 	var Data := GetOrCreateModularNodeData(InNode.get_script())
-	InNode.get_parent().remove_meta(Data.TryGetFromMeta)
+	InOwner.remove_meta(Data.TryGetFromMeta)

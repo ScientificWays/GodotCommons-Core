@@ -15,8 +15,9 @@ var RestartEnableTicksMs: int = 0
 
 func _input(InEvent: InputEvent) -> void:
 	
-	if InEvent.is_pressed() and Time.get_ticks_msec() > RestartEnableTicksMs:
-		OwnerHUD.OwnerPlayerController.Restart()
+	if Time.get_ticks_msec() > RestartEnableTicksMs:
+		if InEvent.is_pressed() and not InEvent.is_echo():
+			OwnerHUD.OwnerPlayerController.Restart()
 
 func OnOwnerControlledPawnChanged():
 	

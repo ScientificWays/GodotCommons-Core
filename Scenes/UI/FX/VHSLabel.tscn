@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://d3o4fa5w0r7ao"]
 
 [ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="1_33je3"]
-[ext_resource type="Script" uid="uid://cn0tkuy8sxeyr" path="res://addons/GodotCommons-Core/Scripts/UI/FX/VHSFX.gd" id="2_33je3"]
+[ext_resource type="Script" uid="uid://ce5yd0cnxusim" path="res://addons/GodotCommons-Core/Scripts/UI/FX/LabelVHSFX.gd" id="2_cguu5"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vfhbj"]
 resource_local_to_scene = true
@@ -16,18 +16,6 @@ viewport_path = NodePath("SubViewport")
 
 [sub_resource type="Animation" id="Animation_rgqcq"]
 length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SubViewport/RestartLabelControl/RestartLabel:self_modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
 
 [sub_resource type="Animation" id="Animation_cguu5"]
 resource_name = "Show"
@@ -35,11 +23,11 @@ length = 0.5
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("SubViewport/RestartLabelControl/RestartLabel:self_modulate")
+tracks/0/path = NodePath("SubViewport/TargetLabelControl/TargetLabel:self_modulate")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.5),
+"times": PackedFloat32Array(0.0666667, 0.5),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
@@ -51,7 +39,7 @@ _data = {
 &"Show": SubResource("Animation_cguu5")
 }
 
-[node name="VHSLabel" type="Control" node_paths=PackedStringArray("animation_player", "target")]
+[node name="VHSLabel" type="Control" node_paths=PackedStringArray("target_texture", "sub_viewport", "animation_player", "target")]
 modulate = Color(1, 1, 1, 0.965203)
 material = SubResource("ShaderMaterial_vfhbj")
 layout_mode = 3
@@ -62,20 +50,35 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("2_33je3")
+mouse_filter = 2
+script = ExtResource("2_cguu5")
+target_texture = NodePath("RenderTarget")
+sub_viewport = NodePath("SubViewport")
 animation_player = NodePath("AnimationPlayer")
-target = NodePath("SubViewport/RestartLabelControl/RestartLabel")
+target = NodePath("SubViewport/TargetLabelControl/TargetLabel")
 
-[node name="Sprite" type="Sprite2D" parent="."]
+[node name="RenderTarget" type="TextureRect" parent="."]
 use_parent_material = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -29.7105
+offset_right = 291.0
+offset_bottom = 27.2895
+grow_horizontal = 2
+grow_vertical = 2
 texture = SubResource("ViewportTexture_8p174")
 
 [node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
 transparent_bg = true
-size = Vector2i(512, 256)
+size = Vector2i(571, 57)
 
-[node name="RestartLabelControl" type="Control" parent="SubViewport"]
+[node name="TargetLabelControl" type="Control" parent="SubViewport"]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -84,24 +87,25 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
-[node name="RestartLabel" type="Label" parent="SubViewport/RestartLabelControl"]
-modulate = Color(1, 1, 1, 0.951248)
+[node name="TargetLabel" type="Label" parent="SubViewport/TargetLabelControl"]
+modulate = Color(1, 1, 1, 0.99115)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -26.8795
-offset_right = 240.0
-offset_bottom = 29.1204
+offset_left = -280.0
+offset_top = -27.2908
+offset_right = 280.0
+offset_bottom = 28.7092
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.0112052
-scale = Vector2(0.986181, 0.986181)
-pivot_offset = Vector2(240, 28)
+rotation = -0.0171052
+scale = Vector2(1.01641, 1.01641)
+pivot_offset = Vector2(280, 28)
 theme_override_font_sizes/font_size = 64
 text = "Press any key to restart"
 horizontal_alignment = 1

@@ -1,6 +1,8 @@
 extends Control
 class_name MovementHintUI
 
+const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
+
 @export_category("Owner")
 @export var OwnerHUD: HUDUI
 
@@ -12,21 +14,33 @@ class_name MovementHintUI
 @export var LeftTexture: Texture2D
 @export var NoneTexture: Texture2D
 
+signal Finished()
+
 var display_time_left: float = 0.0:
 	set(InTime):
+		
 		display_time_left = InTime
-		Update()
+		
+		if is_node_ready():
+			
+			Update()
+			
+			if display_time_left <= 0.0:
+				HandleFinished()
 
 func _ready() -> void:
 	
+	if GameGlobals.get_meta(HintFinishedMeta, false):
+		queue_free()
+		return
+	
 	assert(OwnerHUD)
-	
 	assert(KeysTextureRect)
-	
-	display_time_left = 9999.0
 	
 	visibility_changed.connect(OnVisibilityChanged)
 	OnVisibilityChanged()
+	
+	Update()
 
 func _process(InDelta: float) -> void:
 	
@@ -54,3 +68,10 @@ func OnVisibilityChanged() -> void:
 
 func Update():
 	visible = display_time_left > 0.0
+
+func HandleFinished():
+	
+	GameGlobals.set_meta(HintFinishedMeta, true)
+	Finished.emit()
+	
+	queue_free()

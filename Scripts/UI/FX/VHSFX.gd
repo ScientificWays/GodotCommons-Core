@@ -36,8 +36,9 @@ func _process(InDelta: float) -> void:
 	var new_scale := 1.0 + sin(time * scale_speed) * scale_offset
 	target.scale = Vector2(new_scale, new_scale)
 	
-	target.position = target.size * position_offset - target.pivot_offset
-	target.position.y += sin(time * 1.5) * 2.0
+	var position_target := GetPositionTarget()
+	position_target.position = target.size * position_offset - target.pivot_offset
+	position_target.position.y += sin(time * 1.5) * 2.0
 	
 	target.rotation = sin(time * 1.5) * 0.02
 	
@@ -45,6 +46,9 @@ func _process(InDelta: float) -> void:
 		target.modulate.a = 0.0
 	else:
 		target.modulate.a = 0.9 + randf() * 0.1
+
+func GetPositionTarget() -> Control:
+	return target
 
 func OnVisibilityChanged() -> void:
 	
