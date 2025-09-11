@@ -4,7 +4,8 @@ extends Node
 @export var _StageScenePath: NodePath = "res://World/Levels/Stage/Stage.tscn"
 @export var _PrologueScenePath: NodePath = "res://World/Levels/Prologue/Prologue.tscn"
 
-signal StageFinished()
+signal TransitionBegin(InTransitionArea: LevelTransitionArea2D)
+signal PreTransitionFinished(InTransitionArea: LevelTransitionArea2D)
 
 var _Level: LevelBase2D
 var _GameState: GameState

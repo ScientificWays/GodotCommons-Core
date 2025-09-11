@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://foni7yupbmx8"]
+
+[ext_resource type="Script" uid="uid://b3u5h4c7o6id4" path="res://addons/GodotCommons-Core/Scripts/UI/HUD/HUDUI.gd" id="1_prbjo"]
+[ext_resource type="PackedScene" uid="uid://c3d0nsiik674d" path="res://Scenes/UI/RestartUI.tscn" id="2_pbfmw"]
+[ext_resource type="PackedScene" uid="uid://dht21mb55i4d4" path="res://addons/GodotCommons-Core/Scenes/UI/Hints/MovementHint001.tscn" id="3_lvpsu"]
+[ext_resource type="PackedScene" uid="uid://blvhavndyph64" path="res://Scenes/UI/Hints/ThrowHint001.tscn" id="4_fv2im"]
+[ext_resource type="PackedScene" uid="uid://by0scmspmhlye" path="res://Scenes/UI/Menu/Background001.tscn" id="5_umibx"]
+
+[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("TransitionBackground")]
+script = ExtResource("1_prbjo")
+TransitionBackground = NodePath("TransitionBackground")
+
+[node name="MainMC" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="RestartUI" parent="MainMC" node_paths=PackedStringArray("OwnerHUD") instance=ExtResource("2_pbfmw")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+OwnerHUD = NodePath("../..")
+
+[node name="MovementHint" parent="MainMC" node_paths=PackedStringArray("OwnerHUD") instance=ExtResource("3_lvpsu")]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+OwnerHUD = NodePath("../..")
+
+[node name="ThrowHint" parent="MainMC" node_paths=PackedStringArray("OwnerHUD", "OwnerMovementHint") instance=ExtResource("4_fv2im")]
+layout_mode = 2
+OwnerHUD = NodePath("../..")
+OwnerMovementHint = NodePath("../MovementHint")
+
+[node name="TransitionBackground" parent="." instance=ExtResource("5_umibx")]

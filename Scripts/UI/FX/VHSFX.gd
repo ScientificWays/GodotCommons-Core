@@ -2,9 +2,6 @@
 extends Control
 class_name VHSFX
 
-@export var animation_player: AnimationPlayer
-@export var show_animation: StringName = &"Show"
-
 @export var target: Control:
 	set(InTarget):
 		target = InTarget
@@ -12,6 +9,10 @@ class_name VHSFX
 
 @export var scale_speed: float = 6.0
 @export var scale_offset: float = 0.02
+
+@export var rotation_speed: float = 1.5
+@export var rotation_offset: float = 0.02
+
 @export var toggle: bool = true:
 	set(InToggle):
 		toggle = InToggle
@@ -22,14 +23,20 @@ class_name VHSFX
 		position_offset = InOffset
 		Update()
 
+@export var lerp_visible: bool = true
+@export var lerp_visible_speed: float = 4.0
+
 var time: float
 
 func _ready() -> void:
-	
-	visibility_changed.connect(OnVisibilityChanged)
-	OnVisibilityChanged()
+	pass
 
 func _process(InDelta: float) -> void:
+	
+	if lerp_visible:
+		modulate.a = minf(modulate.a + lerp_visible_speed * InDelta, 1.0)
+	else:
+		modulate.a = maxf(modulate.a - lerp_visible_speed * InDelta, 0.0)
 	
 	time += InDelta
 	
@@ -40,7 +47,7 @@ func _process(InDelta: float) -> void:
 	position_target.position = target.size * position_offset - target.pivot_offset
 	position_target.position.y += sin(time * 1.5) * 2.0
 	
-	target.rotation = sin(time * 1.5) * 0.02
+	target.rotation = sin(time * rotation_speed) * rotation_offset
 	
 	if randf() > 0.99:
 		target.modulate.a = 0.0
@@ -50,14 +57,17 @@ func _process(InDelta: float) -> void:
 func GetPositionTarget() -> Control:
 	return target
 
-func OnVisibilityChanged() -> void:
-	
-	if visible and animation_player:
-		animation_player.play(show_animation)
-
 func Update() -> void:
 	
 	if target:
 		target.pivot_offset = target.size * 0.5
 	set_process(target and toggle)
+
+func SetInstantLerpVisible(InLerpVisible: bool) -> void:
 	
+	lerp_visible = InLerpVisible
+	
+	if lerp_visible:
+		modulate.a = 1.0
+	else:
+		modulate.a = 0.0

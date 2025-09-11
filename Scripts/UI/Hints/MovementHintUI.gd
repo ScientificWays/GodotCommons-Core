@@ -6,6 +6,9 @@ const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
 @export_category("Owner")
 @export var OwnerHUD: HUDUI
 
+@export_category("Components")
+@export var VHSControl: VHSFX
+
 @export_category("Textures")
 @export var KeysTextureRect: TextureRect
 @export var UpTexture: Texture2D
@@ -21,7 +24,7 @@ var display_time_left: float = 0.0:
 		
 		display_time_left = InTime
 		
-		if is_node_ready():
+		if is_node_ready() and not Engine.is_editor_hint():
 			
 			Update()
 			
@@ -71,7 +74,11 @@ func Update():
 
 func HandleFinished():
 	
+	assert(not Engine.is_editor_hint())
+	
 	GameGlobals.set_meta(HintFinishedMeta, true)
 	Finished.emit()
 	
-	queue_free()
+	VHSControl.lerp_visible = false
+	
+	GameGlobals.SpawnOneShotTimerFor(self, queue_free, 0.5)
