@@ -1,0 +1,56 @@
+extends Control
+class_name MovementHintUI
+
+@export_category("Owner")
+@export var OwnerHUD: HUDUI
+
+@export_category("Textures")
+@export var KeysTextureRect: TextureRect
+@export var UpTexture: Texture2D
+@export var DownTexture: Texture2D
+@export var RightTexture: Texture2D
+@export var LeftTexture: Texture2D
+@export var NoneTexture: Texture2D
+
+var display_time_left: float = 0.0:
+	set(InTime):
+		display_time_left = InTime
+		Update()
+
+func _ready() -> void:
+	
+	assert(OwnerHUD)
+	
+	assert(KeysTextureRect)
+	
+	display_time_left = 9999.0
+	
+	visibility_changed.connect(OnVisibilityChanged)
+	OnVisibilityChanged()
+
+func _process(InDelta: float) -> void:
+	
+	var movement_input := OwnerHUD.OwnerPlayerController.MovementInput
+	
+	if movement_input.is_zero_approx():
+		KeysTextureRect.texture = NoneTexture
+		KeysTextureRect.self_modulate.a = 0.5
+		return
+	
+	if movement_input.x > 0.0:
+		KeysTextureRect.texture = RightTexture
+	elif movement_input.x < 0.0:
+		KeysTextureRect.texture = LeftTexture
+	elif movement_input.y > 0.0:
+		KeysTextureRect.texture = DownTexture
+	elif movement_input.y < 0.0:
+		KeysTextureRect.texture = UpTexture
+	
+	KeysTextureRect.self_modulate.a = 1.0
+	display_time_left -= InDelta
+
+func OnVisibilityChanged() -> void:
+	set_process(visible)
+
+func Update():
+	visible = display_time_left > 0.0

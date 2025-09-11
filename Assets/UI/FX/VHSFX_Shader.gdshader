@@ -30,5 +30,5 @@ void fragment()
 	// VHS
 	float noise = (rand(uv * t) - 0.5) * noise_strength;
 	
-	COLOR = vec4(color * flicker + noise, texture(TEXTURE, uv).a);
+	COLOR = vec4(color * flicker + noise, texture(TEXTURE, uv).a * COLOR.a);
 }

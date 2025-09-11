@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ve68ncevtn40"]
+[gd_scene load_steps=5 format=3 uid="uid://ve68ncevtn40"]
 
 [ext_resource type="Texture2D" uid="uid://bvkkfcwauk4dv" path="res://addons/GodotCommons-Core/Assets/Tiles/Spikes001a.png" id="1_etcia"]
 [ext_resource type="Script" uid="uid://3chjjrim0lk6" path="res://addons/GodotCommons-Core/Scripts/Tiles/SpikesTile2D.gd" id="1_x26uw"]
+[ext_resource type="Script" uid="uid://dcpp0d2wejmdp" path="res://addons/GodotCommons-Core/Scripts/Common/RandomSprite2D.gd" id="3_xi80n"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2jom5"]
 radius = 8.0
@@ -17,3 +18,6 @@ shape = SubResource("CircleShape2D_2jom5")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 texture = ExtResource("1_etcia")
+hframes = 2
+vframes = 2
+script = ExtResource("3_xi80n")

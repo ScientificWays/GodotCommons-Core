@@ -2,13 +2,13 @@ extends Control
 class_name HUDUI_Restart
 
 @export_category("Owner")
-@export var OwnerPlayerController: PlayerController
+@export var OwnerHUD: HUDUI
 
 func _ready() -> void:
 	
-	assert(OwnerPlayerController)
+	assert(OwnerHUD)
 	
-	OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
+	OwnerHUD.OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
 	OnOwnerControlledPawnChanged()
 
 var RestartEnableTicksMs: int = 0
@@ -16,11 +16,11 @@ var RestartEnableTicksMs: int = 0
 func _input(InEvent: InputEvent) -> void:
 	
 	if InEvent.is_pressed() and Time.get_ticks_msec() > RestartEnableTicksMs:
-		OwnerPlayerController.Restart()
+		OwnerHUD.OwnerPlayerController.Restart()
 
 func OnOwnerControlledPawnChanged():
 	
-	if is_instance_valid(OwnerPlayerController.ControlledPawn):
+	if is_instance_valid(OwnerHUD.OwnerPlayerController.ControlledPawn):
 		HideRestart()
 	else:
 		ShowRestart()
