@@ -4,6 +4,9 @@ class_name HUDUI_Restart
 @export_category("Owner")
 @export var OwnerHUD: HUDUI
 
+@export_category("Label")
+@export var TextLabel: VHSFX
+
 func _ready() -> void:
 	
 	assert(OwnerHUD)
@@ -28,11 +31,15 @@ func OnOwnerControlledPawnChanged():
 
 func ShowRestart():
 	
-	visible = true
+	TextLabel.lerp_visible_speed = 4.0
+	TextLabel.lerp_visible = true
+	
 	set_process_input(true)
 	
 	RestartEnableTicksMs = Time.get_ticks_msec() + 500
 
 func HideRestart():
-	visible = false
+	TextLabel.lerp_visible_speed = 8.0
+	TextLabel.lerp_visible = false
+	
 	set_process_input(false)

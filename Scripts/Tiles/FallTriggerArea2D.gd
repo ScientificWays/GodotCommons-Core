@@ -23,7 +23,8 @@ func TryTriggerTargetFall(InTarget: Node2D) -> bool:
 		return false
 	
 	if CurrentTarget != null:
-		await FallSequenceFinished
+		push_warning("TODO: Add support for multiple targets (Create separate Node per target?)")
+		return false
 	
 	CurrentTarget = InTarget
 	

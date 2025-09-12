@@ -27,6 +27,9 @@ func TryPickUpBy(InTarget: Node) -> bool:
 		PickUpAP.play(PickUpAnimaionName)
 		await PickUpAP.animation_finished
 	
+	if not is_instance_valid(self) or not is_instance_valid(InTarget):
+		return false
+	
 	if RemoveOnPickUp:
 		queue_free()
 	return true

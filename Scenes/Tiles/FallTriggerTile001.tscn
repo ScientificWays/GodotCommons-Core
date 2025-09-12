@@ -58,7 +58,7 @@ _data = {
 
 [node name="FallTriggerArea001" type="Area2D" node_paths=PackedStringArray("FallAP")]
 collision_layer = 0
-collision_mask = 264215
+collision_mask = 3
 monitorable = false
 script = ExtResource("1_mipvu")
 FallAP = NodePath("AnimationPlayer")
