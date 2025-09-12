@@ -9,6 +9,12 @@ class_name LevelBase2D
 @export var DefaultPlayerSpawn: Node2D
 @export var RespawnAllPlayersOnBeginPlay: bool = true
 
+@export_category("Music")
+@export var LevelMusicBankLabel: String = "Music"
+@export var LevelMusic: MusicTrackResource
+@export var StartLevelMusicOnBeginPlay: bool = true
+@export var StopLevelMusicOnEndPlay: bool = true
+
 #const ForceMoodMeta: StringName = &"ForceMood"
 
 const WorldBankLabel: String = "World"
@@ -84,6 +90,9 @@ func BeginPlay():
 	if RespawnAllPlayersOnBeginPlay:
 		PlayerGlobals.RespawnAllPlayers()
 	
+	if StartLevelMusicOnBeginPlay and not AudioGlobals.IsMusicPlaying(LevelMusicBankLabel, LevelMusic):
+		AudioGlobals.TryPlayMusic(LevelMusicBankLabel, LevelMusic)
+	
 	#_LevelTileMap.UpdateUnbreakableCells()
 	#_LevelTileMap.InitNavigation()
 
@@ -91,7 +100,7 @@ func EndPlay():
 	
 	_GameState.HandleEndPlay(self)
 	
-	if MusicManager._is_playing_music():
+	if StopLevelMusicOnEndPlay and MusicManager._is_playing_music():
 		MusicManager.stop(1.0)
 
 func GetPlayerSpawnPosition(InPlayer: PlayerController) -> Vector2:

@@ -2,7 +2,7 @@ extends Area2D
 class_name LevelTransitionArea2D
 
 @export_category("Transition")
-@export var TransitionScene: PackedScene
+@export var TransitionScenePath: String
 @export var TransitionDelay: float = 1.0
 
 var TransitionBegan: bool = false
@@ -27,4 +27,4 @@ func BeginTransition():
 func FinishTranstiion() -> void:
 	
 	WorldGlobals.PreTransitionFinished.emit(self)
-	get_tree().change_scene_to_packed(TransitionScene)
+	WorldGlobals.LoadSceneByPath(TransitionScenePath)

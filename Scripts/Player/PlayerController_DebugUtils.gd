@@ -5,7 +5,11 @@ class_name PlayerController_DebugUtils
 @export var OwnerPlayerController: PlayerController
 
 func _ready() -> void:
+	
 	assert(OwnerPlayerController)
+	
+	if not OS.has_feature("debug"):
+		queue_free()
 
 func _unhandled_input(InEvent: InputEvent):
 	

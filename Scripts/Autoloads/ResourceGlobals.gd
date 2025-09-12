@@ -126,3 +126,30 @@ func UtilInitSoundBankWithEvent(InCurrentKeyArray: Array) -> SoundBank:
 func UtilDeInitSoundBank(InSoundBank: SoundBank) -> void:
 	SoundBankByLabelDictionary.erase(InSoundBank.label)
 	InSoundBank.queue_free()
+
+## MusicBanks
+var MusicBankByLabelDictionary: Dictionary
+
+func GetOrCreateMusicBankAndAppendEvent(InLabel: String, InData: MusicTrackResource) -> MusicBank:
+	return UtilGetOrCreate([ InLabel, InData ], UtilInitMusicBankWithEvent)
+
+func UtilInitMusicBankWithEvent(InCurrentKeyArray: Array) -> MusicBank:
+	
+	var SampleBank: MusicBank = null
+	
+	if MusicBankByLabelDictionary.has(InCurrentKeyArray[0]):
+		SampleBank = MusicBankByLabelDictionary.get(InCurrentKeyArray[0])
+		SampleBank.tracks.append(InCurrentKeyArray[1])
+	else:
+		SampleBank = MusicBank.new()
+		SampleBank.label = InCurrentKeyArray[0]
+		SampleBank.tracks = [InCurrentKeyArray[1]]
+		SampleBank.tree_exited.connect(UtilDeInitMusicBank.bind(SampleBank))
+		WorldGlobals.add_child(SampleBank)
+		MusicBankByLabelDictionary[InCurrentKeyArray[0]] = SampleBank
+	MusicManager._music_table[SampleBank.label]["tracks"] = MusicManager._create_tracks(SampleBank.tracks)
+	return SampleBank
+
+func UtilDeInitMusicBank(InMusicBank: MusicBank) -> void:
+	MusicBankByLabelDictionary.erase(InMusicBank.label)
+	InMusicBank.queue_free()

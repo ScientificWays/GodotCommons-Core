@@ -36,4 +36,4 @@ func TriggerStart() -> void:
 	GameGlobals.SpawnOneShotTimerFor(self, HandleStartPostDelay, 1.0)
 
 func HandleStartPostDelay() -> void:
-	get_tree().change_scene_to_packed(TargetScene)
+	WorldGlobals.LoadSceneByPacked(TargetScene)

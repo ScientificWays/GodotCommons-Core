@@ -74,3 +74,19 @@ func TryPlaySound_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEvent
 		return true
 	else:
 		return false
+
+func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bool:
+	return MusicManager.is_playing(InBankLabel, InMusicTrack.name)
+
+func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffset: float = 0.0, InCrossfadeTime: float = 5.0, InAutoLoop: bool = false) -> bool:
+	
+	if not MusicManager.has_loaded:
+		await MusicManager.loaded
+		#return false
+	
+	if InMusicTrack:
+		ResourceGlobals.GetOrCreateMusicBankAndAppendEvent(InBankLabel, InMusicTrack)
+		MusicManager.play(InBankLabel, InMusicTrack.name, InOffset, InCrossfadeTime, InAutoLoop)
+		return true
+	else:
+		return false

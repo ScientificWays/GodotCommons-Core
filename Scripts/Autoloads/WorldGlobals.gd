@@ -1,9 +1,5 @@
 extends Node
 
-@export var _MainMenuScenePath: NodePath = "res://World/Levels/MainMenu/MainMenu.tscn"
-@export var _StageScenePath: NodePath = "res://World/Levels/Stage/Stage.tscn"
-@export var _PrologueScenePath: NodePath = "res://World/Levels/Prologue/Prologue.tscn"
-
 signal TransitionBegin(InTransitionArea: LevelTransitionArea2D)
 signal PreTransitionFinished(InTransitionArea: LevelTransitionArea2D)
 
@@ -14,8 +10,11 @@ func _enter_tree():
 	if _GameState:
 		_GameState.OnNewSceneLoaded()
 
-func LoadScene(InPath: NodePath):
+func LoadSceneByPath(InPath: String):
 	get_tree().change_scene_to_file(InPath)
+
+func LoadSceneByPacked(InPacked: PackedScene):
+	get_tree().change_scene_to_packed(InPacked)
 
 func StartNewGame(InGameMode: GameModeData, InGameSeed: int, InArgs: Array = []):
 	
@@ -50,7 +49,7 @@ func ReturnToMainMenu(InSavePersistentData: bool):
 	#	SaveGlobals.SavePersistentSaveData(false)
 	
 	_GameState = null
-	LoadScene(_MainMenuScenePath)
+	#LoadScene(_MainMenuScenePath)
 
 func CalcBodyCombinedLinearDamp(InBody: RigidBody2D) -> float:
 	
