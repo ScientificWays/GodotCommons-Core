@@ -54,10 +54,14 @@ func GetOrInitAttribute(InName: StringName) -> AttributeData:
 		AttributesDictionary[InName] = AttributeData.new(PawnGlobals.GetDefaultAttributeValue(InName))
 	return AttributesDictionary[InName]
 
-func SetAttributeBaseValue(InName: StringName, InValue: float):
+func SetAttributeBaseValue(InName: StringName, InValue: float) -> void:
 	var SampleAttribute := GetOrInitAttribute(InName)
 	SampleAttribute.BaseValue = InValue
 	RecalcAttributes()
+
+func AddAttributeBaseValue(InName: StringName, InValue: float) -> void:
+	var SampleAttribute := GetOrInitAttribute(InName)
+	SetAttributeBaseValue(InName, SampleAttribute.BaseValue + InValue)
 
 signal PostRecalcAttributes()
 

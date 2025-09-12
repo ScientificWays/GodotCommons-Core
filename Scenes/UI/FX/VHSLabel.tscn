@@ -39,8 +39,7 @@ _data = {
 &"Show": SubResource("Animation_cguu5")
 }
 
-[node name="VHSLabel" type="Control" node_paths=PackedStringArray("target_texture", "sub_viewport", "animation_player", "target")]
-modulate = Color(1, 1, 1, 0.965203)
+[node name="VHSLabel" type="Control" node_paths=PackedStringArray("target_texture", "sub_viewport", "target")]
 material = SubResource("ShaderMaterial_vfhbj")
 layout_mode = 3
 anchors_preset = 8
@@ -52,9 +51,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_cguu5")
+label_horizontal_alignment = null
+label_vertical_alignment = null
 target_texture = NodePath("RenderTarget")
 sub_viewport = NodePath("SubViewport")
-animation_player = NodePath("AnimationPlayer")
 target = NodePath("SubViewport/TargetLabelControl/TargetLabel")
 
 [node name="RenderTarget" type="TextureRect" parent="."]
@@ -66,9 +66,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -280.0
-offset_top = -29.7105
+offset_top = -28.6434
 offset_right = 291.0
-offset_bottom = 27.2895
+offset_bottom = 28.3566
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("ViewportTexture_8p174")
@@ -90,7 +90,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="TargetLabel" type="Label" parent="SubViewport/TargetLabelControl"]
-modulate = Color(1, 1, 1, 0.99115)
+modulate = Color(1, 1, 1, 0.952682)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -98,13 +98,13 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -280.0
-offset_top = -27.2908
+offset_top = -26.2571
 offset_right = 280.0
-offset_bottom = 28.7092
+offset_bottom = 29.7429
 grow_horizontal = 2
 grow_vertical = 2
-rotation = -0.0171052
-scale = Vector2(1.01641, 1.01641)
+rotation = -0.00643427
+scale = Vector2(0.980676, 0.980676)
 pivot_offset = Vector2(280, 28)
 theme_override_font_sizes/font_size = 64
 text = "Press any key to restart"
