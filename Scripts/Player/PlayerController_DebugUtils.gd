@@ -22,15 +22,18 @@ func _unhandled_input(InEvent: InputEvent):
 		#DebugSelfDamage()
 		#DebugUnlock()
 		#DebugToggleVisibility()
-		pass
+		get_viewport().set_input_as_handled()
+		
 	elif InEvent.is_action_pressed(&"DebugScrollUp"):
 		OwnerPlayerController._Camera.PendingZoom *= 1.25
 		print("Set camera zoom to ", OwnerPlayerController._Camera.PendingZoom)
-		pass
+		get_viewport().set_input_as_handled()
+		
 	elif InEvent.is_action_pressed(&"DebugScrollDown"):
 		OwnerPlayerController._Camera.PendingZoom *= 0.8
 		print("Set camera zoom to ", OwnerPlayerController._Camera.PendingZoom)
-		pass
+		get_viewport().set_input_as_handled()
+		
 
 func DebugTeleport():
 	var TeleportPosition := OwnerPlayerController.ControlledPawn.get_global_mouse_position()

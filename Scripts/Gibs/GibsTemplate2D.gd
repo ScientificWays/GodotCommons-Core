@@ -95,7 +95,7 @@ func InitGib(InGib: Gib2D) -> bool:
 func ApplyInitialImpulseTo(InGib: Gib2D) -> void:
 	
 	if InitialImpulseType == ImpulseType.Radial:
-		var SampleImpulseAngle := InGib.position.angle() + randf_range(InitialImpulseAngleMinMax.x, InitialImpulseAngleMinMax.y)
+		var SampleImpulseAngle := InGib.global_position.angle() + randf_range(InitialImpulseAngleMinMax.x, InitialImpulseAngleMinMax.y)
 		var SampleImpulse := Vector2.from_angle(SampleImpulseAngle) * randf_range(InitialImpulseMinMax.x, InitialImpulseMinMax.y)
 		InGib.apply_impulse(SampleImpulse)
 		InGib.apply_torque_impulse(randf_range(InitialTorqueImpulseMinMax.x, InitialTorqueImpulseMinMax.y))

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dht21mb55i4d4"]
+[gd_scene load_steps=12 format=3 uid="uid://dht21mb55i4d4"]
 
 [ext_resource type="Script" uid="uid://er21mvfrupar" path="res://addons/GodotCommons-Core/Scripts/UI/Hints/MovementHintUI.gd" id="1_duy3o"]
 [ext_resource type="Script" uid="uid://cn0tkuy8sxeyr" path="res://addons/GodotCommons-Core/Scripts/UI/FX/VHSFX.gd" id="1_fnvc5"]
@@ -16,59 +16,6 @@ shader_parameter/time_speed = 1.0
 shader_parameter/split_amount = 1.5
 shader_parameter/flicker_intensity = 0.2
 shader_parameter/noise_strength = 0.05
-
-[sub_resource type="Animation" id="Animation_fid5b"]
-resource_name = "Hide"
-step = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_0hp1a"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="Animation" id="Animation_duy3o"]
-resource_name = "Show"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_wjhdp"]
-_data = {
-&"Hide": SubResource("Animation_fid5b"),
-&"RESET": SubResource("Animation_0hp1a"),
-&"Show": SubResource("Animation_duy3o")
-}
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sfcfg"]
 resource_local_to_scene = true
@@ -96,6 +43,8 @@ DownTexture = ExtResource("4_duy3o")
 RightTexture = ExtResource("4_e3rsd")
 LeftTexture = ExtResource("5_fid5b")
 NoneTexture = ExtResource("6_e3rsd")
+lerp_visible = false
+lerp_visible_speed = 1.0
 
 [node name="Control" type="Control" parent="." node_paths=PackedStringArray("target")]
 material = SubResource("ShaderMaterial_fnvc5")
@@ -113,7 +62,7 @@ target = NodePath("KeysTexture")
 position_offset = Vector2(0.75, -0.75)
 
 [node name="KeysTexture" type="TextureRect" parent="Control"]
-modulate = Color(1, 1, 1, 0.943738)
+modulate = Color(1, 1, 1, 0.929943)
 use_parent_material = true
 custom_minimum_size = Vector2(192, 128)
 layout_mode = 1
@@ -121,27 +70,22 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 48.0
-offset_top = -159.745
+offset_top = -159.853
 offset_right = 240.0
-offset_bottom = -31.7445
+offset_bottom = -31.8529
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.0025562
-scale = Vector2(1.00981, 1.00981)
-pivot_offset = Vector2(96, 64.0003)
+rotation = 0.0014719
+scale = Vector2(0.994192, 0.994192)
+pivot_offset = Vector2(96, 64.0002)
 texture = ExtResource("4_duy3o")
 stretch_mode = 5
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Control"]
-libraries = {
-&"": SubResource("AnimationLibrary_wjhdp")
-}
 
 [node name="RollLabel" parent="Control" instance=ExtResource("9_fid5b")]
 material = SubResource("ShaderMaterial_sfcfg")
 layout_mode = 1
 label_text = "Roll"
+label_horizontal_alignment = 1
+label_vertical_alignment = 1
 scale_speed = 4.0
 position_offset = Vector2(0.45, -2.5)
-lerp_visible = null
-lerp_visible_speed = null

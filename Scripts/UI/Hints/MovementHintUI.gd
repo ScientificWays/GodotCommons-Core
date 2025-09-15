@@ -17,6 +17,10 @@ const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
 @export var LeftTexture: Texture2D
 @export var NoneTexture: Texture2D
 
+@export_category("Visiblity")
+@export var lerp_visible: bool = true
+@export var lerp_visible_speed: float = 4.0
+
 signal Finished()
 
 var display_time_left: float = 0.0:
@@ -33,19 +37,26 @@ var display_time_left: float = 0.0:
 
 func _ready() -> void:
 	
-	if GameGlobals.get_meta(HintFinishedMeta, false):
+	if GameGlobals.get_meta(HintFinishedMeta, false) \
+	or not GameGlobals.IsPC(true):
 		queue_free()
 		return
 	
 	assert(OwnerHUD)
 	assert(KeysTextureRect)
 	
-	visibility_changed.connect(OnVisibilityChanged)
-	OnVisibilityChanged()
-	
+	SetInstantLerpVisible(lerp_visible)
 	Update()
 
 func _process(InDelta: float) -> void:
+	
+	if lerp_visible:
+		modulate.a = minf(modulate.a + lerp_visible_speed * InDelta, 1.0)
+	else:
+		modulate.a = maxf(modulate.a - lerp_visible_speed * InDelta, 0.0)
+	
+	if display_time_left <= 0.0:
+		return
 	
 	var movement_input := OwnerHUD.OwnerPlayerController.MovementInput
 	
@@ -66,11 +77,19 @@ func _process(InDelta: float) -> void:
 	KeysTextureRect.self_modulate.a = 1.0
 	display_time_left -= InDelta
 
-func OnVisibilityChanged() -> void:
-	set_process(visible)
-
 func Update():
-	visible = display_time_left > 0.0
+	lerp_visible = (display_time_left > 0.0)
+	VHSControl.lerp_visible = lerp_visible
+
+func SetInstantLerpVisible(InLerpVisible: bool) -> void:
+	
+	lerp_visible = InLerpVisible
+	VHSControl.SetInstantLerpVisible(InLerpVisible)
+	
+	if lerp_visible:
+		modulate.a = 1.0
+	else:
+		modulate.a = 0.0
 
 func HandleFinished():
 	
@@ -78,7 +97,3 @@ func HandleFinished():
 	
 	GameGlobals.set_meta(HintFinishedMeta, true)
 	Finished.emit()
-	
-	VHSControl.lerp_visible = false
-	
-	GameGlobals.SpawnOneShotTimerFor(self, queue_free, 0.5)

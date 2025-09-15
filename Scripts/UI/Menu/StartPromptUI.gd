@@ -24,7 +24,12 @@ func _input(InEvent: InputEvent) -> void:
 			TriggerStart()
 
 func ShowStartLabel() -> void:
+	
 	StartLabel.lerp_visible = true
+	
+	if YandexSDK.is_working():
+		YandexSDK.game_ready()
+	
 
 func TriggerStart() -> void:
 	

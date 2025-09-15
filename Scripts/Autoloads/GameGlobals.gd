@@ -248,3 +248,34 @@ static func GetAllFilePathsIn(InPath: String) -> Array[String]:
 			OutPaths.append(SampleFilePath)  
 		NextFileName = DirectoryStream.get_next()  
 	return OutPaths
+
+static func HasAnyFeature(InFeatures: Array[String]) -> bool:
+	return InFeatures.any(func(feature): return OS.has_feature(feature))
+
+static func HasAllFeatures(InFeatures: Array[String]) -> bool:
+	return InFeatures.all(func(feature): return OS.has_feature(feature))
+
+static func IsMobile(InCheckWeb: bool = true) -> bool:
+	
+	#if DisplayServer.has_feature(DisplayServer.FEATURE_TOUCHSCREEN):
+	#	return true
+	
+	if InCheckWeb and OS.has_feature("web"):
+		
+		var UserAgent := JavaScriptBridge.eval("navigator.userAgent;", true) as String
+		UserAgent = UserAgent.to_lower()
+		
+		var MobileKeywords := [
+			"android", "iphone", "ipad", "ipod", "blackberry",
+			"windows phone", "opera mini", "mobile"
+		]
+		for SampleKeyword: String in MobileKeywords:
+			if UserAgent.find(SampleKeyword) != -1:
+				return true
+	return OS.has_feature("mobile")
+
+static func IsPC(InCheckWeb: bool = true) -> bool:
+	
+	if InCheckWeb and OS.has_feature("web"):
+		return not IsMobile()
+	return OS.has_feature("pc")

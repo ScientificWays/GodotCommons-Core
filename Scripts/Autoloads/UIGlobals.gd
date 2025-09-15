@@ -38,7 +38,7 @@ func _ready():
 func _notification(InCode: int) -> void:
 	match InCode:
 		Node.NOTIFICATION_WM_GO_BACK_REQUEST:
-			Input.parse_input_event(load("res://addons/GodotCommons-Core/Assets/Data/UI/Shortcuts/BackAction.tres"))
+			Input.parse_input_event(load("res://addons/GodotCommons-Core/Assets/UI/Shortcuts/BackAction.tres"))
 
 signal BombStockPreferenceChanged()
 

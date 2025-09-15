@@ -77,18 +77,29 @@ func ProcessMovementInputs(InDelta: float) -> void:
 func _unhandled_input(InEvent: InputEvent) -> void:
 	
 	if InEvent is InputEventScreenTouch:
+		
 		if DisableTapInputs or _Camera.ShouldBlockTapInputs():
 			pass
 		else:
 			HandleTapInput(InEvent.position, InEvent.is_released())
+		get_viewport().set_input_as_handled()
+		
 	elif InEvent.is_action_pressed(&"1"):
 		HandleNumberInput(1)
+		get_viewport().set_input_as_handled()
+		
 	elif InEvent.is_action_pressed(&"2"):
 		HandleNumberInput(2)
+		get_viewport().set_input_as_handled()
+		
 	elif InEvent.is_action_pressed(&"3"):
 		HandleNumberInput(3)
+		get_viewport().set_input_as_handled()
+		
 	elif InEvent.is_action_pressed(&"LeaveBarrel"):
 		HandleLeaveBarrelInput()
+		get_viewport().set_input_as_handled()
+		
 
 var TapInputCallableArray: Array[Callable] = []
 
