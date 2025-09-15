@@ -62,7 +62,7 @@ target = NodePath("KeysTexture")
 position_offset = Vector2(0.75, -0.75)
 
 [node name="KeysTexture" type="TextureRect" parent="Control"]
-modulate = Color(1, 1, 1, 0.929943)
+modulate = Color(1, 1, 1, 0.903203)
 use_parent_material = true
 custom_minimum_size = Vector2(192, 128)
 layout_mode = 1
@@ -70,22 +70,25 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 48.0
-offset_top = -159.853
+offset_top = -160.94
 offset_right = 240.0
-offset_bottom = -31.8529
+offset_bottom = -32.9401
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.0014719
-scale = Vector2(0.994192, 0.994192)
-pivot_offset = Vector2(96, 64.0002)
+rotation = -0.00940136
+scale = Vector2(1.01852, 1.01852)
+pivot_offset = Vector2(96, 64)
 texture = ExtResource("4_duy3o")
 stretch_mode = 5
 
 [node name="RollLabel" parent="Control" instance=ExtResource("9_fid5b")]
 material = SubResource("ShaderMaterial_sfcfg")
 layout_mode = 1
-label_text = "Roll"
-label_horizontal_alignment = 1
-label_vertical_alignment = 1
-scale_speed = 4.0
-position_offset = Vector2(0.45, -2.5)
+label_text = "ROLL"
+label_horizontal_alignment = 0
+scale_speed = 2.0
+scale_offset = 0.01
+rotation_speed = 1.0
+rotation_offset = 0.01
+position_offset = Vector2(1.05, -2.1)
+lerp_visible_speed = 1.0

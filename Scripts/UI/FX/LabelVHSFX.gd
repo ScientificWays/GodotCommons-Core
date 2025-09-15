@@ -1,7 +1,7 @@
 @tool
 extends VHSFX
 
-@export var label_text: String = "Press any key to restart":
+@export var label_text: String = "START_PROMPT":
 	set(InText):
 		label_text = InText
 		Update()
@@ -29,8 +29,6 @@ func GetPositionTarget() -> Control:
 
 func Update() -> void:
 	
-	super()
-	
 	var label_target := target as Label
 	label_target.text = label_text
 	
@@ -38,4 +36,10 @@ func Update() -> void:
 	label_target.horizontal_alignment = label_horizontal_alignment
 	label_target.vertical_alignment = label_vertical_alignment
 	
-	sub_viewport.size = label_target.size * (1.0 + scale_offset)
+	sub_viewport.size = label_target.size * (1.1 + scale_offset)
+	
+	if target_texture:
+		target_texture.size = sub_viewport.size
+		target_texture.pivot_offset = target_texture.size * 0.5
+	
+	super()

@@ -51,8 +51,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_cguu5")
-label_horizontal_alignment = null
-label_vertical_alignment = null
 target_texture = NodePath("RenderTarget")
 sub_viewport = NodePath("SubViewport")
 target = NodePath("SubViewport/TargetLabelControl/TargetLabel")
@@ -65,18 +63,20 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -28.6434
-offset_right = 291.0
-offset_bottom = 28.3566
+offset_left = -273.0
+offset_top = -29.496
+offset_right = 273.0
+offset_bottom = 32.504
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(273, 31)
 texture = SubResource("ViewportTexture_8p174")
+stretch_mode = 5
 
 [node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
 transparent_bg = true
-size = Vector2i(571, 57)
+size = Vector2i(546, 62)
 
 [node name="TargetLabelControl" type="Control" parent="SubViewport"]
 layout_mode = 3
@@ -90,24 +90,24 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="TargetLabel" type="Label" parent="SubViewport/TargetLabelControl"]
-modulate = Color(1, 1, 1, 0.952682)
+modulate = Color(1, 1, 1, 0.983277)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -26.2571
-offset_right = 280.0
-offset_bottom = 29.7429
+offset_left = -156.0
+offset_top = -28.0
+offset_right = 156.0
+offset_bottom = 28.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = -0.00643427
-scale = Vector2(0.980676, 0.980676)
-pivot_offset = Vector2(280, 28)
+rotation = 0.0150398
+scale = Vector2(1.00519, 1.00519)
+pivot_offset = Vector2(156, 28)
 theme_override_font_sizes/font_size = 64
-text = "Press any key to restart"
+text = "START_PROMPT"
 horizontal_alignment = 1
 vertical_alignment = 1
 
