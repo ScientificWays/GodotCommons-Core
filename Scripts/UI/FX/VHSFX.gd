@@ -23,13 +23,17 @@ class_name VHSFX
 		position_offset = InOffset
 		Update()
 
-@export var lerp_visible: bool = true
+@export var lerp_visible: bool = true:
+	set(InVisible):
+		lerp_visible = InVisible
+		Update()
+
 @export var lerp_visible_speed: float = 4.0
 
 var time: float
 
 func _ready() -> void:
-	Update()
+	Update.call_deferred()
 
 func _process(InDelta: float) -> void:
 	
