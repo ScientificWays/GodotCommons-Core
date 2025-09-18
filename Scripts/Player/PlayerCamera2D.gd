@@ -17,7 +17,6 @@ var ConstantRotation: float = 0.0
 var PendingOffset: Vector2 = Vector2.ZERO
 var PendingRotation: float = 0.0
 
-var PendingZoomType: StringName = &"Default"
 var PendingZoom: Vector2 = Vector2.ONE
 @onready var PendingZoomLerpSpeed: float = DefaultPendingZoomLerpSpeed
 
@@ -112,7 +111,8 @@ func ResetZoom() -> void:
 
 func GetMovementZoomMul() -> float:
 	
-	if OwnerPlayerController.ControlledPawn.linear_velocity.length() > 64.0 and not OwnerPlayerController.MovementInput.is_zero_approx():
+	if OwnerPlayerController.GetControlledPawnLinearVelocity().length() > 64.0 \
+	and not OwnerPlayerController.MovementInput.is_zero_approx():
 		return 0.9
 	else:
 		return 1.0

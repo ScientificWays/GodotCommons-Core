@@ -59,6 +59,12 @@ func Restart() -> void:
 	
 	ControlledPawn._Controller = self
 
+func GetControlledPawnLinearVelocity() -> Vector2:
+	
+	if is_instance_valid(ControlledPawn):
+		return PhysicsServer2D.body_get_state(ControlledPawn.get_rid(), PhysicsServer2D.BODY_STATE_LINEAR_VELOCITY)
+	return Vector2.ZERO
+
 ##
 ## Inputs
 ##

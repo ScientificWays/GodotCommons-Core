@@ -15,12 +15,26 @@ func _ready() -> void:
 	OnOwnerControlledPawnChanged()
 
 var RestartEnableTicksMs: int = 0
+var ScreenTouchWasPressed: bool = false
 
 func _input(InEvent: InputEvent) -> void:
 	
-	if (Time.get_ticks_msec() > RestartEnableTicksMs) \
-	and (InEvent is InputEventScreenTouch or InEvent is InputEventKey) \
-	and (InEvent.is_released() and not InEvent.is_echo()):
+	if Time.get_ticks_msec() > RestartEnableTicksMs and not InEvent.is_echo():
+		
+		if GameGlobals.IsPC():
+			if InEvent.is_action_pressed(&"Restart"):
+				pass
+			else:
+				return
+		elif InEvent is InputEventScreenTouch:
+			if InEvent.is_released() and ScreenTouchWasPressed:
+				pass
+			else:
+				ScreenTouchWasPressed = InEvent.is_pressed()
+				return
+		else:
+			return
+		
 		OwnerHUD.OwnerPlayerController.Restart()
 
 func OnOwnerControlledPawnChanged():
@@ -38,6 +52,7 @@ func ShowRestart():
 	set_process_input(true)
 	
 	RestartEnableTicksMs = Time.get_ticks_msec() + 500
+	ScreenTouchWasPressed = false
 
 func HideRestart():
 	TextLabel.lerp_visible_speed = 8.0
