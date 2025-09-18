@@ -175,6 +175,9 @@ func GetOneBitsNum(InInteger: int, InAcc: int = 0) -> int:
 ##
 ## Random
 ##
+func RandRangeVector2(InVector: Vector2) -> float:
+	return randf_range(InVector.x, InVector.y)
+
 func RandRangeVector2i(InVector: Vector2i) -> int:
 	return randi_range(InVector.x, InVector.y)
 

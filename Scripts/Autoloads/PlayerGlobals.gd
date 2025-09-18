@@ -2,7 +2,7 @@ extends Node
 
 var PlayerArray: Array[PlayerController]
 
-const DefaultCameraZoom_Const: Vector2 = Vector2(3.2, 3.2)
+const DefaultCameraZoom_Const: Vector2 = Vector2(3.6, 3.6)
 const ShopCameraZoom_Const: Vector2 = Vector2(5.4, 5.4)
 const DeathCameraZoom_Const: Vector2 = Vector2(5.4, 5.4)
 signal ZoomOverridesChanged()
