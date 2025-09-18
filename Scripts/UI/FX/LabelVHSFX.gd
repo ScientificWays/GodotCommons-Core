@@ -6,6 +6,11 @@ extends VHSFX
 		label_text = InText
 		Update()
 
+@export var label_text_mobile: String:
+	set(InText):
+		label_text_mobile = InText
+		Update()
+
 @export var label_settings: LabelSettings:
 	set(InSettings):
 		label_settings = InSettings
@@ -29,8 +34,10 @@ func GetPositionTarget() -> Control:
 
 func Update() -> void:
 	
+	var use_mobile_text := (not label_text_mobile.is_empty()) and GameGlobals_Class.IsMobile()
+	
 	var label_target := target as Label
-	label_target.text = label_text
+	label_target.text = label_text_mobile if use_mobile_text else label_text
 	
 	label_target.label_settings = label_settings
 	label_target.horizontal_alignment = label_horizontal_alignment

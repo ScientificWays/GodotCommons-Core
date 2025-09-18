@@ -265,13 +265,12 @@ static func IsMobile(InCheckWeb: bool = true) -> bool:
 		var UserAgent := JavaScriptBridge.eval("navigator.userAgent;", true) as String
 		UserAgent = UserAgent.to_lower()
 		
-		var MobileKeywords := [
+		const MobileKeywords := [
 			"android", "iphone", "ipad", "ipod", "blackberry",
 			"windows phone", "opera mini", "mobile"
 		]
-		for SampleKeyword: String in MobileKeywords:
-			if UserAgent.find(SampleKeyword) != -1:
-				return true
+		if MobileKeywords.any(func(InKeyWord): return UserAgent.find(InKeyWord) != -1):
+			return true
 	return OS.has_feature("mobile")
 
 static func IsPC(InCheckWeb: bool = true) -> bool:
