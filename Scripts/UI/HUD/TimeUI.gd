@@ -29,16 +29,7 @@ func _ready() -> void:
 		TimeLabel.queue_free()
 
 func OnGlobalTimeSecondsChanged(InGlobalTimer: GameState_GlobalTimer) -> void:
-	
-	var NewTimeSeconds := InGlobalTimer.TimeSeconds
-	var Seconds := NewTimeSeconds % 60
-	var Minutes := (NewTimeSeconds / 60) % 60
-	var Hours := NewTimeSeconds / (60 * 60)
-	
-	if Hours > 0:
-		TimeLabel.label_text = "%02d:%02d:%02d" % [ Hours, Minutes, Seconds ]
-	else:
-		TimeLabel.label_text = "%02d:%02d" % [ Minutes, Seconds ]
+	TimeLabel.label_text = UIGlobals.FormatTimeString(InGlobalTimer.TimeSeconds)
 
 #func OnPlayerScoreChanged(InGameState: MainGameState) -> void:
 #	ScoreLabel.label_text = String.num_int64(InGameState.PlayerScore)

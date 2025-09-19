@@ -53,7 +53,7 @@ func _process(InDelta: float) -> void:
 	target.scale = Vector2(new_scale, new_scale)
 	
 	var position_target := GetPositionTarget()
-	position_target.position = position_target.size * position_offset - position_target.pivot_offset + pivot_offset
+	position_target.position = position_offset - position_target.pivot_offset + pivot_offset
 	position_target.position.y += sin(time * 1.5) * 2.0
 	
 	target.rotation = sin(time * rotation_speed) * rotation_offset

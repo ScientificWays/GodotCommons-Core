@@ -36,5 +36,9 @@ func _unhandled_input(InEvent: InputEvent):
 		
 
 func DebugTeleport():
+	
+	if not is_instance_valid(OwnerPlayerController.ControlledPawn):
+		return
+	
 	var TeleportPosition := OwnerPlayerController.ControlledPawn.get_global_mouse_position()
 	OwnerPlayerController.ControlledPawn.TeleportTo(TeleportPosition)

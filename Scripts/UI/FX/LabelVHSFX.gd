@@ -37,6 +37,11 @@ class_name VHSLabel
 
 @export var target_texture: TextureRect 
 @export var sub_viewport: SubViewport
+@export var use_forced_anchors_preset: bool = false:
+	set(InUse):
+		use_forced_anchors_preset = InUse
+		Update()
+
 @export var forced_anchors_preset: LayoutPreset = Control.PRESET_CENTER:
 	set(InPreset):
 		forced_anchors_preset = InPreset
@@ -71,7 +76,9 @@ func Update() -> void:
 		pass
 	else:
 		size = custom_minimum_size
-		set_anchors_preset(forced_anchors_preset, true)
+		if use_forced_anchors_preset:
+			set_anchors_and_offsets_preset(forced_anchors_preset, Control.PRESET_MODE_MINSIZE)
+	label_target.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
 	
 	if target_texture:
 		target_texture.size = sub_viewport.size

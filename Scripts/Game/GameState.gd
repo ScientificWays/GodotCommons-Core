@@ -13,6 +13,9 @@ func _init(InGameMode: GameModeData, InGameSeed: int, InGameArgs: Array):
 	_GameModeData = InGameMode
 	GameSeed = InGameSeed
 	GameArgs = InGameArgs
+	
+	if YandexSDK.is_working():
+		YandexSDK.leaderboard_player_entry_loaded.connect(OnLeaderboardPlayerEntryLoaded)
 
 const State_Unknown: int = -1
 const State_BeganPlaying: int = 0
@@ -47,6 +50,8 @@ func HandleContinueGameFromSaveData():
 
 func HandleLevelReady(InLevel: LevelBase2D):
 	
+	LoadPlayerScore()
+	
 	InitNewLocalPlayer()
 	
 	assert(not _GlobalTimer)
@@ -77,12 +82,6 @@ func InitNewLocalPlayer() -> PlayerController:
 	var NewLocalPlayer = _GameModeData.PlayerControllerScene.instantiate() as PlayerController
 	WorldGlobals._Level.add_child(NewLocalPlayer)
 	return NewLocalPlayer
-
-func InitPlayer(InPlayer: PlayerController):
-	pass
-
-#func InitCreatureManager(InManager: CreatureManager):
-#	pass
 
 #func GetNewCreatureModifierNames(InCreature: Creature) -> Array[StringName]:
 #	return []
@@ -128,9 +127,12 @@ func LoadPlayerScore() -> void:
 		YandexSDK.load_leaderboard_player_entry("levelscore")
 
 func OnLeaderboardPlayerEntryLoaded(InData) -> void:
-	pass
+	
+	PlayerScore = InData["score"]
 
 func AddPlayerScore(InScore: int) -> void:
 	
 	PlayerScore += InScore
 	
+	if YandexSDK.is_working():
+		YandexSDK.save_leaderboard_score("levelscore", PlayerScore)

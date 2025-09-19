@@ -69,3 +69,15 @@ func SetOutlineButtonColor(InColor: Color):
 		
 		for SampleFocusStyleBox: StyleBox in SampleData.FocusVariants:
 			SampleFocusStyleBox.modulate_color = FocusColor
+
+func FormatTimeString(InTimeSeconds: int) -> String:
+	
+	var NewTimeSeconds := InTimeSeconds
+	var Seconds := NewTimeSeconds % 60
+	var Minutes := (NewTimeSeconds / 60) % 60
+	var Hours := NewTimeSeconds / (60 * 60)
+	
+	if Hours > 0:
+		return "%02d:%02d:%02d" % [ Hours, Minutes, Seconds ]
+	else:
+		return "%02d:%02d" % [ Minutes, Seconds ]

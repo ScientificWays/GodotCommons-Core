@@ -18,6 +18,7 @@ class_name ScoreUI_Conversion
 
 @export_category("Stat")
 @export var stat_type: String = GameState.LevelFinishTimeStat
+@export var format_as_time_string: bool = true
 @export var stat_to_score_ratio: float = 1.0
 @export var conversion_speed: float = 10.0
 
@@ -26,7 +27,11 @@ var coversion_timer: Timer
 var conversion_num_left: int = 0:
 	set(InNum):
 		conversion_num_left = InNum
-		TargetLabel.label_text = String.num_int64(conversion_num_left)
+		
+		if format_as_time_string:
+			TargetLabel.label_text = UIGlobals.FormatTimeString(conversion_num_left)
+		else:
+			TargetLabel.label_text = String.num_int64(conversion_num_left)
 
 signal Converted(InScore: float)
 signal ConversionFinished()
