@@ -34,11 +34,13 @@ var ControlledPawn: Pawn2D:
 		
 		if is_instance_valid(ControlledPawn):
 			ControlledPawn.tree_exited.disconnect(OnControlledPawnTreeExited)
+			ControlledPawn.remove_meta(PlayerControllerMeta)
 		
 		ControlledPawn = InPawn
 		
 		if is_instance_valid(ControlledPawn):
 			ControlledPawn.tree_exited.connect(OnControlledPawnTreeExited)
+			ControlledPawn.set_meta(PlayerControllerMeta, self)
 		
 		ControlledPawnChanged.emit()
 

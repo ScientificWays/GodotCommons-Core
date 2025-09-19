@@ -1,0 +1,71 @@
+@tool
+extends Control
+class_name ScoreUI_Conversion
+
+@export_category("Components")
+@export var TargetImage: TextureRect:
+	set(InImage):
+		TargetImage = InImage
+		UpdateAppearance()
+
+@export var TargetLabel: VHSLabel
+
+@export_category("Appearance")
+@export var image_texture: Texture2D:
+	set(InTexture):
+		image_texture = InTexture
+		UpdateAppearance()
+
+@export_category("Stat")
+@export var stat_type: String = GameState.LevelFinishTimeStat
+@export var stat_to_score_ratio: float = 1.0
+@export var conversion_speed: float = 10.0
+
+var coversion_timer: Timer
+
+var conversion_num_left: int = 0:
+	set(InNum):
+		conversion_num_left = InNum
+		TargetLabel.label_text = String.num_int64(conversion_num_left)
+
+signal Converted(InScore: float)
+signal ConversionFinished()
+
+func _ready() -> void:
+	
+	if not Engine.is_editor_hint():
+		var _GameState := WorldGlobals._GameState
+		conversion_num_left = _GameState.GetGameStatValue(stat_type)
+	
+	UpdateAppearance()
+
+func UpdateAppearance() -> void:
+	if TargetImage:
+		TargetImage.texture = image_texture
+
+func HandleAnimatedSequence() -> void:
+	
+	var _GameState := WorldGlobals._GameState
+	conversion_num_left = _GameState.GetGameStatValue(stat_type)
+	
+	if conversion_num_left > 0:
+		
+		assert(not coversion_timer)
+		coversion_timer = GameGlobals.SpawnRegularTimerFor(self, OnConvertTimerTimeout, 1.0 / conversion_speed)
+		
+		await ConversionFinished
+	
+	_GameState.ResetGameStatValue(stat_type)
+
+func OnConvertTimerTimeout() -> void:
+	
+	conversion_num_left -= 1
+	Converted.emit(stat_to_score_ratio)
+	
+	if conversion_num_left <= 0:
+		
+		coversion_timer.stop()
+		coversion_timer.queue_free()
+		coversion_timer = null
+		
+		ConversionFinished.emit()

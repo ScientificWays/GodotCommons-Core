@@ -25,6 +25,9 @@ var ShouldCreateGlobalTimer: bool = true
 var _GlobalTimer: GameState_GlobalTimer
 const GlobalTimer_OverrideTimeMeta: StringName = &"GlobalTimer_OverrideTime"
 
+signal GlobalTimerCreated()
+signal GlobalTimerDestroyed()
+
 var BeginPlayOnLevelReady: bool = true
 
 var OwnedArtifactDictionary: Dictionary = {}
@@ -49,6 +52,7 @@ func HandleLevelReady(InLevel: LevelBase2D):
 	assert(not _GlobalTimer)
 	if ShouldCreateGlobalTimer:
 		_GlobalTimer = GameState_GlobalTimer.new()
+		GlobalTimerCreated.emit()
 		InLevel.add_child(_GlobalTimer)
 	
 	if BeginPlayOnLevelReady:
@@ -63,8 +67,10 @@ func HandleEndPlay(InLevel: LevelBase2D):
 	_State = State_EndedPlaying
 	
 	if is_instance_valid(_GlobalTimer):
+		SetGameStatValue(LevelFinishTimeStat, _GlobalTimer.TimeSeconds)
 		_GlobalTimer.queue_free()
 		_GlobalTimer = null
+		GlobalTimerDestroyed.emit()
 
 func InitNewLocalPlayer() -> PlayerController:
 	
@@ -89,3 +95,42 @@ func InitPlayer(InPlayer: PlayerController):
 
 func GetDebugStatsFileNamePostfix() -> String:
 	return _GameModeData.UniqueName
+
+##
+## Game Stats
+##
+const LevelFinishTimeStat: StringName = &"LevelFinishTime"
+
+var GameStatsDictionary: Dictionary[StringName, Variant]
+
+func GetGameStatValue(InStat: StringName) -> Variant:
+	return GameStatsDictionary.get(InStat, 0)
+
+func SetGameStatValue(InStat: StringName, InValue: Variant) -> void:
+	GameStatsDictionary[InStat] = InValue
+
+func ResetGameStatValue(InStat: StringName) -> void:
+	GameStatsDictionary.erase(InStat)
+
+##
+## Leaderboards
+##
+var PlayerScore: int = 0:
+	set(InScore):
+		PlayerScore = InScore
+		PlayerScoreChanged.emit()
+
+signal PlayerScoreChanged()
+
+func LoadPlayerScore() -> void:
+	
+	if YandexSDK.is_working():
+		YandexSDK.load_leaderboard_player_entry("levelscore")
+
+func OnLeaderboardPlayerEntryLoaded(InData) -> void:
+	pass
+
+func AddPlayerScore(InScore: int) -> void:
+	
+	PlayerScore += InScore
+	

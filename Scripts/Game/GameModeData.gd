@@ -33,3 +33,6 @@ func InitNewGameState(InGameSeed: int, InArgs: Array) -> GameState:
 #	var GlobalTimeSeconds := InRunSaveData.GetGlobalTimeSeconds()
 #	if is_instance_valid(WorldGlobals._GameState._GlobalTimer):
 #		WorldGlobals._GameState._GlobalTimer.TimeSeconds = GlobalTimeSeconds
+
+@export_category("Transition")
+@export var TransitionScenePath: String

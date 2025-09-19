@@ -1,22 +1,39 @@
 extends Node
 
-signal TransitionBegin(InTransitionArea: LevelTransitionArea2D)
-signal PreTransitionFinished(InTransitionArea: LevelTransitionArea2D)
+signal TransitionAreaEnterBegin(InTransitionArea: LevelTransitionArea2D)
+signal TransitionAreaEnterFinished(InTransitionArea: LevelTransitionArea2D)
 
 var _Level: LevelBase2D
 var _GameState: GameState
 
-func _enter_tree():
+func _enter_tree() -> void:
 	if _GameState:
 		_GameState.OnNewSceneLoaded()
 
-func LoadSceneByPath(InPath: String):
+func LoadSceneByPath(InPath: String) -> void:
+	
+	if _Level:
+		_Level.EndPlay()
+	
 	get_tree().change_scene_to_file(InPath)
 
-func LoadSceneByPacked(InPacked: PackedScene):
+func LoadSceneByPacked(InPacked: PackedScene) -> void:
+	
+	if _Level:
+		_Level.EndPlay()
+	
 	get_tree().change_scene_to_packed(InPacked)
 
-func StartNewGame(InGameMode: GameModeData, InGameSeed: int, InArgs: Array = []):
+var PendingScenePath: StringName
+
+func LoadPendingScene() -> void:
+	
+	var Path := PendingScenePath
+	PendingScenePath = StringName()
+	
+	LoadSceneByPath(Path)
+
+func StartNewGame(InGameMode: GameModeData, InGameSeed: int, InArgs: Array = []) -> void:
 	
 	print("Starting new game...")
 	_GameState = GameState.new(InGameMode, InGameSeed, InArgs)
@@ -26,7 +43,7 @@ func StartNewGame(InGameMode: GameModeData, InGameSeed: int, InArgs: Array = [])
 	_GameState.GameStartedFromMainMenu = true
 	_GameState.HandleStartNewGame()
 
-func ContinueGameFromSaveData():
+func ContinueGameFromSaveData() -> void:
 	
 	print("Continuing game from save data...")
 	
@@ -38,7 +55,7 @@ func ContinueGameFromSaveData():
 
 signal PreReturnToMainMenu()
 
-func ReturnToMainMenu(InSavePersistentData: bool):
+func ReturnToMainMenu(InSavePersistentData: bool) -> void:
 	
 	print("Returning to MainMenu...")
 	

@@ -9,17 +9,26 @@ signal ZoomOverridesChanged()
 
 signal MoodChanged(InPlayer: PlayerController)
 
-func _ready():
+func _ready() -> void:
 	pass
 
-func _exit_tree():
+func _exit_tree() -> void:
 	RemoveDefaultCameraZoomOverride()
 	RemoveShopCameraZoomOverride()
 	RemoveDeathCameraZoomOverride()
 
-func RespawnAllPlayers():
+##
+## Respawn
+##
+func RespawnAllPlayers() -> void:
 	for SampelPlayer: PlayerController in PlayerArray:
 		SampelPlayer.Restart()
+
+##
+## Camera
+##
+func GetLevelPlayerCurrentCameraRect() -> Rect2:
+	return PlayerArray[0].GetCurrentCameraRect() ## TODO: Add this method
 
 func GetDefaultCameraZoom() -> Vector2:
 	return get_meta(&"DefaultCameraZoom", DefaultCameraZoom_Const)
@@ -54,29 +63,21 @@ func RemoveDeathCameraZoomOverride() -> void:
 	remove_meta(&"DeathCameraZoom")
 	ZoomOverridesChanged.emit()
 
-func ResetAllPlayersZoom():
+func ResetAllPlayersZoom() -> void:
 	for SampelPlayer: PlayerController in PlayerArray:
 		SampelPlayer._Camera.ResetZoom()
 
-func StartFadeInForAllPlayers(ToColor: Color, InDuration: float):
+##
+## Fade
+##
+func StartFadeInForAllPlayers(ToColor: Color, InDuration: float) -> void:
 	for SamplePlayer: PlayerController in PlayerArray:
 		SamplePlayer._GameUI.StartFadeIn(ToColor, InDuration)
 
-func StartFadeOutForAllPlayers(FromColor: Color, InDuration: float):
+func StartFadeOutForAllPlayers(FromColor: Color, InDuration: float) -> void:
 	for SamplePlayer: PlayerController in PlayerArray:
 		SamplePlayer._GameUI.StartFadeOut(FromColor, InDuration)
 
-func StopFadeForAllPlayers(InDuration: float):
+func StopFadeForAllPlayers(InDuration: float) -> void:
 	for SamplePlayer: PlayerController in PlayerArray:
 		SamplePlayer._GameUI.StopFade(InDuration)
-
-func GetLevelPlayerObservedTileMapAreaRect() -> Rect2i:
-	return PlayerArray[0].GetObservedTileMapAreaRect(WorldGlobals._Level._LevelTileMap)
-
-func GetLevelPlayerCell(InIndex: int = 0) -> Vector2i:
-	if PlayerArray.is_empty() or not is_instance_valid(PlayerArray[InIndex].CurrentPhysicsBody):
-		return Vector2i.ZERO
-	return PlayerArray[InIndex].GetLevelTileMapCell()
-
-func GetLevelPlayerCurrentCameraRect() -> Rect2:
-	return PlayerArray[0].GetCurrentCameraRect()

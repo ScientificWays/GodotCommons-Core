@@ -44,6 +44,9 @@ func _ready():
 	#SaveGlobals.SettingsProfile_PhysicsTickRateChanged_ConnectAndTryEmit(OnPhysicsTickRateSettingChanged)
 	pass
 
+##
+## Timers
+##
 func SpawnOneShotTimerFor(InOwner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
 	
 	if InDelay > 0.0:
@@ -69,6 +72,16 @@ func SpawnRegularTimerFor(InOwner: Node, InCallable: Callable, InDelay: float, I
 	NewTimer.autostart = InAutostart
 	NewTimer.one_shot = false
 	NewTimer.timeout.connect(InCallable)
+	NewTimer.wait_time = InDelay
+	InOwner.add_child(NewTimer)
+	return NewTimer
+
+func SpawnAwaitTimer(InOwner: Node, InDelay: float) -> Timer:
+	
+	assert(InDelay > 0.0)
+	var NewTimer = Timer.new()
+	NewTimer.autostart = true
+	NewTimer.one_shot = false
 	NewTimer.wait_time = InDelay
 	InOwner.add_child(NewTimer)
 	return NewTimer

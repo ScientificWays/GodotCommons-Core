@@ -21,10 +21,10 @@ func BeginTransition():
 	TransitionBegan = true
 	monitoring = false
 	
-	WorldGlobals.TransitionBegin.emit(self)
+	WorldGlobals.TransitionAreaEnterBegin.emit(self)
 	GameGlobals.SpawnOneShotTimerFor(self, FinishTranstiion, TransitionDelay)
 
 func FinishTranstiion() -> void:
 	
-	WorldGlobals.PreTransitionFinished.emit(self)
-	WorldGlobals.LoadSceneByPath(TransitionScenePath)
+	WorldGlobals.TransitionAreaEnterFinished.emit(self)
+	TransitionLevel2D.LoadWithTransition(TransitionScenePath)

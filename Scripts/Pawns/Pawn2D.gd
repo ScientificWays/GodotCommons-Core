@@ -29,13 +29,14 @@ var _LastController: PlayerController
 var _Controller: PlayerController:
 	set(InController):
 		
-		var OldPlayerCommon := _Controller
 		_Controller = InController
 		
-		if _Controller:
+		if is_instance_valid(_Controller):
+			set_meta(PlayerController.PlayerControllerMeta, _Controller)
 			_LastController = _Controller
 		else:
-			pass
+			remove_meta(PlayerController.PlayerControllerMeta)
+		
 		ControllerChanged.emit()
 
 signal ControllerChanged()

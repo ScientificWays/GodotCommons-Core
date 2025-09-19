@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=5 format=3 uid="uid://q8npcf7rs3gp"]
 
-[ext_resource type="FontFile" uid="uid://of2yrl1cwyne" path="res://addons/GodotCommons-Core/Assets/UI/Fonts/bitcell_memesbruh03.ttf" id="1_w3git"]
+[ext_resource type="FontFile" uid="uid://of2yrl1cwyne" path="res://addons/GodotCommons-Core/Assets/UI/Fonts/bitcell_memesbruh03.ttf" id="1_tuky6"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ouw7w"]
 
@@ -10,7 +10,7 @@ bg_color = Color(0, 0, 0, 0.588235)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3oawt"]
 
 [resource]
-default_font = ExtResource("1_w3git")
+default_font = ExtResource("1_tuky6")
 default_font_size = 48
 Label/colors/font_color = Color(1, 1, 1, 1)
 Label/colors/font_outline_color = Color(0, 0, 0, 1)
@@ -20,7 +20,6 @@ Label/constants/outline_size = 0
 Label/constants/shadow_offset_x = 1
 Label/constants/shadow_offset_y = 1
 Label/constants/shadow_outline_size = 1
-Label/font_sizes/font_size = 16
 Label/styles/normal = SubResource("StyleBoxEmpty_ouw7w")
 MarginContainer/constants/margin_bottom = 50
 MarginContainer/constants/margin_left = 50

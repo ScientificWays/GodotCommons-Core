@@ -1,9 +1,10 @@
 shader_type canvas_item;
 
-uniform float time_speed : hint_range(0.0, 10.0) = 1.0;
-uniform float split_amount : hint_range(0.0, 5.0) = 1.5;
-uniform float flicker_intensity : hint_range(0.0, 1.0) = 0.2;
-uniform float noise_strength : hint_range(0.0, 0.5) = 0.05;
+uniform float time_speed: hint_range(0.0, 10.0) = 1.0;
+uniform float split_amount: hint_range(0.0, 5.0) = 1.5;
+uniform float flicker_intensity: hint_range(0.0, 1.0) = 0.2;
+uniform float noise_strength: hint_range(0.0, 0.5) = 0.05;
+uniform vec4 modulate: source_color = vec4(1.0, 1.0, 1.0, 1.0);
 
 float rand(vec2 co)
 {
@@ -30,5 +31,5 @@ void fragment()
 	// VHS
 	float noise = (rand(uv * t) - 0.5) * noise_strength;
 	
-	COLOR = vec4(color * flicker + noise, texture(TEXTURE, uv).a * COLOR.a);
+	COLOR = vec4(color * flicker + noise, texture(TEXTURE, uv).a * COLOR.a) * modulate;
 }

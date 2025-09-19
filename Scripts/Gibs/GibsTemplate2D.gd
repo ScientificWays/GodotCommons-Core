@@ -90,6 +90,7 @@ func InitGib(InGib: Gib2D) -> bool:
 			#SampleParticles.InitAsOneShot(Vector2.ZERO, SampleParticlesNum, 4.0, InGib)
 			SampleParticles.InitAsOneShot(Vector2.ZERO, 0, 4.0, InGib)
 			SampleParticles.EmitParticlesWithVelocity(SampleParticlesNum, SampleGibImpulse * 0.5)
+	
 	return true
 
 func ApplyInitialImpulseTo(InGib: Gib2D) -> void:

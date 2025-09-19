@@ -51,8 +51,8 @@ func _enter_tree():
 	WorldGlobals._Level = self
 
 func _exit_tree():
+	#EndPlay()
 	WorldGlobals._Level = null
-	EndPlay()
 
 func PrepareGameStateAndSaveData():
 	

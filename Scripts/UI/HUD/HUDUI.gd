@@ -11,8 +11,8 @@ func _ready() -> void:
 	
 	assert(OwnerPlayerController)
 	
-	WorldGlobals.TransitionBegin.connect(OnWorldTransitionBegin)
+	WorldGlobals.TransitionAreaEnterBegin.connect(OnWorldTransitionAreaEnterBegin)
 	TransitionBackground.FadeOut()
 
-func OnWorldTransitionBegin(InTransitionArea: LevelTransitionArea2D) -> void:
+func OnWorldTransitionAreaEnterBegin(InTransitionArea: LevelTransitionArea2D) -> void:
 	TransitionBackground.FadeIn(InTransitionArea.TransitionDelay)
