@@ -29,7 +29,7 @@ func _input(InEvent: InputEvent) -> void:
 
 func ShowMusicLabel() -> void:
 	
-	MusicLabel.label_text = MusicManager._get_current_player().track_name
+	MusicLabel.label_text = AudioGlobals.GetCurrentMusicName()
 	MusicLabel.lerp_visible = true
 
 func ShowStartLabel() -> void:

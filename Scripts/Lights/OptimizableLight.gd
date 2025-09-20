@@ -3,6 +3,7 @@ class_name OptimizableLight
 
 @export var enable_sprite_light_on_mobile: bool = true
 @export var light_energy_to_alpha_curve: Curve = preload("res://addons/GodotCommons-Core/Assets/Lights/LightEnergyToAlpha.tres")
+@export var sprite_light_material: Material = preload("res://addons/GodotCommons-Core/Assets/Lights/SpriteLightMaterial.tres")
 
 var _SpriteLight: Sprite2D
 
@@ -24,7 +25,7 @@ func EnableSpriteLight():
 	_SpriteLight.modulate.a = light_energy_to_alpha_curve.sample_baked(energy)
 	_SpriteLight.z_index = 2
 	_SpriteLight.z_as_relative = false
-	_SpriteLight.material = load("res://World/Lights/SpriteLightMaterial.tres")
+	_SpriteLight.material = sprite_light_material
 	add_child(_SpriteLight)
 
 func DisableSpriteLight():

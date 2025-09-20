@@ -20,10 +20,18 @@ func GetCurrentMusicMood() -> int:
 	return GetCurrentMusicMoodCallable.call()
 signal RequestSetMusicMood(InMood: int, InRestart: bool)
 
+var CurrentMusicName: String
+
+var WebMusicPlayer: AudioStreamPlayer
+
 func _ready():
 	
 	AudioServer.bus_layout_changed.connect(UpdateBusIndices)
 	UpdateBusIndices()
+	
+	if GameGlobals.IsWeb():
+		WebMusicPlayer = AudioStreamPlayer.new()
+		add_child(WebMusicPlayer)
 	
 	#SaveGlobals.SettingsProfile_GameVolumeChanged_ConnectAndTryEmit(OnGameVolumeChanged)
 	#SaveGlobals.SettingsProfile_MusicVolumeChanged_ConnectAndTryEmit(OnMusicVolumeChanged)
@@ -75,18 +83,54 @@ func TryPlaySound_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEvent
 	else:
 		return false
 
-func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bool:
-	return MusicManager.is_playing(InBankLabel, InMusicTrack.name)
+func IsAnyMusicPlaying() -> bool:
+	
+	if GameGlobals.IsWeb():
+		return WebMusicPlayer.playing
+	else:
+		return MusicManager._is_playing_music()
 
-func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffset: float = 0.0, InCrossfadeTime: float = 5.0, InAutoLoop: bool = false) -> bool:
+func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bool:
 	
-	if not MusicManager.has_loaded:
-		await MusicManager.loaded
-		#return false
+	if GameGlobals.IsWeb():
+		return WebMusicPlayer.playing and WebMusicPlayer.stream == InMusicTrack.stems[0].stream
+	else:
+		return MusicManager.is_playing(InBankLabel, InMusicTrack.name)
+
+func GetCurrentMusicName() -> String:
+	return CurrentMusicName
+
+func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffset: float = 0.0, InCrossfadeTime: float = 2.0, InAutoLoop: bool = false) -> bool:
 	
-	if InMusicTrack:
+	if not is_instance_valid(InMusicTrack):
+		push_error("AudioGlobals.TryPlayMusic() InMusicTrack is invalid!")
+		return false
+	
+	if GameGlobals.IsWeb():
+		WebMusicPlayer.stream = InMusicTrack.stems[0].stream
+		WebMusicPlayer.play()
+	else:
+		
+		if not MusicManager.has_loaded:
+			await MusicManager.loaded
+			#return false
+		
 		ResourceGlobals.GetOrCreateMusicBankAndAppendEvent(InBankLabel, InMusicTrack)
 		MusicManager.play(InBankLabel, InMusicTrack.name, InOffset, InCrossfadeTime, InAutoLoop)
-		return true
+	CurrentMusicName = InMusicTrack.name
+	return true
+
+func TryStopMusic(InCrossfadeTime: float = 2.0) -> bool:
+	
+	if GameGlobals.IsWeb():
+		if WebMusicPlayer.playing:
+			WebMusicPlayer.stop()
+			CurrentMusicName = ""
+			return true
 	else:
-		return false
+		if MusicManager._is_playing_music():
+			MusicManager.stop(InCrossfadeTime)
+			CurrentMusicName = ""
+			return true
+	push_warning("AudioGlobals.TryStopMusic() No music is playing!")
+	return false

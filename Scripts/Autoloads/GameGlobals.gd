@@ -294,3 +294,18 @@ static func IsPC(InCheckWeb: bool = true) -> bool:
 	if InCheckWeb and OS.has_feature("web"):
 		return not IsMobile()
 	return OS.has_feature("pc")
+
+static func IsWeb() -> bool:
+	return OS.has_feature("web")
+
+##
+## Ads
+##
+var InterstitialAdShowCooldownTicksMs: int = 60000
+var NextInterstitialAdShowTimeTicksMs: int = -InterstitialAdShowCooldownTicksMs
+
+func ShouldShowInterstitialAd() -> bool:
+	return Time.get_ticks_msec() > NextInterstitialAdShowTimeTicksMs
+
+func TriggerShowInterstitialAdCooldown() -> void:
+	NextInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + InterstitialAdShowCooldownTicksMs
