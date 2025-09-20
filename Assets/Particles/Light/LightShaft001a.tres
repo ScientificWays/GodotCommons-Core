@@ -1,0 +1,26 @@
+[gd_resource type="ParticleProcessMaterial" load_steps=4 format=3 uid="uid://1gqa2rwn3xs7"]
+
+[ext_resource type="Texture2D" uid="uid://dh2evt7yubm0m" path="res://addons/GodotCommons-Core/Assets/Particles/EmissionCurve001b.tres" id="1_krf4l"]
+
+[sub_resource type="Curve" id="Curve_tgbbl"]
+_data = [Vector2(0, 0.010989), 0.0, 0.0, 0, 0, Vector2(0.103604, 1), 0.0, 0.0, 0, 0, Vector2(0.747748, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_m2tem"]
+width = 32
+curve = SubResource("Curve_tgbbl")
+
+[resource]
+lifetime_randomness = 1.0
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(8, 24, 1)
+direction = Vector3(0.5, 1, 0)
+spread = 30.0
+initial_velocity_min = 8.0
+initial_velocity_max = 16.0
+radial_velocity_max = 5.0
+scale_min = 0.5
+scale_curve = SubResource("CurveTexture_m2tem")
+color = Color(0, 0.784314, 1, 1)
+emission_curve = ExtResource("1_krf4l")

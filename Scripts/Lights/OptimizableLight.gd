@@ -1,0 +1,36 @@
+extends PointLight2D
+class_name OptimizableLight
+
+@export var enable_sprite_light_on_mobile: bool = true
+@export var light_energy_to_alpha_curve: Curve = preload("res://addons/GodotCommons-Core/Assets/Lights/LightEnergyToAlpha.tres")
+
+var _SpriteLight: Sprite2D
+
+func _ready():
+	if GameGlobals.IsMobile() and enable_sprite_light_on_mobile:
+		EnableSpriteLight()
+
+func EnableSpriteLight():
+	
+	enabled = false
+	
+	assert(not _SpriteLight)
+	_SpriteLight = Sprite2D.new()
+	_SpriteLight.texture = texture
+	_SpriteLight.offset = offset
+	_SpriteLight.scale = Vector2(texture_scale, texture_scale)
+	_SpriteLight.modulate = color
+	#_SpriteLight.modulate.h -= 0.08
+	_SpriteLight.modulate.a = light_energy_to_alpha_curve.sample_baked(energy)
+	_SpriteLight.z_index = 2
+	_SpriteLight.z_as_relative = false
+	_SpriteLight.material = load("res://World/Lights/SpriteLightMaterial.tres")
+	add_child(_SpriteLight)
+
+func DisableSpriteLight():
+	
+	assert(_SpriteLight)
+	_SpriteLight.queue_free()
+	_SpriteLight = null
+	
+	enabled = true

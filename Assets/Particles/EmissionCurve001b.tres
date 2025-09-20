@@ -1,7 +1,7 @@
 [gd_resource type="CurveTexture" load_steps=2 format=3 uid="uid://dh2evt7yubm0m"]
 
 [sub_resource type="Curve" id="Curve_bp3n5"]
-max_value = 20.0
+_limits = [0.0, 20.0, 0.0, 1.0]
 _data = [Vector2(1e-05, 20), 0.0, 0.0, 0, 0]
 point_count = 1
 
