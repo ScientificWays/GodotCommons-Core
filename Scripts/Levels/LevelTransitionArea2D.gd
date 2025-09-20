@@ -4,6 +4,7 @@ class_name LevelTransitionArea2D
 @export_category("Transition")
 @export var TransitionScenePath: String
 @export var TransitionDelay: float = 1.0
+@export var OverrideBackgroundGradient: GradientTexture1D
 
 var TransitionBegan: bool = false
 
@@ -20,6 +21,9 @@ func BeginTransition():
 	
 	TransitionBegan = true
 	monitoring = false
+	
+	if is_instance_valid(OverrideBackgroundGradient):
+		UIGlobals.BackgroundTextureOverride = OverrideBackgroundGradient
 	
 	WorldGlobals.TransitionAreaEnterBegin.emit(self)
 	GameGlobals.SpawnOneShotTimerFor(self, FinishTranstiion, TransitionDelay)

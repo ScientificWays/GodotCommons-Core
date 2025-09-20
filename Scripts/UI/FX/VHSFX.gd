@@ -13,6 +13,8 @@ class_name VHSFX
 @export var rotation_speed: float = 1.5
 @export var rotation_offset: float = 0.02
 
+@export var dissapear_probability: float = 0.01
+
 @export var toggle: bool = true:
 	set(InToggle):
 		toggle = InToggle
@@ -60,10 +62,10 @@ func _process(InDelta: float) -> void:
 	
 	target.rotation = sin(time * rotation_speed) * rotation_offset
 	
-	if randf() > 0.99:
-		target.modulate.a = 0.0
-	else:
+	if randf() > dissapear_probability:
 		target.modulate.a = 0.9 + randf() * 0.1
+	else:
+		target.modulate.a = 0.0
 
 func GetPositionTarget() -> Control:
 	return target

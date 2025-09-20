@@ -81,3 +81,13 @@ func FormatTimeString(InTimeSeconds: int) -> String:
 		return "%02d:%02d:%02d" % [ Hours, Minutes, Seconds ]
 	else:
 		return "%02d:%02d" % [ Minutes, Seconds ]
+
+##
+## BackgroundUI
+##
+var BackgroundTextureOverride: Texture2D:
+	set(InTexture):
+		BackgroundTextureOverride = InTexture
+		BackgroundTextureOverrideChanged.emit()
+
+signal BackgroundTextureOverrideChanged()
