@@ -21,6 +21,7 @@ class_name ScoreUI_Conversion
 @export var format_as_time_string: bool = true
 @export var stat_to_score_ratio: float = 1.0
 @export var conversion_speed: float = 10.0
+@export var conversion_speed_increase: float = 1.0
 
 var coversion_timer: Timer
 
@@ -66,6 +67,9 @@ func OnConvertTimerTimeout() -> void:
 	
 	conversion_num_left -= 1
 	Converted.emit(stat_to_score_ratio)
+	
+	conversion_speed += conversion_speed_increase
+	coversion_timer.wait_time = 1.0 / conversion_speed
 	
 	if conversion_num_left <= 0:
 		

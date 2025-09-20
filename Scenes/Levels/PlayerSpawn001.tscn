@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://8b0jckg41k61"]
+[gd_scene load_steps=3 format=3 uid="uid://8b0jckg41k61"]
 
 [ext_resource type="Script" uid="uid://bkyrummrept71" path="res://addons/GodotCommons-Core/Scripts/Levels/PlayerSpawn.gd" id="1_m4msj"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m4msj"]
+font_size = 32
 
 [node name="PlayerSpawn" type="Marker2D" node_paths=PackedStringArray("HintLabel")]
 script = ExtResource("1_m4msj")
@@ -20,5 +23,6 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Player
 Spawn"
+label_settings = SubResource("LabelSettings_m4msj")
 horizontal_alignment = 1
 vertical_alignment = 1

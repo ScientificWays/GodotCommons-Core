@@ -26,7 +26,7 @@ class_name VHSFX
 @export var lerp_visible: bool = true:
 	set(InVisible):
 		lerp_visible = InVisible
-		Update()
+		Update.call_deferred()
 
 @export var lerp_visible_speed: float = 4.0
 
@@ -38,6 +38,8 @@ func _ready() -> void:
 func _notification(InCode: int) -> void:
 	
 	if InCode == NOTIFICATION_EDITOR_PRE_SAVE:
+		Update()
+	elif InCode == NOTIFICATION_TRANSLATION_CHANGED:
 		Update()
 
 func _process(InDelta: float) -> void:

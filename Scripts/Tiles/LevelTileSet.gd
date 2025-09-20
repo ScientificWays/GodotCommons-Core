@@ -4,7 +4,7 @@ class_name LevelTileSet
 @export var TerrainData: Dictionary[String, LeveTileSet_TerrainData]
 
 func GetTerrainData(InID: int) -> LeveTileSet_TerrainData:
-	return TerrainData[get_source(InID).resource_name]
+	return TerrainData[BetterTerrain.get_terrain(self, InID).name]
 
 func GetTerrainID(InName: String) -> int:
 	

@@ -16,10 +16,10 @@ func HandleAnimatedSequence() -> void:
 	
 	CumulatedPlayerScore = 0.0
 	
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.5).timeout
 	await ExperienceConversion.HandleAnimatedSequence()
 	
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.5).timeout
 	await TimeConversion.HandleAnimatedSequence()
 	
 	var _GameState := WorldGlobals._GameState

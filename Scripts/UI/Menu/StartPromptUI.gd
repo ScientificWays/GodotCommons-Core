@@ -3,8 +3,8 @@ class_name StartPromptUI
 
 @export_category("Start")
 @export var TargetScene: PackedScene
-@export var StartLabel: VHSFX
-@export var MusicLabel: VHSFX
+@export var StartLabel: VHSLabel
+@export var MusicLabel: VHSLabel
 
 var StartEnableTicksMs: int = 0
 var StartWasTriggered: bool = false
@@ -28,6 +28,8 @@ func _input(InEvent: InputEvent) -> void:
 			TriggerStart()
 
 func ShowMusicLabel() -> void:
+	
+	MusicLabel.label_text = MusicManager._get_current_player().track_name
 	MusicLabel.lerp_visible = true
 
 func ShowStartLabel() -> void:
