@@ -7,8 +7,8 @@ class_name LeveTileSet_TerrainData
 
 @export_category("Ignite")
 @export var CanIgnite: bool = false
-@export var IgniteDamageThreshold: float = 50.0
-@export var IgniteDamageProbabilityMul: float = 0.2
+@export var IgniteDamageThreshold: float = 20.0
+@export var IgniteDamageProbabilityMul: float = 0.4
 @export var IgniteDamageToBreakProbabilityMul: float = 0.02
 @export var PostIgniteTerrainName: StringName = &"Floor: Dirt"
 

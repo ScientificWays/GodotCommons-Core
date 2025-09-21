@@ -23,9 +23,23 @@ func _ready() -> void:
 
 func _input(InEvent: InputEvent) -> void:
 	
-	if Time.get_ticks_msec() > StartEnableTicksMs:
-		if InEvent.is_pressed() and not InEvent.is_echo():
-			TriggerStart()
+	if Time.get_ticks_msec() < StartEnableTicksMs:
+		return
+	
+	if InEvent.is_echo():
+		return
+	
+	if GameGlobals.IsPC():
+		if InEvent.is_action_pressed(&"Continue"):
+			pass
+		else:
+			return
+	elif InEvent is InputEventScreenTouch:
+		pass
+	else:
+		return
+	
+	TriggerStart()
 
 func ShowMusicLabel() -> void:
 	

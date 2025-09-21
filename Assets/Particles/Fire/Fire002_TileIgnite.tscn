@@ -1,14 +1,79 @@
-[gd_scene load_steps=5 format=3 uid="uid://dcwkf1qp0lodv"]
+[gd_scene load_steps=9 format=3 uid="uid://dcwkf1qp0lodv"]
 
 [ext_resource type="SpriteFrames" uid="uid://cxb70ep3v0x11" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002a_Frames.tres" id="1_ll881"]
 [ext_resource type="PackedScene" uid="uid://de4g22smssemf" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002.tscn" id="2_a8rgd"]
-[ext_resource type="Script" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticlesPivot.gd" id="2_wljdn"]
+[ext_resource type="Script" uid="uid://blsbjpjvrhw7c" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticlesPivot.gd" id="2_wljdn"]
+[ext_resource type="Texture2D" uid="uid://nm65nh6a5o2s" path="res://addons/GodotCommons-Core/Assets/Lights/Light002b.png" id="4_3d6w6"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_qsep8"]
 light_mode = 1
 
+[sub_resource type="Animation" id="Animation_3d6w6"]
+resource_name = "Fire"
+length = 0.5
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:flip_h")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(5, 0.2, 1),
+"update": 0,
+"values": [Color(1, 0.7845677, 0, 0.1), Color(1, 0.7845677, 0, 0.15), Color(1, 0.7845677, 0, 0.1)]
+}
+
+[sub_resource type="Animation" id="Animation_cfugi"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:flip_h")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 0.7845677, 0, 0.1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qsr4l"]
+_data = {
+&"Fire": SubResource("Animation_3d6w6"),
+&"RESET": SubResource("Animation_cfugi")
+}
+
 [node name="Fire002_TileIgnite" type="AnimatedSprite2D"]
-z_index = -1
+z_index = 1
+z_as_relative = false
 material = SubResource("CanvasItemMaterial_qsep8")
 scale = Vector2(0.75, 0.75)
 sprite_frames = ExtResource("1_ll881")
@@ -19,3 +84,14 @@ script = ExtResource("2_wljdn")
 
 [node name="Fire" parent="ParticlesPivot" instance=ExtResource("2_a8rgd")]
 amount = 8
+
+[node name="LightSprite" type="Sprite2D" parent="."]
+modulate = Color(1, 0.7845677, 0, 0.1)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_3d6w6")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="LightSprite"]
+libraries = {
+&"": SubResource("AnimationLibrary_qsr4l")
+}
+autoplay = "Fire"

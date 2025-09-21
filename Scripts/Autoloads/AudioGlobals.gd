@@ -108,6 +108,7 @@ func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffse
 	
 	if GameGlobals.IsWeb():
 		WebMusicPlayer.stream = InMusicTrack.stems[0].stream
+		WebMusicPlayer.volume_db = InMusicTrack.stems[0].volume
 		WebMusicPlayer.play()
 	else:
 		
