@@ -1,7 +1,7 @@
 extends Area2D
 class_name Explosion2D
 
-const BaseRadius: float = 48.0
+const BaseRadius: float = 64.0
 const BaseDamage: float = 50.0
 const BaseImpulse: float = 100.0
 

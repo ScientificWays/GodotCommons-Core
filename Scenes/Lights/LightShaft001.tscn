@@ -18,7 +18,7 @@ script = ExtResource("3_8wpvu")
 [node name="Particles" type="GPUParticles2D" parent="."]
 position = Vector2(-8, -24)
 rotation = -0.174533
-amount = 2
+amount = 4
 speed_scale = 0.1
 visibility_rect = Rect2(-25, -50, 50, 100)
 draw_order = 0

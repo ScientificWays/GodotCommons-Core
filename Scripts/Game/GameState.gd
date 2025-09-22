@@ -127,7 +127,7 @@ func LoadPlayerScore() -> void:
 		YandexSDK.load_leaderboard_player_entry("levelscore")
 
 func OnLeaderboardPlayerEntryLoaded(InData) -> void:
-	
+	print("GameState OnLeaderboardPlayerEntryLoaded(), ", InData)
 	PlayerScore = InData["score"]
 
 func AddPlayerScore(InScore: int) -> void:
