@@ -33,6 +33,9 @@ var GibsSetting: GraphicsOption = GraphicsOption.Average if OS.has_feature("mobi
 
 func _ready():
 	
+	if IsWeb():
+		TranslationServer.set_locale(Bridge.platform.language)
+	
 	#DebugMenu.style = DebugMenu.Style.VISIBLE_DETAILED
 	#if OS.get_name() == &"Windows":
 		#get_window().content_scale_size = Vector2i(1280, 1280) * 2
@@ -42,7 +45,6 @@ func _ready():
 		#Engine.max_fps = 120
 	
 	#SaveGlobals.SettingsProfile_PhysicsTickRateChanged_ConnectAndTryEmit(OnPhysicsTickRateSettingChanged)
-	pass
 
 ##
 ## Timers

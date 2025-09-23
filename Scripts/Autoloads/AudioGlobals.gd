@@ -1,9 +1,11 @@
 extends Node
 
+@export var MasterBusName: StringName = &"Master"
 @export var MusicBusName: StringName = &"Music"
 @export var WorldBusName: StringName = &"World"
 @export var UIBusName: StringName = &"UI"
 
+var MasterBusIndex: int = -1
 var MusicBusIndex: int = -1
 var WorldBusIndex: int = -1
 var UIBusIndex: int = -1
@@ -26,18 +28,45 @@ var WebMusicPlayer: AudioStreamPlayer
 
 func _ready():
 	
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	Bridge.game.connect("visibility_state_changed", UpdateVisibilityStateMute)
+	
 	AudioServer.bus_layout_changed.connect(UpdateBusIndices)
 	UpdateBusIndices()
 	
 	if GameGlobals.IsWeb():
 		WebMusicPlayer = AudioStreamPlayer.new()
+		WebMusicPlayer.bus = MusicBusName
 		add_child(WebMusicPlayer)
 	
 	#SaveGlobals.SettingsProfile_GameVolumeChanged_ConnectAndTryEmit(OnGameVolumeChanged)
 	#SaveGlobals.SettingsProfile_MusicVolumeChanged_ConnectAndTryEmit(OnMusicVolumeChanged)
 	#SaveGlobals.SettingsProfile_UIVolumeChanged_ConnectAndTryEmit(OnUIVolumeChanged)
 
+#func _notification(InCode: int) -> void:
+#	
+#	if InCode == NOTIFICATION_WM_WINDOW_FOCUS_IN \
+#	or InCode == NOTIFICATION_APPLICATION_FOCUS_IN \
+#	or InCode == NOTIFICATION_APPLICATION_RESUMED:
+#		AudioServer.set_bus_mute(MasterBusIndex, false)
+#	elif InCode == NOTIFICATION_WM_WINDOW_FOCUS_OUT \
+#	or InCode == NOTIFICATION_APPLICATION_FOCUS_OUT \
+#	or InCode == NOTIFICATION_APPLICATION_PAUSED:
+#		AudioServer.set_bus_mute(MasterBusIndex, true)
+
+func UpdateVisibilityStateMute(InState) -> void:
+	
+	if InState == "hidden" \
+	#or not get_window().has_focus() \
+	or YandexSDK.is_ad_on_screen \
+	or YandexSDK.is_rewarded_ad_on_screen:
+		AudioServer.set_bus_mute(MasterBusIndex, true)
+	else:
+		AudioServer.set_bus_mute(MasterBusIndex, false)
+
 func UpdateBusIndices():
+	MasterBusIndex = AudioServer.get_bus_index(MasterBusName)
 	MusicBusIndex = AudioServer.get_bus_index(MusicBusName)
 	WorldBusIndex = AudioServer.get_bus_index(WorldBusName)
 	UIBusIndex = AudioServer.get_bus_index(UIBusName)
