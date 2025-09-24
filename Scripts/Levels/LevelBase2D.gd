@@ -70,16 +70,11 @@ func PrepareGameStateAndSaveData():
 		
 		if not WorldGlobals._GameState:
 			
-			#if not SaveGlobals._RunSaveData and SaveGlobals.TryLoadRunSaveData():
-				
-				## Will create GameState and init GameMode internally
-			#	SaveGlobals.ApplyRunSaveData_Game()
-			#else:
-				var NewGameSeed := 2729052680
-				#var NewGameSeed := randi()
-				
-				assert(DefaultGameMode)
-				WorldGlobals._GameState = DefaultGameMode.InitNewGameState(NewGameSeed, DefaultGameModeArgs)
+			var NewGameSeed := 2729052680
+			#var NewGameSeed := randi()
+			
+			assert(DefaultGameMode)
+			WorldGlobals._GameState = DefaultGameMode.InitNewGameState(NewGameSeed, DefaultGameModeArgs)
 	assert(WorldGlobals._GameState)
 	_GameState = WorldGlobals._GameState
 

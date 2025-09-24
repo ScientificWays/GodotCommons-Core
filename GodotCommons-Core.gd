@@ -12,6 +12,7 @@ func _enter_tree():
 	add_autoload_singleton("PlayerGlobals", "Scripts/Autoloads/PlayerGlobals.gd")
 	add_autoload_singleton("UIGlobals", "Scripts/Autoloads/UIGlobals.gd")
 	add_autoload_singleton("AudioGlobals", "Scripts/Autoloads/AudioGlobals.gd")
+	add_autoload_singleton("SaveGlobals", "Scripts/Autoloads/SaveGlobals.gd")
 
 func _exit_tree():
 	
@@ -24,3 +25,4 @@ func _exit_tree():
 	remove_autoload_singleton("PlayerGlobals")
 	remove_autoload_singleton("UIGlobals")
 	remove_autoload_singleton("AudioGlobals")
+	remove_autoload_singleton("SaveGlobals")

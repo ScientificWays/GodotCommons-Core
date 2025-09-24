@@ -22,9 +22,6 @@ func InitNewGameState(InGameSeed: int, InArgs: Array) -> GameState:
 @export_category("Player")
 @export var PlayerControllerScene: PackedScene
 
-@export_category("Saves")
-@export var ShouldSaveRunData: bool = false
-
 #func UpdateRunSaveData(InRunSaveData: RunSaveData):
 #	pass
 

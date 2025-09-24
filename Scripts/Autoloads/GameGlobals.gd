@@ -36,6 +36,16 @@ func _ready():
 	if IsWeb():
 		TranslationServer.set_locale(Bridge.platform.language)
 	
+	if YandexSDK.is_working():
+		YandexSDK.rewarded_ad.connect(OnYandexRewardedAd)
+		YandexSDK.interstitial_ad.connect(OnYandexInterstitialAd)
+	
+	RewardedAdProxy = Node.new()
+	add_child(RewardedAdProxy)
+	
+	InterstitialAdProxy = Node.new()
+	add_child(InterstitialAdProxy)
+
 	#DebugMenu.style = DebugMenu.Style.VISIBLE_DETAILED
 	#if OS.get_name() == &"Windows":
 		#get_window().content_scale_size = Vector2i(1280, 1280) * 2
@@ -311,3 +321,20 @@ func ShouldShowInterstitialAd() -> bool:
 
 func TriggerShowInterstitialAdCooldown() -> void:
 	NextInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + InterstitialAdShowCooldownTicksMs
+
+var RewardedAdProxy: Node = Node.new()
+var InterstitialAdProxy: Node = Node.new()
+
+func OnYandexRewardedAd(InResult: String) -> void:
+	
+	if InResult == "opened":
+		AddPauseSource(RewardedAdProxy)
+	else:
+		RemovePauseSource(RewardedAdProxy)
+
+func OnYandexInterstitialAd(InResult: String) -> void:
+	
+	if InResult == "opened":
+		AddPauseSource(InterstitialAdProxy)
+	else:
+		RemovePauseSource(InterstitialAdProxy)

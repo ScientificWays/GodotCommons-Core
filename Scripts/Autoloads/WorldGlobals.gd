@@ -24,7 +24,11 @@ func LoadSceneByPacked(InPacked: PackedScene) -> void:
 	
 	get_tree().change_scene_to_packed(InPacked)
 
-var PendingScenePath: StringName
+var PendingScenePath: StringName:
+	set(InPath):
+		PendingScenePath = InPath
+		PendingScenePathChanged.emit()
+signal PendingScenePathChanged()
 
 func LoadPendingScene() -> void:
 	

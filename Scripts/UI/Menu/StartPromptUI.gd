@@ -2,16 +2,15 @@ extends Control
 class_name StartPromptUI
 
 @export_category("Start")
-@export var TargetScene: PackedScene
 @export var StartLabel: VHSLabel
 @export var MusicLabel: VHSLabel
 
 var StartEnableTicksMs: int = 0
 var StartWasTriggered: bool = false
 
+signal StartTrigger()
+
 func _ready() -> void:
-	
-	assert(TargetScene)
 	
 	StartEnableTicksMs = Time.get_ticks_msec() + 1000
 	
@@ -41,6 +40,20 @@ func _input(InEvent: InputEvent) -> void:
 	
 	TriggerStart()
 
+func UpdateAsStart() -> void:
+	
+	StartLabel.label_text = "START_PROMPT"
+	StartLabel.label_text_mobile = "START_PROMPT_MOBILE"
+	
+	MusicLabel.visible = true
+
+func UpdateAsContinue() -> void:
+	
+	StartLabel.label_text = "CONTINUE_PROMPT"
+	StartLabel.label_text_mobile = "CONTINUE_PROMPT"
+	
+	MusicLabel.visible = false
+
 func ShowMusicLabel() -> void:
 	
 	MusicLabel.label_text = AudioGlobals.GetCurrentMusicName()
@@ -64,7 +77,4 @@ func TriggerStart() -> void:
 	MusicLabel.lerp_visible_speed *= 2.0
 	MusicLabel.lerp_visible = false
 	
-	GameGlobals.SpawnOneShotTimerFor(self, HandleStartPostDelay, 1.0)
-
-func HandleStartPostDelay() -> void:
-	WorldGlobals.LoadSceneByPacked(TargetScene)
+	StartTrigger.emit()
