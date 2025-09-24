@@ -22,18 +22,36 @@ extends Node
 #		assert(is_instance_valid(InSettingsUI) != is_instance_valid(_SettingsUI))
 #		_SettingsUI = InSettingsUI
 
-signal GameUIReady()
+##
+## PauseMenuUI
+##
+var pause_menu_ui: PauseMenuUI
+
+func try_create_pause_menu_ui() -> bool:
+	
+	var pause_menu_scene_path := ProjectSettings.get_setting(GodotCommonsCore_Settings.PAUSE_MENU_SETTING_NAME, GodotCommonsCore_Settings.PAUSE_MENU_SETTING_DEFAULT) as String
+	if ResourceLoader.exists(pause_menu_scene_path, "PackedScene"):
+		var pause_menu_ui_scene := ResourceLoader.load(pause_menu_scene_path) as PackedScene
+		pause_menu_ui = pause_menu_ui_scene.instantiate()
+		pause_menu_ui.is_enabled = false
+		add_child(pause_menu_ui)
+		return is_instance_valid(pause_menu_ui)
+	push_error("UIGlobals.try_create_pause_menu_ui(): Failed to create PauseMenuUI!")
+	return false
 
 func IsPointInsideControlArea(InPoint: Vector2, InControl: Control) -> bool:
 	var x: bool = InPoint.x >= InControl.global_position.x and InPoint.x <= InControl.global_position.x + (InControl.size.x * InControl.get_global_transform_with_canvas().get_scale().x)
 	var y: bool = InPoint.y >= InControl.global_position.y and InPoint.y <= InControl.global_position.y + (InControl.size.y * InControl.get_global_transform_with_canvas().get_scale().y)
 	return x and y
 
-func IsLeftMouseClick(InEvent: InputEvent):
-	return InEvent is InputEventMouseButton and InEvent.is_pressed() and InEvent.button_index == MouseButton.MOUSE_BUTTON_LEFT
+func IsLeftMouseClick(InEvent: InputEvent) -> bool:
+	return (InEvent is InputEventMouseButton) and InEvent.is_pressed() and (InEvent.button_index == MouseButton.MOUSE_BUTTON_LEFT)
 
-func _ready():
+func _ready() -> void:
+	
 	Input.set_custom_mouse_cursor(load("res://addons/GodotCommons-Core/Assets/UI/Cursors/Cross001a.png"), Input.CURSOR_CROSS, Vector2(8.0, 8.0))
+	
+	try_create_pause_menu_ui.call_deferred()
 
 func _notification(InCode: int) -> void:
 	match InCode:

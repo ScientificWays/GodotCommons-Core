@@ -10,6 +10,28 @@ var MusicBusIndex: int = -1
 var WorldBusIndex: int = -1
 var UIBusIndex: int = -1
 
+var music_volume_linear: float = 1.0:
+	set(in_volume):
+		if music_volume_linear != in_volume:
+			music_volume_linear = in_volume
+			handle_music_volume_changed()
+
+var game_volume_linear: float = 1.0:
+	set(in_volume):
+		if game_volume_linear != in_volume:
+			game_volume_linear = in_volume
+			handle_game_volume_changed()
+
+var ui_volume_linear: float = 1.0:
+	set(in_volume):
+		if ui_volume_linear != in_volume:
+			ui_volume_linear = in_volume
+			handle_ui_volume_changed()
+
+signal music_volume_linear_changed()
+signal game_volume_linear_changed()
+signal ui_volume_linear_changed()
+
 @export var WorldSoundBankName: String = "World"
 
 #var GetCurrentMusicDataCallable: Callable
@@ -71,20 +93,23 @@ func UpdateBusIndices():
 	WorldBusIndex = AudioServer.get_bus_index(WorldBusName)
 	UIBusIndex = AudioServer.get_bus_index(UIBusName)
 
-func OnGameVolumeChanged(InValue: float):
-	AudioServer.set_bus_volume_db(WorldBusIndex, linear_to_db(InValue))
+func handle_music_volume_changed():
 
-func OnMusicVolumeChanged(InValue: float):
-
-	var NormalGainPart := minf(InValue, 0.6)
-	var ExtraGainPart := InValue - NormalGainPart
+	var NormalGainPart := minf(music_volume_linear, 0.6)
+	var ExtraGainPart := music_volume_linear - NormalGainPart
 	
 	var NewVolumeDb := linear_to_db(NormalGainPart / 0.6 + ExtraGainPart / 0.4)
 	#print(NewVolumeDb)
 	AudioServer.set_bus_volume_db(MusicBusIndex, NewVolumeDb)
+	music_volume_linear_changed.emit()
 
-func OnUIVolumeChanged(InValue: float):
-	AudioServer.set_bus_volume_db(UIBusIndex, linear_to_db(InValue))
+func handle_game_volume_changed():
+	AudioServer.set_bus_volume_db(WorldBusIndex, linear_to_db(game_volume_linear))
+	game_volume_linear_changed.emit()
+
+func handle_ui_volume_changed():
+	AudioServer.set_bus_volume_db(UIBusIndex, linear_to_db(ui_volume_linear))
+	ui_volume_linear_changed.emit()
 
 func TryPlaySoundVaried_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2, InPitch: float, InVolume: float) -> bool:
 	

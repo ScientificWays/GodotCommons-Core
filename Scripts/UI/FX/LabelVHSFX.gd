@@ -2,7 +2,7 @@
 extends VHSFX
 class_name VHSLabel
 
-@export var label_text: String = "START_PROMPT":
+@export var label_text: String = "-":
 	set(InText):
 		label_text = InText
 		Update()

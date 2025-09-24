@@ -1,8 +1,18 @@
+@tool
 extends TextureRect
 class_name BackgroundUI
 
-@export_category("Initialize")
-@export var EnabledFromStart: bool = false
+@export_category("State")
+@export var is_enabled: bool = true:
+	set(in_is_enabled):
+		
+		is_enabled = in_is_enabled
+		
+		if is_enabled:
+			_handle_enabled()
+		else:
+			_handle_disabled()
+@export var default_fade_time: float = 0.5
 
 @export_category("Components")
 @export var PulseAP: AnimationPlayer
@@ -21,15 +31,31 @@ var gradient_texture: GradientTexture1D
 
 func _ready() -> void:
 	
-	if EnabledFromStart:
+	if is_enabled:
 		FadeIn(0.0)
+	else:
+		FadeOut(0.0)
 
 func _enter_tree() -> void:
+	
+	if Engine.is_editor_hint():
+		return
+	
 	UIGlobals.BackgroundTextureOverrideChanged.connect(OnTextureOverrideChanged)
 	OnTextureOverrideChanged()
 
 func _exit_tree() -> void:
+	
+	if Engine.is_editor_hint():
+		return
+	
 	UIGlobals.BackgroundTextureOverrideChanged.disconnect(OnTextureOverrideChanged)
+
+func _handle_enabled() -> void:
+	FadeIn(default_fade_time)
+
+func _handle_disabled() -> void:
+	FadeOut(default_fade_time)
 
 func OnTextureOverrideChanged() -> void:
 	

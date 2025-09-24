@@ -2,20 +2,8 @@ extends Node
 
 var PlayerArray: Array[PlayerController]
 
-const DefaultCameraZoom_Const: Vector2 = Vector2(3.6, 3.6)
-const ShopCameraZoom_Const: Vector2 = Vector2(5.4, 5.4)
-const DeathCameraZoom_Const: Vector2 = Vector2(5.4, 5.4)
-signal ZoomOverridesChanged()
-
-signal MoodChanged(InPlayer: PlayerController)
-
 func _ready() -> void:
 	pass
-
-func _exit_tree() -> void:
-	RemoveDefaultCameraZoomOverride()
-	RemoveShopCameraZoomOverride()
-	RemoveDeathCameraZoomOverride()
 
 ##
 ## Respawn
@@ -27,41 +15,17 @@ func RespawnAllPlayers() -> void:
 ##
 ## Camera
 ##
+var default_camera_zoom: float = 3.6:
+	set(in_zoom):
+		default_camera_zoom = in_zoom
+		handle_default_camera_zoom_changed()
+signal default_camera_zoom_changed()
+
+func handle_default_camera_zoom_changed():
+	default_camera_zoom_changed.emit()
+
 func GetLevelPlayerCurrentCameraRect() -> Rect2:
 	return PlayerArray[0].GetCurrentCameraRect() ## TODO: Add this method
-
-func GetDefaultCameraZoom() -> Vector2:
-	return get_meta(&"DefaultCameraZoom", DefaultCameraZoom_Const)
-
-func GetShopCameraZoom() -> Vector2:
-	return get_meta(&"ShopCameraZoom", ShopCameraZoom_Const)
-
-func GetDeathCameraZoom() -> Vector2:
-	return get_meta(&"DeathCameraZoom", DeathCameraZoom_Const)
-
-func SetDefaultCameraZoomOverride(InZoom: Vector2) -> void:
-	set_meta(&"DefaultCameraZoom", InZoom)
-	ZoomOverridesChanged.emit()
-
-func SetShopCameraZoomOverride(InZoom: Vector2) -> void:
-	set_meta(&"ShopCameraZoom", InZoom)
-	ZoomOverridesChanged.emit()
-
-func SetDeathCameraZoomOverride(InZoom: Vector2) -> void:
-	set_meta(&"DeathCameraZoom", InZoom)
-	ZoomOverridesChanged.emit()
-
-func RemoveDefaultCameraZoomOverride() -> void:
-	remove_meta(&"DefaultCameraZoom")
-	ZoomOverridesChanged.emit()
-
-func RemoveShopCameraZoomOverride() -> void:
-	remove_meta(&"ShopCameraZoom")
-	ZoomOverridesChanged.emit()
-
-func RemoveDeathCameraZoomOverride() -> void:
-	remove_meta(&"DeathCameraZoom")
-	ZoomOverridesChanged.emit()
 
 func ResetAllPlayersZoom() -> void:
 	for SampelPlayer: PlayerController in PlayerArray:

@@ -1,18 +1,18 @@
-[gd_scene load_steps=8 format=3 uid="uid://d3o4fa5w0r7ao"]
+[gd_scene load_steps=8 format=3 uid="uid://cq1ntov28domc"]
 
-[ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="1_33je3"]
-[ext_resource type="Script" uid="uid://ce5yd0cnxusim" path="res://addons/GodotCommons-Core/Scripts/UI/FX/LabelVHSFX.gd" id="2_cguu5"]
+[ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="1_8okjb"]
+[ext_resource type="Script" uid="uid://c2nl7gpxqs08e" path="res://addons/GodotCommons-Core/Scripts/UI/FX/ButtonVHSFX.gd" id="2_8okjb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vfhbj"]
 resource_local_to_scene = true
-shader = ExtResource("1_33je3")
+shader = ExtResource("1_8okjb")
 shader_parameter/time_speed = 1.0
 shader_parameter/split_amount = 1.5
 shader_parameter/flicker_intensity = 0.2
 shader_parameter/noise_strength = 0.05
 shader_parameter/modulate = Color(1, 1, 1, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_8p174"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_8okjb"]
 viewport_path = NodePath("SubViewport")
 
 [sub_resource type="Animation" id="Animation_rgqcq"]
@@ -40,10 +40,9 @@ _data = {
 &"Show": SubResource("Animation_cguu5")
 }
 
-[node name="VHSLabel" type="Control" node_paths=PackedStringArray("target_texture", "sub_viewport", "target")]
+[node name="VHSButton" type="Button" node_paths=PackedStringArray("target_texture", "sub_viewport", "target")]
 material = SubResource("ShaderMaterial_vfhbj")
 custom_minimum_size = Vector2(15, 42)
-layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -56,9 +55,8 @@ offset_bottom = 21.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(7.5, 21)
-mouse_filter = 2
-script = ExtResource("2_cguu5")
-label_text = "-"
+flat = true
+script = ExtResource("2_8okjb")
 target_texture = NodePath("RenderTarget")
 sub_viewport = NodePath("SubViewport")
 target = NodePath("SubViewport/TargetLabelControl/TargetLabel")
@@ -72,14 +70,14 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -8.0
-offset_top = -25.482681
+offset_top = -21.504007
 offset_right = 8.0
-offset_bottom = 21.517319
+offset_bottom = 25.495995
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(8, 23.5)
 mouse_filter = 2
-texture = SubResource("ViewportTexture_8p174")
+texture = SubResource("ViewportTexture_8okjb")
 stretch_mode = 5
 
 [node name="SubViewport" type="SubViewport" parent="."]
@@ -99,7 +97,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="TargetLabel" type="Label" parent="SubViewport/TargetLabelControl"]
-modulate = Color(1, 1, 1, 0.91822827)
+modulate = Color(1, 1, 1, 0.9064857)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -112,8 +110,8 @@ offset_right = 7.5
 offset_bottom = 21.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = -0.019826824
-scale = Vector2(1.0100548, 1.0100548)
+rotation = 0.019959921
+scale = Vector2(1.0050116, 1.0050116)
 pivot_offset = Vector2(7.5, 21)
 text = "-"
 horizontal_alignment = 1

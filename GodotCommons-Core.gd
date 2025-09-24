@@ -13,6 +13,12 @@ func _enter_tree():
 	add_autoload_singleton("UIGlobals", "Scripts/Autoloads/UIGlobals.gd")
 	add_autoload_singleton("AudioGlobals", "Scripts/Autoloads/AudioGlobals.gd")
 	add_autoload_singleton("SaveGlobals", "Scripts/Autoloads/SaveGlobals.gd")
+	
+	add_project_setting(
+		GodotCommonsCore_Settings.PAUSE_MENU_SETTING_NAME,
+		GodotCommonsCore_Settings.PAUSE_MENU_SETTING_DEFAULT,
+		TYPE_STRING)
+	
 
 func _exit_tree():
 	
@@ -26,3 +32,21 @@ func _exit_tree():
 	remove_autoload_singleton("UIGlobals")
 	remove_autoload_singleton("AudioGlobals")
 	remove_autoload_singleton("SaveGlobals")
+
+func add_project_setting(in_name: String, in_default: Variant, in_type: int, in_hint: int = PROPERTY_HINT_NONE, in_hint_string: String = ""):
+	
+	if ProjectSettings.has_setting(in_name): 
+		return
+	
+	ProjectSettings.set_setting(in_name, in_default)
+	
+	ProjectSettings.add_property_info({
+		"name": in_name,
+		"type": in_type,
+		"hint": in_hint,
+		"hint_string": in_hint_string,
+	})
+	
+	var error: int = ProjectSettings.save()
+	if error: 
+		push_error("GodotCommons-Core: encountered error %d when saving project settings." % error)

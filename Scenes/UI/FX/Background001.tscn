@@ -1,0 +1,131 @@
+[gd_scene load_steps=12 format=3 uid="uid://by0scmspmhlye"]
+
+[ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="1_xg5x2"]
+[ext_resource type="Texture2D" uid="uid://dm1ecj5l13e6l" path="res://Assets/UI/Menu/Background001a.tres" id="2_pgscy"]
+[ext_resource type="Script" uid="uid://dxde86tixhw2j" path="res://addons/GodotCommons-Core/Scripts/UI/FX/BackgroundUI.gd" id="3_i4th2"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jacxv"]
+shader = ExtResource("1_xg5x2")
+shader_parameter/time_speed = 1.0
+shader_parameter/split_amount = 1.5
+shader_parameter/flicker_intensity = 0.2
+shader_parameter/noise_strength = 0.05
+shader_parameter/modulate = Color(1, 1, 1, 1)
+
+[sub_resource type="Animation" id="Animation_hjd41"]
+resource_name = "Pulse"
+length = 4.0
+loop_mode = 2
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:pulse_alpha")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="Animation" id="Animation_2olb5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:pulse_alpha")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_38nhw"]
+_data = {
+&"Pulse": SubResource("Animation_hjd41"),
+&"RESET": SubResource("Animation_2olb5")
+}
+
+[sub_resource type="Animation" id="Animation_i4th2"]
+resource_name = "FadeIn"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_rbd4o"]
+resource_name = "FadeOut"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_4d4hg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fumur"]
+_data = {
+&"FadeIn": SubResource("Animation_i4th2"),
+&"FadeOut": SubResource("Animation_rbd4o"),
+&"RESET": SubResource("Animation_4d4hg")
+}
+
+[node name="Background" type="TextureRect" node_paths=PackedStringArray("PulseAP", "FadeAP")]
+modulate = Color(1, 1, 1, 0)
+material = SubResource("ShaderMaterial_jacxv")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_pgscy")
+script = ExtResource("3_i4th2")
+PulseAP = NodePath("PulseAP")
+FadeAP = NodePath("FadeAP")
+
+[node name="PulseAP" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_38nhw")
+}
+autoplay = "Pulse"
+
+[node name="FadeAP" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_fumur")
+}

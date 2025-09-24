@@ -28,9 +28,13 @@ signal ReachedPendingZoom()
 
 func _ready() -> void:
 	
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	assert(OwnerPlayerController)
 	
+	PlayerGlobals.default_camera_zoom_changed.connect(ResetZoom)
 	ResetZoom()
+	
 	OnViewportSizeChanged()
 	
 	OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
@@ -40,11 +44,9 @@ func _ready() -> void:
 	OnOwnerControlledPawnTeleport()
 
 func _enter_tree() -> void:
-	PlayerGlobals.ZoomOverridesChanged.connect(UpdateObservedTileMapAreaSize)
 	get_viewport().size_changed.connect(OnViewportSizeChanged)
 
 func _exit_tree() -> void:
-	PlayerGlobals.ZoomOverridesChanged.disconnect(UpdateObservedTileMapAreaSize)
 	get_viewport().size_changed.disconnect(OnViewportSizeChanged)
 
 func _physics_process(InDelta: float) -> void:
@@ -68,8 +70,9 @@ func _physics_process(InDelta: float) -> void:
 			zoom = FinalZoom
 
 func OnViewportSizeChanged() -> void:
+	
 	if is_node_ready():
-		UpdateObservedTileMapAreaSize()
+		pass
 
 func OnOwnerControlledPawnChanged() -> void:
 	if TriggerLagOnPawnChanged:
@@ -107,7 +110,7 @@ func SetZoom(InZoom: float) -> void:
 	PendingZoom = Vector2(InZoom, InZoom)
 
 func ResetZoom() -> void:
-	PendingZoom = PlayerGlobals.GetDefaultCameraZoom()
+	PendingZoom = Vector2(PlayerGlobals.default_camera_zoom, PlayerGlobals.default_camera_zoom)
 
 func GetMovementZoomMul() -> float:
 	
@@ -125,24 +128,3 @@ func ShouldBlockMovementInputs() -> bool:
 
 func ShouldBlockTapInputs() -> bool:
 	return is_instance_valid(OverrideTarget) and OverrideTargetBlocksTapInputs
-
-##
-## Tiles
-##
-var CurrentObservedTileMapAreaSize: Vector2i = Vector2i.ZERO
-
-func GetObservedTileMapAreaRect(InTileMap: TileMap) -> Rect2i:
-	var CameraPosition := get_screen_center_position()
-	var TileMapCoords := InTileMap.local_to_map(InTileMap.to_local(CameraPosition))
-	return Rect2i(TileMapCoords - CurrentObservedTileMapAreaSize / 2, CurrentObservedTileMapAreaSize)
-
-func UpdateObservedTileMapAreaSize():
-	var DefaultCameraViewportSize := Vector2(get_viewport().size) / PlayerGlobals.GetDefaultCameraZoom() as Vector2
-	#CurrentObservedTileMapAreaSize = Vector2i(DefaultCameraViewportSize / Vector2(WorldGlobals._Level._LevelTileMap.tile_set.tile_size))
-	#print(CurrentObservedTileMapAreaSize)
-
-func GetCameraRect() -> Rect2:
-	var OutRect := get_viewport_rect()
-	OutRect.size /= zoom
-	OutRect.position = get_screen_center_position() - OutRect.size * 0.5
-	return OutRect
