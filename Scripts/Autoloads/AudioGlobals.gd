@@ -84,8 +84,10 @@ func UpdateVisibilityStateMute(InState) -> void:
 	or YandexSDK.is_ad_on_screen \
 	or YandexSDK.is_rewarded_ad_on_screen:
 		AudioServer.set_bus_mute(MasterBusIndex, true)
+		WebMusicPlayer.stream_paused = true
 	else:
 		AudioServer.set_bus_mute(MasterBusIndex, false)
+		WebMusicPlayer.stream_paused = false
 
 func UpdateBusIndices():
 	MasterBusIndex = AudioServer.get_bus_index(MasterBusName)
