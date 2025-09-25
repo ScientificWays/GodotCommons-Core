@@ -90,6 +90,8 @@ func BeginPlay():
 	
 	#_LevelTileMap.UpdateUnbreakableCells()
 	#_LevelTileMap.InitNavigation()
+	
+	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STARTED)
 
 func EndPlay():
 	
@@ -97,6 +99,8 @@ func EndPlay():
 	
 	if StopLevelMusicOnEndPlay and MusicManager._is_playing_music():
 		MusicManager.stop(1.0)
+	
+	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STOPPED)
 
 func GetPlayerSpawnPosition(InPlayer: PlayerController) -> Vector2:
 	return DefaultPlayerSpawn.global_position if DefaultPlayerSpawn else Vector2.ZERO

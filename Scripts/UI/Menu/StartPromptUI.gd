@@ -60,11 +60,7 @@ func ShowMusicLabel() -> void:
 	MusicLabel.lerp_visible = true
 
 func ShowStartLabel() -> void:
-	
 	StartLabel.lerp_visible = true
-	
-	if YandexSDK.is_working():
-		YandexSDK.game_ready()
 	
 
 func TriggerStart() -> void:

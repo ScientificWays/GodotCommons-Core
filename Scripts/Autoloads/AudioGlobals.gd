@@ -52,48 +52,47 @@ func _ready():
 	
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
-	Bridge.game.connect("visibility_state_changed", UpdateVisibilityStateMute)
-	
-	AudioServer.bus_layout_changed.connect(UpdateBusIndices)
-	UpdateBusIndices()
+	AudioServer.bus_layout_changed.connect(update_bus_indices)
+	update_bus_indices()
 	
 	if GameGlobals.IsWeb():
+		
 		WebMusicPlayer = AudioStreamPlayer.new()
 		WebMusicPlayer.bus = MusicBusName
 		add_child(WebMusicPlayer)
-	
-	#SaveGlobals.SettingsProfile_GameVolumeChanged_ConnectAndTryEmit(OnGameVolumeChanged)
-	#SaveGlobals.SettingsProfile_MusicVolumeChanged_ConnectAndTryEmit(OnMusicVolumeChanged)
-	#SaveGlobals.SettingsProfile_UIVolumeChanged_ConnectAndTryEmit(OnUIVolumeChanged)
+		
+		Bridge.game.visibility_state_changed.connect(on_game_visibility_state_changed)
+		Bridge.advertisement.interstitial_state_changed.connect(on_advertisement_interstitial_state_changed)
+		Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
+		
+		update_web_mute()
 
-#func _notification(InCode: int) -> void:
-#	
-#	if InCode == NOTIFICATION_WM_WINDOW_FOCUS_IN \
-#	or InCode == NOTIFICATION_APPLICATION_FOCUS_IN \
-#	or InCode == NOTIFICATION_APPLICATION_RESUMED:
-#		AudioServer.set_bus_mute(MasterBusIndex, false)
-#	elif InCode == NOTIFICATION_WM_WINDOW_FOCUS_OUT \
-#	or InCode == NOTIFICATION_APPLICATION_FOCUS_OUT \
-#	or InCode == NOTIFICATION_APPLICATION_PAUSED:
-#		AudioServer.set_bus_mute(MasterBusIndex, true)
+func update_bus_indices():
+	MasterBusIndex = AudioServer.get_bus_index(MasterBusName)
+	MusicBusIndex = AudioServer.get_bus_index(MusicBusName)
+	WorldBusIndex = AudioServer.get_bus_index(WorldBusName)
+	UIBusIndex = AudioServer.get_bus_index(UIBusName)
 
-func UpdateVisibilityStateMute(InState) -> void:
+func on_game_visibility_state_changed(InState: String) -> void:
+	update_web_mute()
+
+func on_advertisement_interstitial_state_changed(InState: String) -> void:
+	update_web_mute()
+
+func on_advertisement_rewarded_state_changed(InState: String) -> void:
+	update_web_mute()
+
+func update_web_mute() -> void:
 	
-	if InState == "hidden" \
+	if Bridge.game.visibility_state == Bridge.VisibilityState.HIDDEN \
 	#or not get_window().has_focus() \
-	or YandexSDK.is_ad_on_screen \
-	or YandexSDK.is_rewarded_ad_on_screen:
+	or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
+	or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED:
 		AudioServer.set_bus_mute(MasterBusIndex, true)
 		WebMusicPlayer.stream_paused = true
 	else:
 		AudioServer.set_bus_mute(MasterBusIndex, false)
 		WebMusicPlayer.stream_paused = false
-
-func UpdateBusIndices():
-	MasterBusIndex = AudioServer.get_bus_index(MasterBusName)
-	MusicBusIndex = AudioServer.get_bus_index(MusicBusName)
-	WorldBusIndex = AudioServer.get_bus_index(WorldBusName)
-	UIBusIndex = AudioServer.get_bus_index(UIBusName)
 
 func handle_music_volume_changed():
 

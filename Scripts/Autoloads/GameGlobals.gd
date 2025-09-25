@@ -34,11 +34,14 @@ var GibsSetting: GraphicsOption = GraphicsOption.Average if OS.has_feature("mobi
 func _ready():
 	
 	if IsWeb():
+		
 		TranslationServer.set_locale(Bridge.platform.language)
-	
-	if YandexSDK.is_working():
-		YandexSDK.rewarded_ad.connect(OnYandexRewardedAd)
-		YandexSDK.interstitial_ad.connect(OnYandexInterstitialAd)
+		
+		if Bridge.advertisement.is_interstitial_supported:
+			Bridge.advertisement.interstitial_state_changed.connect(on_advertisement_interstitial_state_changed)
+		
+		if Bridge.advertisement.is_rewarded_supported:
+			Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
 	
 	RewardedAdProxy = Node.new()
 	add_child(RewardedAdProxy)
@@ -290,21 +293,22 @@ static func IsMobile(InCheckWeb: bool = true) -> bool:
 	
 	if InCheckWeb and OS.has_feature("web"):
 		
-		var UserAgent := JavaScriptBridge.eval("navigator.userAgent;", true) as String
-		UserAgent = UserAgent.to_lower()
+		#var UserAgent := JavaScriptBridge.eval("navigator.userAgent;", true) as String
+		#UserAgent = UserAgent.to_lower()
 		
-		const MobileKeywords := [
-			"android", "iphone", "ipad", "ipod", "blackberry",
-			"windows phone", "opera mini", "mobile"
-		]
-		if MobileKeywords.any(func(InKeyWord): return UserAgent.find(InKeyWord) != -1):
-			return true
+		#const MobileKeywords := [
+		#	"android", "iphone", "ipad", "ipod", "blackberry",
+		#	"windows phone", "opera mini", "mobile"
+		#]
+		#if MobileKeywords.any(func(InKeyWord): return UserAgent.find(InKeyWord) != -1):
+		#	return true
+		return Bridge.device.type == Bridge.DeviceType.MOBILE
 	return OS.has_feature("mobile")
 
 static func IsPC(InCheckWeb: bool = true) -> bool:
 	
 	if InCheckWeb and OS.has_feature("web"):
-		return not IsMobile()
+		return Bridge.device.type == Bridge.DeviceType.DESKTOP
 	return OS.has_feature("pc")
 
 static func IsWeb() -> bool:
@@ -317,24 +321,25 @@ var InterstitialAdShowCooldownTicksMs: int = 60000
 var NextInterstitialAdShowTimeTicksMs: int = -InterstitialAdShowCooldownTicksMs
 
 func ShouldShowInterstitialAd() -> bool:
-	return Time.get_ticks_msec() > NextInterstitialAdShowTimeTicksMs
+	return Bridge.advertisement.is_interstitial_supported and Time.get_ticks_msec() > NextInterstitialAdShowTimeTicksMs
 
-func TriggerShowInterstitialAdCooldown() -> void:
+func TriggerShowInterstitialAd() -> void:
+	Bridge.advertisement.show_interstitial()
 	NextInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + InterstitialAdShowCooldownTicksMs
 
-var RewardedAdProxy: Node = Node.new()
 var InterstitialAdProxy: Node = Node.new()
+var RewardedAdProxy: Node = Node.new()
 
-func OnYandexRewardedAd(InResult: String) -> void:
-	
-	if InResult == "opened":
-		AddPauseSource(RewardedAdProxy)
-	else:
-		RemovePauseSource(RewardedAdProxy)
-
-func OnYandexInterstitialAd(InResult: String) -> void:
+func on_advertisement_interstitial_state_changed(InResult: String) -> void:
 	
 	if InResult == "opened":
 		AddPauseSource(InterstitialAdProxy)
 	else:
 		RemovePauseSource(InterstitialAdProxy)
+
+func on_advertisement_rewarded_state_changed(InResult: String) -> void:
+	
+	if InResult == "opened":
+		AddPauseSource(RewardedAdProxy)
+	else:
+		RemovePauseSource(RewardedAdProxy)

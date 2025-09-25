@@ -13,9 +13,6 @@ func _init(InGameMode: GameModeData, InGameSeed: int, InGameArgs: Array):
 	_GameModeData = InGameMode
 	GameSeed = InGameSeed
 	GameArgs = InGameArgs
-	
-	if YandexSDK.is_working():
-		YandexSDK.leaderboard_player_entry_loaded.connect(OnLeaderboardPlayerEntryLoaded)
 
 const State_Unknown: int = -1
 const State_BeganPlaying: int = 0
@@ -122,9 +119,9 @@ var PlayerScore: int = 0:
 signal PlayerScoreChanged()
 
 func LoadPlayerScore() -> void:
-	
-	if YandexSDK.is_working():
-		YandexSDK.load_leaderboard_player_entry("levelscore")
+	pass
+	#if Bridge.leaderboards.type != Bridge.LeaderboardType.NOT_AVAILABLE:
+		#Bridge.leaderboards.get_entries("levelscore")
 
 func OnLeaderboardPlayerEntryLoaded(InData) -> void:
 	print("GameState OnLeaderboardPlayerEntryLoaded(), ", InData)
@@ -134,5 +131,5 @@ func AddPlayerScore(InScore: int) -> void:
 	
 	PlayerScore += InScore
 	
-	if YandexSDK.is_working():
-		YandexSDK.save_leaderboard_score("levelscore", PlayerScore)
+	#if Bridge.leaderboards.type != Bridge.LeaderboardType.NOT_AVAILABLE:
+	#	Bridge.leaderboards.set_score("levelscore", PlayerScore)

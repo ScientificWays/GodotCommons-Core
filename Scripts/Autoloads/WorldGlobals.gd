@@ -15,14 +15,22 @@ func LoadSceneByPath(InPath: String) -> void:
 	if _Level:
 		_Level.EndPlay()
 	
-	get_tree().change_scene_to_file(InPath)
+	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STARTED)
+	
+	if get_tree().change_scene_to_file(InPath) == OK:
+		await get_tree().scene_changed
+	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STOPPED)
 
 func LoadSceneByPacked(InPacked: PackedScene) -> void:
 	
 	if _Level:
 		_Level.EndPlay()
 	
-	get_tree().change_scene_to_packed(InPacked)
+	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STARTED)
+	
+	if get_tree().change_scene_to_packed(InPacked) == OK:
+		await get_tree().scene_changed
+	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STOPPED)
 
 var PendingScenePath: StringName:
 	set(InPath):
