@@ -120,7 +120,7 @@ func TryApplyImpulseTo(InTarget: Node2D) -> void:
 			pass
 		elif InTarget is RigidBody2D:
 			InTarget.apply_impulse(TargetImpulse, ImpulseOffset)
-		GameGlobals.PostExplosionApplyImpulse.emit(self, InTarget, TargetImpulse, ImpulseOffset)
+		GameGlobals.post_explosion_apply_impulse.emit(self, InTarget, TargetImpulse, ImpulseOffset)
 
 func TryApplyDamageTo(InTarget: Node) -> void:
 	

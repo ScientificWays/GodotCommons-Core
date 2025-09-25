@@ -4,7 +4,7 @@ class_name GameGlobals_Class
 @export var ShakeSource2DScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Shake/ShakeSource2D.tscn")
 
 signal PreExplosionImpact(InExplosionImpact: Explosion2D_Impact)
-signal PostExplosionApplyImpulse(InExplosionImpact: Explosion2D_Impact, InTarget: Node2D, InImpulse: Vector2, InOffset: Vector2)
+signal post_explosion_apply_impulse(InExplosionImpact: Explosion2D_Impact, InTarget: Node2D, InImpulse: Vector2, InOffset: Vector2)
 
 signal PostBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll)
 
@@ -317,15 +317,17 @@ static func IsWeb() -> bool:
 ##
 ## Ads
 ##
-var InterstitialAdShowCooldownTicksMs: int = 60000
-var NextInterstitialAdShowTimeTicksMs: int = -InterstitialAdShowCooldownTicksMs
+var WebInterstitialAdShowCooldownTicksMs: int = 60000
+var NextWebInterstitialAdShowTimeTicksMs: int = -WebInterstitialAdShowCooldownTicksMs
 
-func ShouldShowInterstitialAd() -> bool:
-	return Bridge.advertisement.is_interstitial_supported and Time.get_ticks_msec() > NextInterstitialAdShowTimeTicksMs
+func ShouldShowWebInterstitialAd() -> bool:
+	return IsWeb() \
+		and Bridge.advertisement.is_interstitial_supported \
+		and Time.get_ticks_msec() > NextWebInterstitialAdShowTimeTicksMs
 
-func TriggerShowInterstitialAd() -> void:
+func TriggerShowWebInterstitialAd() -> void:
 	Bridge.advertisement.show_interstitial()
-	NextInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + InterstitialAdShowCooldownTicksMs
+	NextWebInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + WebInterstitialAdShowCooldownTicksMs
 
 var InterstitialAdProxy: Node = Node.new()
 var RewardedAdProxy: Node = Node.new()
