@@ -1,18 +1,18 @@
 extends RefCounted
 class_name GameState
 
-var _GameModeData: GameModeData
-var GameSeed: int = 0
-var GameArgs: Array = []
+var _game_mode: GameModeData
+var _game_seed: int = 0
+var _game_args: Dictionary = {}
 
-func _init(InGameMode: GameModeData, InGameSeed: int, InGameArgs: Array):
+func _init(in_game_mode: GameModeData, in_game_seed: int, in_game_args: Dictionary):
 	
 	assert(not is_instance_valid(WorldGlobals._game_state))
 	WorldGlobals._game_state = self
 	
-	_GameModeData = InGameMode
-	GameSeed = InGameSeed
-	GameArgs = InGameArgs
+	_game_mode = in_game_mode
+	_game_seed = in_game_seed
+	_game_args = in_game_args
 
 const STATE_UNKNOWN: int = -1
 const STATE_BEGAN_PLAYING: int = 0
@@ -40,12 +40,14 @@ func OnNewSceneLoaded():
 
 func handle_level_ready():
 	
-	LoadPlayerScore()
+	load_current_score()
 	
 	InitNewLocalPlayer()
 	
 	if BeginPlayOnLevelReady:
 		begin_play()
+
+signal on_begin_play()
 
 func begin_play():
 	
@@ -57,7 +59,9 @@ func begin_play():
 		GlobalTimerCreated.emit()
 		WorldGlobals._level.add_child(_GlobalTimer)
 	
-	WorldGlobals._level.handle_begin_play()
+	on_begin_play.emit()
+
+signal on_end_play()
 
 func end_play():
 	
@@ -69,11 +73,11 @@ func end_play():
 		_GlobalTimer = null
 		GlobalTimerDestroyed.emit()
 	
-	WorldGlobals._level.handle_end_play()
+	on_end_play.emit()
 
 func InitNewLocalPlayer() -> PlayerController:
 	
-	var NewLocalPlayer = _GameModeData.PlayerControllerScene.instantiate() as PlayerController
+	var NewLocalPlayer = _game_mode.PlayerControllerScene.instantiate() as PlayerController
 	WorldGlobals._level.add_child(NewLocalPlayer)
 	return NewLocalPlayer
 
@@ -87,7 +91,7 @@ func InitNewLocalPlayer() -> PlayerController:
 #	return 0
 
 func GetDebugStatsFileNamePostfix() -> String:
-	return _GameModeData.UniqueName
+	return _game_mode.UniqueName
 
 ##
 ## Game Stats
@@ -108,25 +112,25 @@ func ResetGameStatValue(InStat: StringName) -> void:
 ##
 ## Leaderboards
 ##
-var PlayerScore: int = 0:
-	set(InScore):
-		PlayerScore = InScore
-		PlayerScoreChanged.emit()
+var current_score: int = 0:
+	set(in_score):
+		current_score = in_score
+		current_score_changed.emit()
 
-signal PlayerScoreChanged()
+signal current_score_changed()
 
-func LoadPlayerScore() -> void:
+func load_current_score() -> void:
 	pass
 	#if Bridge.leaderboards.type != Bridge.LeaderboardType.NOT_AVAILABLE:
 		#Bridge.leaderboards.get_entries("levelscore")
 
 func OnLeaderboardPlayerEntryLoaded(InData) -> void:
 	print("GameState OnLeaderboardPlayerEntryLoaded(), ", InData)
-	PlayerScore = InData["score"]
+	current_score = InData["score"]
 
-func AddPlayerScore(InScore: int) -> void:
+func add_score(in_score: int) -> void:
 	
-	PlayerScore += InScore
+	current_score += in_score
 	
 	#if Bridge.leaderboards.type != Bridge.LeaderboardType.NOT_AVAILABLE:
-	#	Bridge.leaderboards.set_score("levelscore", PlayerScore)
+	#	Bridge.leaderboards.set_score("levelscore", current_score)

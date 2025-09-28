@@ -3,7 +3,7 @@ class_name LevelBase2D
 
 @export_category("Game Mode")
 @export var DefaultGameMode: GameModeData
-@export var DefaultGameModeArgs: Array
+@export var DefaultGameModeArgs: Dictionary
 
 @export_category("Players")
 @export var DefaultPlayerSpawn: Node2D
@@ -53,7 +53,7 @@ func _ready() -> void:
 	_sync_with_game_state()
 	WorldGlobals._game_state.handle_level_ready()
 	
-	print(WorldGlobals._game_state.GameArgs)
+	print(WorldGlobals._game_state._game_args)
 
 func _enter_tree() -> void:
 	WorldGlobals._level = self
@@ -71,7 +71,10 @@ func _sync_with_game_state() -> void:
 		
 		assert(DefaultGameMode)
 		WorldGlobals._game_state = DefaultGameMode.init_new_game_state(new_game_seed, DefaultGameModeArgs)
+	
 	assert(WorldGlobals._game_state)
+	WorldGlobals._game_state.on_begin_play.connect(handle_begin_play)
+	WorldGlobals._game_state.on_end_play.connect(handle_end_play)
 
 func handle_begin_play() -> void:
 	

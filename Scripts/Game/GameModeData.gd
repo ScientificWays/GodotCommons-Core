@@ -5,7 +5,7 @@ class_name GameModeData
 @export var UniqueName: StringName
 @export var PreviewTexture: Texture2D
 
-func init_new_game_state(InGameSeed: int, InArgs: Array) -> GameState:
+func init_new_game_state(in_game_seed: int, InArgs: Dictionary) -> GameState:
 	assert(false, "init_new_game_state() is not implemented!")
 	return null
 

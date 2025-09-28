@@ -23,7 +23,7 @@ func HandleAnimatedSequence() -> void:
 	await TimeConversion.HandleAnimatedSequence()
 	
 	var _game_state := WorldGlobals._game_state
-	_game_state.AddPlayerScore(ceili(CumulatedPlayerScore))
+	_game_state.add_score(ceili(CumulatedPlayerScore))
 
 var CumulatedPlayerScore: float = 0.0:
 	set(InScore):

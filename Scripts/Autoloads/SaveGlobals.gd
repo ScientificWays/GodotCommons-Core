@@ -1,7 +1,7 @@
 extends Node
 class_name SaveGlobals_Class
 
-var local_data_path: String = "user://local-data.save"
+var local_data_path: String = "user://local_data.save"
 
 var last_level_path_key: String = "last_level_path"
 
@@ -88,7 +88,7 @@ func save_local_data(in_forced: bool = false) -> void:
 	
 	#print("Saved local data")
 	
-	save_delay_time_left = 4.0
+	save_delay_time_left = 2.0
 
 func load_local_data() -> void:
 	
@@ -115,3 +115,54 @@ func IsLastLevelFromSaveDataValid() -> bool:
 
 func GetLastLevelFromSaveData() -> String:
 	return local_data.get(last_level_path_key, "")
+
+##
+## Storage
+##
+var _get_data_from_storage_pending: Variant
+signal on_get_data_from_storage_callback()
+
+func get_data_from_storage(in_key: String, in_default: Variant) -> Variant:
+	
+	Bridge.storage.get(in_key, _get_data_from_storage_callback.bind(in_default))
+	
+	if _get_data_from_storage_pending == null:
+		await on_get_data_from_storage_callback
+	
+	var out_data = _get_data_from_storage_pending
+	_get_data_from_storage_pending = null
+	return out_data
+
+func _get_data_from_storage_callback(in_success: bool, in_data: Variant, in_default: Variant) -> void:
+	
+	if not in_success:
+		push_error("%s _get_data_from_storage_callback() in_success == false!" % self)
+	
+	assert(in_default != null)
+	
+	if in_data == null:
+		in_data = in_default
+	
+	var converted_data := convert(in_data, typeof(in_default))
+	
+	_get_data_from_storage_pending = converted_data
+	on_get_data_from_storage_callback.emit()
+
+var _on_set_data_in_storage_finished: bool = false
+signal on_set_data_from_storage_callback()
+
+func set_data_in_storage(in_key: String, in_data: Variant) -> void:
+	
+	Bridge.storage.set(in_key, in_data, _on_set_data_in_storage_callback)
+	
+	if not _on_set_data_in_storage_finished:
+		await on_set_data_from_storage_callback
+	_on_set_data_in_storage_finished = false
+
+func _on_set_data_in_storage_callback(in_success: bool) -> void:
+	
+	if not in_success:
+		push_error("%s _on_set_data_in_storage_callback() in_success == false!" % self)
+	
+	_on_set_data_in_storage_finished = true
+	on_set_data_from_storage_callback.emit()

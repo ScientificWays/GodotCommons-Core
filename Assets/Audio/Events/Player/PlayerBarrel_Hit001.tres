@@ -8,6 +8,4 @@
 script = ExtResource("1_7lu2k")
 name = "Hit"
 bus = "World"
-volume = 0.0
-pitch = 1.0
 streams = Array[AudioStream]([ExtResource("2_70ed8"), ExtResource("3_6e6qa")])

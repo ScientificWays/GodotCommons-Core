@@ -15,8 +15,6 @@ func _ready() -> void:
 	#assert(ScoreLabel)
 	
 	var _game_state := WorldGlobals._game_state as MainGameState
-	#_game_state.PlayerScoreChanged.connect(OnPlayerScoreChanged.bind(_game_state))
-	#OnPlayerScoreChanged(_game_state)
 	
 	if not _game_state._GlobalTimer and _game_state.ShouldCreateGlobalTimer:
 		
@@ -30,6 +28,3 @@ func _ready() -> void:
 
 func OnGlobalTimeSecondsChanged(InGlobalTimer: GameState_GlobalTimer) -> void:
 	TimeLabel.label_text = UIGlobals.FormatTimeString(InGlobalTimer.TimeSeconds)
-
-#func OnPlayerScoreChanged(InGameState: MainGameState) -> void:
-#	ScoreLabel.label_text = String.num_int64(InGameState.PlayerScore)
