@@ -16,21 +16,21 @@ void fragment()
 {
 	vec2 uv = UV;
 	float t = TIME * time_speed;
-	
+
 	vec2 pixel = TEXTURE_PIXEL_SIZE * split_amount;
-	
+
 	// RGB split
 	float r = texture(TEXTURE, uv + vec2(pixel.x * sin(t * 1.7), pixel.y * cos(t * 1.3))).r;
 	float g = texture(TEXTURE, uv).g;
 	float b = texture(TEXTURE, uv - vec2(pixel.x * cos(t * 1.1), pixel.y * sin(t * 1.9))).b;
-	
+
 	vec3 color = vec3(r, g, b);
-	
+
 	// Flicker
 	float flicker = 1.0 - (rand(vec2(t, uv.y)) * flicker_intensity);
-	
+
 	// VHS
 	float noise = (rand(uv * t) - 0.5) * noise_strength;
-	
-	COLOR *= vec4(color * flicker + noise, texture(TEXTURE, uv).a) * texture(mask, uv);
+
+	COLOR *= vec4(color * flicker + noise, 1.0) * texture(mask, uv);
 }
