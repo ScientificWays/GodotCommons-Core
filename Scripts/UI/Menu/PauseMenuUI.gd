@@ -5,7 +5,7 @@ class_name PauseMenuUI
 @export_category("Visiblity")
 @export var visibility_control: Control
 
-@export var lerp_visible: bool = true:
+@export var lerp_visible: bool = false:
 	set(in_visible):
 		
 		lerp_visible = in_visible
@@ -18,33 +18,48 @@ class_name PauseMenuUI
 @export var is_enabled: bool = false:
 	set(in_is_enabled):
 		
-		is_enabled = in_is_enabled
+		if not can_be_enabled and in_is_enabled:
+			return
 		
-		if is_enabled:
-			_handle_enabled()
-		else:
-			_handle_disabled()
+		if is_enabled != in_is_enabled or not is_node_ready():
+			
+			is_enabled = in_is_enabled
+			
+			if is_enabled:
+				_handle_enabled()
+			else:
+				_handle_disabled()
 
 @export_category("Options")
 @export var continue_option: Button
-@export var quit_option: Button
+@export var main_menu_option: Button
+
+var can_be_enabled: bool = false:
+	set(in_can):
+		
+		can_be_enabled = in_can
+		
+		if not can_be_enabled:
+			is_enabled = false
 
 func _ready() -> void:
 	
-	visibility_changed.connect(on_visibility_changed)
+	visibility_changed.connect(_on_visibility_changed)
 	
 	if Engine.is_editor_hint():
 		return
 	
-	assert(continue_option)
-	assert(quit_option)
+	skip_lerp_visible()
 	
-	continue_option.pressed.connect(on_continue_option_pressed)
+	assert(continue_option)
+	assert(main_menu_option)
+	
+	continue_option.pressed.connect(_on_continue_option_pressed)
 	
 	if GameGlobals_Class.IsWeb():
-		quit_option.queue_free()
+		main_menu_option.queue_free()
 	else:
-		quit_option.pressed.connect(on_quit_option_pressed)
+		main_menu_option.pressed.connect(_on_main_menu_option_pressed)
 
 func _process(in_delta: float) -> void:
 	
@@ -87,15 +102,25 @@ func _handle_disabled() -> void:
 func toggle() -> void:
 	is_enabled = not is_enabled
 
-func on_visibility_changed() -> void:
+func skip_lerp_visible() -> void:
+	
+	if lerp_visible:
+		visibility_control.modulate.a = 1.0
+	else:
+		visibility_control.modulate.a = 0.0
+
+func _on_visibility_changed() -> void:
 	set_process(visible)
 
-func on_continue_option_pressed() -> void:
+func _on_continue_option_pressed() -> void:
 	is_enabled = false
 
-func on_quit_option_pressed() -> void:
-	UIGlobals.confirm_ui.toggle("QUIT_PROMPT", handle_confirm_quit)
+func _on_main_menu_option_pressed() -> void:
+	UIGlobals.confirm_ui.toggle("QUIT_PROMPT", _handle_confirm_main_menu)
 
-func handle_confirm_quit() -> void:
+func _handle_confirm_main_menu() -> void:
+	
 	SaveGlobals.save_local_data(true)
-	get_tree().quit()
+	
+	var main_menu_level_path := ProjectSettings.get_setting(GodotCommonsCore_Settings.MAIN_MENU_LEVEL_SETTING_NAME, GodotCommonsCore_Settings.MAIN_MENU_LEVEL_SETTING_DEFAULT) as String
+	WorldGlobals.LoadSceneByPath(main_menu_level_path)

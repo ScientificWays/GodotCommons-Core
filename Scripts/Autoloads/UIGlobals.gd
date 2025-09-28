@@ -26,6 +26,7 @@ extends Node
 ## PauseMenuUI
 ##
 var pause_menu_ui: PauseMenuUI
+signal pause_menu_ui_created()
 
 func try_create_pause_menu_ui() -> bool:
 	
@@ -35,6 +36,7 @@ func try_create_pause_menu_ui() -> bool:
 		pause_menu_ui = pause_menu_ui_scene.instantiate()
 		pause_menu_ui.is_enabled = false
 		add_child(pause_menu_ui)
+		pause_menu_ui_created.emit()
 		return is_instance_valid(pause_menu_ui)
 	push_error("UIGlobals.try_create_pause_menu_ui(): Failed to create PauseMenuUI!")
 	return false
@@ -43,6 +45,7 @@ func try_create_pause_menu_ui() -> bool:
 ## ConfirmUI
 ##
 var confirm_ui: ConfirmUI
+signal confirm_ui_created()
 
 func try_create_confirm_ui() -> bool:
 	
@@ -52,6 +55,7 @@ func try_create_confirm_ui() -> bool:
 		confirm_ui = confirm_ui_scene.instantiate()
 		confirm_ui.is_enabled = false
 		add_child(confirm_ui)
+		confirm_ui_created.emit()
 		return is_instance_valid(confirm_ui)
 	push_error("UIGlobals.try_create_confirm_ui(): Failed to create PauseMenuUI!")
 	return false

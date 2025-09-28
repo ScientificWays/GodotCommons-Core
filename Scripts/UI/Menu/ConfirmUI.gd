@@ -18,12 +18,14 @@ class_name ConfirmUI
 @export var is_enabled: bool = false:
 	set(in_is_enabled):
 		
-		is_enabled = in_is_enabled
-		
-		if is_enabled:
-			_handle_enabled()
-		else:
-			_handle_disabled()
+		if is_enabled != in_is_enabled or not is_node_ready():
+			
+			is_enabled = in_is_enabled
+			
+			if is_enabled:
+				_handle_enabled()
+			else:
+				_handle_disabled()
 
 @export_category("Prompt")
 @export var prompt_label: VHSLabel
@@ -41,6 +43,8 @@ func _ready() -> void:
 	
 	if Engine.is_editor_hint():
 		return
+	
+	skip_lerp_visible()
 	
 	assert(confirm_option)
 	assert(cancel_option)
@@ -85,6 +89,13 @@ func toggle(in_prompt_text: String, in_confirm_callable: Callable, in_cancel_cal
 		cancel_callable = in_cancel_callable
 		
 		is_enabled = true
+
+func skip_lerp_visible() -> void:
+	
+	if lerp_visible:
+		visibility_control.modulate.a = 1.0
+	else:
+		visibility_control.modulate.a = 0.0
 
 func on_visibility_changed() -> void:
 	set_process(visible)

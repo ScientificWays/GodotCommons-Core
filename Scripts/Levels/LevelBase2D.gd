@@ -49,6 +49,11 @@ func _ready():
 	
 	PrepareGameStateAndSaveData()
 	_GameState.HandleLevelReady(self)
+	
+	if not UIGlobals.pause_menu_ui:
+		await UIGlobals.pause_menu_ui_created
+	UIGlobals.pause_menu_ui.can_be_enabled = true
+	UIGlobals.pause_menu_ui.skip_lerp_visible()
 
 func _enter_tree():
 	WorldGlobals._Level = self

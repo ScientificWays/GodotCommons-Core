@@ -267,6 +267,9 @@ func OnPauseSourcesChanged():
 	PauseSources.clear()
 	PauseSources = ValidPauseSources
 	
+	if not is_inside_tree():
+		await tree_entered
+	
 	if PauseSources.is_empty():
 		get_tree().paused = false
 	else:
