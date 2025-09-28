@@ -41,7 +41,7 @@ func DetachAndRemoveAll():
 		
 		if MaxLifetime > 0.0:
 			
-			reparent(WorldGlobals._Level)
+			reparent(WorldGlobals._level)
 			reset_physics_interpolation()
 			
 			var SelfRemoveTimer := Timer.new()

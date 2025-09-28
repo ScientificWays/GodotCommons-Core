@@ -123,4 +123,4 @@ func _handle_confirm_main_menu() -> void:
 	SaveGlobals.save_local_data(true)
 	
 	var main_menu_level_path := ProjectSettings.get_setting(GodotCommonsCore_Settings.MAIN_MENU_LEVEL_SETTING_NAME, GodotCommonsCore_Settings.MAIN_MENU_LEVEL_SETTING_DEFAULT) as String
-	WorldGlobals.LoadSceneByPath(main_menu_level_path)
+	WorldGlobals.load_scene_by_path(main_menu_level_path)

@@ -1,11 +1,11 @@
 extends RigidBody2D
 class_name Projectile2D
 
-static func Spawn(InTransform: Transform2D, InScene: PackedScene, InLevel: int, InInstigator: Node, InParent: Node = WorldGlobals._Level._YSorted) -> Projectile2D:
+static func Spawn(InTransform: Transform2D, InScene: PackedScene, InLevel: int, InInstigator: Node, InParent: Node = WorldGlobals._level._YSorted) -> Projectile2D:
 	
 	assert(InScene)
 	var NewProjectile := InScene.instantiate() as Projectile2D
-	NewProjectile._Level = InLevel
+	NewProjectile._level = InLevel
 	NewProjectile._Instigator = InInstigator
 	NewProjectile.transform = InTransform
 	InParent.add_child.call_deferred(NewProjectile)
@@ -20,7 +20,7 @@ static func Spawn(InTransform: Transform2D, InScene: PackedScene, InLevel: int, 
 @export var SoundBankLabel: String = "Projectile"
 
 func GetSizeMul() -> float:
-	return SizeMul + SizeMul_PerLevelGain * _Level
+	return SizeMul + SizeMul_PerLevelGain * _level
 
 ##
 ## Instigator
@@ -36,7 +36,7 @@ var _Instigator: Node = null:
 func OnInstigatorExitedTree():
 	_Instigator = null
 
-var _Level: int = 0
+var _level: int = 0
 var _Power: float = 1.0
 
 func _ready() -> void:

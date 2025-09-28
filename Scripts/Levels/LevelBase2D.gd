@@ -27,8 +27,6 @@ var _YSorted: Node2D
 
 @export var _CanvasModulate: CanvasModulate
 
-var _GameState: GameState
-
 #signal CreatureSpawned(InCreature: Creature)
 #signal BossCreatureSpawned(InCreature: Creature)
 
@@ -40,55 +38,42 @@ var _GameState: GameState
 
 #signal CreatureRelevantDetectedTargetChanged(InCreature: Creature, InOldTarget: Node2D, InNewTarget: Node2D)
 
-func _ready():
+func _ready() -> void:
 	
 	_YSorted = Node2D.new()
 	_YSorted.y_sort_enabled = true
 	add_child(_YSorted)
 	move_child(_YSorted, 0)
 	
-	PrepareGameStateAndSaveData()
-	_GameState.HandleLevelReady(self)
-	
 	if not UIGlobals.pause_menu_ui:
 		await UIGlobals.pause_menu_ui_created
 	UIGlobals.pause_menu_ui.can_be_enabled = true
 	UIGlobals.pause_menu_ui.skip_lerp_visible()
-
-func _enter_tree():
-	WorldGlobals._Level = self
-
-func _exit_tree():
-	#EndPlay()
-	WorldGlobals._Level = null
-
-func PrepareGameStateAndSaveData():
 	
-	if WorldGlobals._GameState and WorldGlobals._GameState.GameStartedFromMainMenu:
-		
-		#if WorldGlobals._GameState._GameMode.ShouldSaveRunData:
-		#	assert(SaveGlobals._PersistentSaveData)
-		#	SaveGlobals.SaveRunData.call_deferred()
+	_sync_with_game_state()
+	WorldGlobals._game_state.handle_level_ready()
+	
+	print(WorldGlobals._game_state.GameArgs)
+
+func _enter_tree() -> void:
+	WorldGlobals._level = self
+
+func _exit_tree() -> void:
+	WorldGlobals._level = null
+
+func _sync_with_game_state() -> void:
+	
+	if WorldGlobals._game_state:
 		pass
 	else:
+		var new_game_seed := 2729052680
+		#var new_game_seed := randi()
 		
-		#if not SaveGlobals._PersistentSaveData:
-		#	if SaveGlobals.TryLoadPersistentSaveData() == ERR_FILE_CANT_OPEN:
-		#		SaveGlobals.CurrentSaveSlot = "Debug"
-		
-		if not WorldGlobals._GameState:
-			
-			var NewGameSeed := 2729052680
-			#var NewGameSeed := randi()
-			
-			assert(DefaultGameMode)
-			WorldGlobals._GameState = DefaultGameMode.InitNewGameState(NewGameSeed, DefaultGameModeArgs)
-	assert(WorldGlobals._GameState)
-	_GameState = WorldGlobals._GameState
+		assert(DefaultGameMode)
+		WorldGlobals._game_state = DefaultGameMode.init_new_game_state(new_game_seed, DefaultGameModeArgs)
+	assert(WorldGlobals._game_state)
 
-func BeginPlay():
-	
-	_GameState.HandleBeginPlay(self)
+func handle_begin_play() -> void:
 	
 	if RespawnAllPlayersOnBeginPlay:
 		PlayerGlobals.RespawnAllPlayers()
@@ -101,14 +86,12 @@ func BeginPlay():
 	
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STARTED)
 
-func EndPlay():
-	
-	_GameState.HandleEndPlay(self)
+func handle_end_play() -> void:
 	
 	if StopLevelMusicOnEndPlay and MusicManager._is_playing_music():
 		MusicManager.stop(1.0)
 	
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STOPPED)
 
-func GetPlayerSpawnPosition(InPlayer: PlayerController) -> Vector2:
+func get_player_spawn_position(in_player: PlayerController) -> Vector2:
 	return DefaultPlayerSpawn.global_position if DefaultPlayerSpawn else Vector2.ZERO

@@ -192,7 +192,7 @@ func _HandleOverrideAnimationReset():
 func TryRemoveWithDeathAnimation() -> bool:
 	
 	if TryPlayDeathAnimation():
-		reparent(WorldGlobals._Level._YSorted)
+		reparent(WorldGlobals._level._YSorted)
 		animation_finished.connect(HandleRemove, Object.CONNECT_ONE_SHOT)
 		return true
 	return false

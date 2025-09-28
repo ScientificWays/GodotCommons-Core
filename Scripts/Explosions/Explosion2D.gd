@@ -10,14 +10,14 @@ static func Spawn(InGlobalPosition: Vector2, InScene: PackedScene, InLevel: int,
 	assert(InScene)
 	
 	var NewExplosion := InScene.instantiate() as Explosion2D
-	NewExplosion._Level = InLevel
+	NewExplosion._level = InLevel
 	NewExplosion._Radius = InRadius
 	NewExplosion._MaxDamage = InMaxDamage
 	NewExplosion._MaxImpulse = InMaxImpulse
 	NewExplosion._Instigator = InInstigator
 	NewExplosion.set_position(InGlobalPosition)
 	
-	WorldGlobals._Level.call_deferred("add_child", NewExplosion)
+	WorldGlobals._level.call_deferred("add_child", NewExplosion)
 	return NewExplosion
 
 @export_category("Audio")
@@ -27,7 +27,7 @@ static func Spawn(InGlobalPosition: Vector2, InScene: PackedScene, InLevel: int,
 @export var _SynergyPriority: int = 0
 
 var _Instigator: Node
-var _Level: int = 0
+var _level: int = 0
 
 var _Radius: float = BaseRadius
 var _MaxDamage: float = BaseDamage

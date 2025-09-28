@@ -14,15 +14,15 @@ func _ready() -> void:
 	assert(TimeLabel)
 	#assert(ScoreLabel)
 	
-	var _GameState := WorldGlobals._GameState as MainGameState
-	#_GameState.PlayerScoreChanged.connect(OnPlayerScoreChanged.bind(_GameState))
-	#OnPlayerScoreChanged(_GameState)
+	var _game_state := WorldGlobals._game_state as MainGameState
+	#_game_state.PlayerScoreChanged.connect(OnPlayerScoreChanged.bind(_game_state))
+	#OnPlayerScoreChanged(_game_state)
 	
-	if not _GameState._GlobalTimer and _GameState.ShouldCreateGlobalTimer:
+	if not _game_state._GlobalTimer and _game_state.ShouldCreateGlobalTimer:
 		
-		await _GameState.GlobalTimerCreated
+		await _game_state.GlobalTimerCreated
 		
-		var _GlobalTimer := _GameState._GlobalTimer
+		var _GlobalTimer := _game_state._GlobalTimer
 		_GlobalTimer.TimeSecondsChanged.connect(OnGlobalTimeSecondsChanged.bind(_GlobalTimer))
 		OnGlobalTimeSecondsChanged(_GlobalTimer)
 	else:

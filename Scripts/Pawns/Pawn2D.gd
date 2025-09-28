@@ -23,7 +23,7 @@ enum Type
 @export_category("Audio")
 @export var SoundBankLabel: String = "Pawn"
 
-var _Level: int = 0
+var _level: int = 0
 
 var _LastController: PlayerController
 var _Controller: PlayerController:

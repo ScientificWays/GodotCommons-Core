@@ -1,7 +1,7 @@
 extends Area2D
 class_name ShakeSource2D
 
-static func Spawn(InPosition: Vector2, InRadius: float, InMaxOffset: Vector2 = Vector2(2.0, 2.0), InMaxRotation: float = 0.004, InDecaySpeed: float = 0.4, InParent: Node = WorldGlobals._Level) -> ShakeSource2D:
+static func Spawn(InPosition: Vector2, InRadius: float, InMaxOffset: Vector2 = Vector2(2.0, 2.0), InMaxRotation: float = 0.004, InDecaySpeed: float = 0.4, InParent: Node = WorldGlobals._level) -> ShakeSource2D:
 	
 	var NewShakeSource := GameGlobals.ShakeSource2DScene.instantiate() as ShakeSource2D
 	NewShakeSource.position = InPosition

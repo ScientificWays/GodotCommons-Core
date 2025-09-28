@@ -22,8 +22,8 @@ func HandleAnimatedSequence() -> void:
 	await get_tree().create_timer(0.5).timeout
 	await TimeConversion.HandleAnimatedSequence()
 	
-	var _GameState := WorldGlobals._GameState
-	_GameState.AddPlayerScore(ceili(CumulatedPlayerScore))
+	var _game_state := WorldGlobals._game_state
+	_game_state.AddPlayerScore(ceili(CumulatedPlayerScore))
 
 var CumulatedPlayerScore: float = 0.0:
 	set(InScore):

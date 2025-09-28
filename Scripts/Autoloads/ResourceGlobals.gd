@@ -118,7 +118,7 @@ func UtilInitSoundBankWithEvent(InCurrentKeyArray: Array) -> SoundBank:
 		SampleBank.label = InCurrentKeyArray[0]
 		SampleBank.events = [InCurrentKeyArray[1]]
 		SampleBank.tree_exited.connect(UtilDeInitSoundBank.bind(SampleBank))
-		WorldGlobals._Level.add_child(SampleBank)
+		WorldGlobals._level.add_child(SampleBank)
 		SoundBankByLabelDictionary[InCurrentKeyArray[0]] = SampleBank
 	SoundManager._event_table[SampleBank.label]["events"] = SoundManager._create_events(SampleBank.events)
 	return SampleBank

@@ -4,7 +4,7 @@ class_name Gib2D
 static func ShouldSpawn(InGib: Gib2D) -> bool:
 	return not InGib.IsCosmetic or GameGlobals.GibsSetting > GameGlobals.GraphicsOption.Minimal
 
-static func Spawn(InPosition: Vector2, InScene: PackedScene, InParent: Node = WorldGlobals._Level) -> Gib2D:
+static func Spawn(InPosition: Vector2, InScene: PackedScene, InParent: Node = WorldGlobals._level) -> Gib2D:
 	
 	assert(InScene)
 	
@@ -27,12 +27,12 @@ func _ready():
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
-		#WorldGlobals._Level._OptimizationManager.RegisterGib(self)
+		#WorldGlobals._level._OptimizationManager.RegisterGib(self)
 		pass
 
 func _exit_tree():
 	if not Engine.is_editor_hint():
-		#WorldGlobals._Level._OptimizationManager.UnRegisterGib(self)
+		#WorldGlobals._level._OptimizationManager.UnRegisterGib(self)
 		pass
 
 func OnSleepingStateChanged():

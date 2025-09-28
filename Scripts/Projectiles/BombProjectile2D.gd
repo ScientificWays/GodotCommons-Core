@@ -53,13 +53,13 @@ func GetDetonateSoundVolumeDb(FromTimer: bool) -> float:
 @export var _ExternalExplosionImpulseMul: float = 1.0
 
 func GetExplosionRadiusMul() -> float:
-	return _ExplosionRadiusMul + _ExplosionRadiusMul_PerLevelGain * _Level
+	return _ExplosionRadiusMul + _ExplosionRadiusMul_PerLevelGain * _level
 
 func GetExplosionDamageMul() -> float:
-	return _ExplosionDamageMul + _ExplosionDamageMul_PerLevelGain * _Level
+	return _ExplosionDamageMul + _ExplosionDamageMul_PerLevelGain * _level
 
 func GetExplosionImpulseMul() -> float:
-	return _ExplosionImpulseMul + _ExplosionImpulseMul_PerLevelSqrtGain * sqrt(_Level)
+	return _ExplosionImpulseMul + _ExplosionImpulseMul_PerLevelSqrtGain * sqrt(_level)
 
 func GetExplosionRadius() -> float:
 	return Explosion2D.BaseRadius * GetExplosionRadiusMul()
@@ -143,7 +143,7 @@ func HandleDetonate(FromTimer: bool):
 var ExplosionDamageReceiverCallableArray: Array[Callable] = []
 
 func SpawnExplosionAt(InGlobalPosition: Vector2) -> Explosion2D:
-	var OutExplosion := Explosion2D.Spawn(InGlobalPosition, _ExplosionScene, _Level, GetExplosionRadius(), GetExplosionDamage(), GetExplosionImpulse(), _Instigator) as Explosion2D
+	var OutExplosion := Explosion2D.Spawn(InGlobalPosition, _ExplosionScene, _level, GetExplosionRadius(), GetExplosionDamage(), GetExplosionImpulse(), _Instigator) as Explosion2D
 	#OutExplosion.OverlayDataArray = ExplosionOverlayDataArray
 	OutExplosion.DamageReceiverCallableArray.append_array(ExplosionDamageReceiverCallableArray)
 	return OutExplosion

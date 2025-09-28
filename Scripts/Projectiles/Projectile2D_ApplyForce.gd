@@ -15,7 +15,7 @@ class_name Projectile2D_ApplyForce
 @export var ApplyConstantAsVelocity: bool = false
 
 func GetConstantMagnitudeMul() -> float:
-	return ConstantMagnitudeMul + ConstantMagnitudeMul_PerLevelGain * OwnerProjectile._Level
+	return ConstantMagnitudeMul + ConstantMagnitudeMul_PerLevelGain * OwnerProjectile._level
 
 @export_category("Pattern")
 @export var PatternDirectionCurve: Curve2D = null
@@ -26,7 +26,7 @@ func GetConstantMagnitudeMul() -> float:
 @export var ApplyPatternAsVelocity: bool = false
 
 func GetPatternMagnitudeMul() -> float:
-	return PatternMagnitudeMul + PatternMagnitudeMul_PerLevelGain * OwnerProjectile._Level
+	return PatternMagnitudeMul + PatternMagnitudeMul_PerLevelGain * OwnerProjectile._level
 
 var ForceOffsetNode: Marker2D = null
 var ForcePatternDelta: float = 0.0

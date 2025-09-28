@@ -1,7 +1,7 @@
 extends Node2D
 class_name GibsTemplate2D
 
-static func Spawn(InPosition: Vector2, InTemplateScene: PackedScene, InImpulse: Vector2, InCanIgnite: bool, InGibsNumMul: float = 1.0, InParent: Node = WorldGlobals._Level) -> GibsTemplate2D:
+static func Spawn(InPosition: Vector2, InTemplateScene: PackedScene, InImpulse: Vector2, InCanIgnite: bool, InGibsNumMul: float = 1.0, InParent: Node = WorldGlobals._level) -> GibsTemplate2D:
 	
 	assert(InTemplateScene)
 	

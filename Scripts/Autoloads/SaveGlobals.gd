@@ -25,7 +25,7 @@ func _ready() -> void:
 	
 	get_tree().scene_changed.connect(on_scene_changed)
 	
-	WorldGlobals.PendingScenePathChanged.connect(on_pending_scene_path_changed)
+	WorldGlobals.pending_scene_path_changed.connect(on_pending_scene_path_changed)
 	
 	AudioGlobals.music_volume_linear_changed.connect(on_music_volume_linear_changed)
 	AudioGlobals.game_volume_linear_changed.connect(on_game_volume_linear_changed)
@@ -57,8 +57,8 @@ func on_scene_changed() -> void:
 
 func on_pending_scene_path_changed() -> void:
 	
-	if ResourceLoader.exists(WorldGlobals.PendingScenePath):
-		local_data[last_level_path_key] = WorldGlobals.PendingScenePath
+	if ResourceLoader.exists(WorldGlobals.pending_scene_path):
+		local_data[last_level_path_key] = WorldGlobals.pending_scene_path
 
 func on_music_volume_linear_changed() -> void:
 	local_data[music_volume_linear_key] = AudioGlobals.music_volume_linear

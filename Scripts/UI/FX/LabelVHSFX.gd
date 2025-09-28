@@ -60,7 +60,7 @@ func _exit_tree() -> void:
 		label_settings.changed.disconnect(Update)
 
 func on_resized() -> void:
-	Update()
+	Update.call_deferred()
 
 func GetPositionTarget() -> Control:
 	return target_texture

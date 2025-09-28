@@ -28,7 +28,7 @@ func QueueSimulation(InTargetBody: RigidBody2D, InImpulseVector: Vector2):
 	if not InTargetBody.is_node_ready():
 		await InTargetBody.ready
 	
-	CachedBodyDamp = WorldGlobals.CalcBodyCombinedLinearDamp(TargetBody)
+	CachedBodyDamp = WorldGlobals.calc_body_combined_linear_damp(TargetBody)
 	
 	if not get_tree().physics_frame.is_connected(QueueSimulation_Process):
 		get_tree().physics_frame.connect(QueueSimulation_Process, Object.CONNECT_ONE_SHOT)

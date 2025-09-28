@@ -7,19 +7,18 @@ var GameArgs: Array = []
 
 func _init(InGameMode: GameModeData, InGameSeed: int, InGameArgs: Array):
 	
-	assert(not is_instance_valid(WorldGlobals._GameState))
-	WorldGlobals._GameState = self
+	assert(not is_instance_valid(WorldGlobals._game_state))
+	WorldGlobals._game_state = self
 	
 	_GameModeData = InGameMode
 	GameSeed = InGameSeed
 	GameArgs = InGameArgs
 
-const State_Unknown: int = -1
-const State_BeganPlaying: int = 0
-const State_EndedPlaying: int = 1
+const STATE_UNKNOWN: int = -1
+const STATE_BEGAN_PLAYING: int = 0
+const STATE_ENDED_PLAYING: int = 1
 
-var _State: int = State_Unknown
-var GameStartedFromMainMenu: bool = false
+var _state: int = STATE_UNKNOWN
 
 var ShouldCreateGlobalTimer: bool = true
 var _GlobalTimer: GameState_GlobalTimer
@@ -39,45 +38,43 @@ func OnNewSceneLoaded():
 	FoundArtifactDictionary = {}
 	SpawnedArtifactDictionary = {}
 
-func HandleStartNewGame():
-	assert(false, "HandleStartNewGame() is not implemented!")
-
-func HandleContinueGameFromSaveData():
-	assert(false, "HandleContinueGameFromSaveData() is not implemented!")
-
-func HandleLevelReady(InLevel: LevelBase2D):
+func handle_level_ready():
 	
 	LoadPlayerScore()
 	
 	InitNewLocalPlayer()
 	
+	if BeginPlayOnLevelReady:
+		begin_play()
+
+func begin_play():
+	
+	_state = STATE_BEGAN_PLAYING
+	
 	assert(not _GlobalTimer)
 	if ShouldCreateGlobalTimer:
 		_GlobalTimer = GameState_GlobalTimer.new()
 		GlobalTimerCreated.emit()
-		InLevel.add_child(_GlobalTimer)
+		WorldGlobals._level.add_child(_GlobalTimer)
 	
-	if BeginPlayOnLevelReady:
-		InLevel.BeginPlay()
+	WorldGlobals._level.handle_begin_play()
 
-func HandleBeginPlay(InLevel: LevelBase2D):
+func end_play():
 	
-	_State = State_BeganPlaying
-
-func HandleEndPlay(InLevel: LevelBase2D):
-	
-	_State = State_EndedPlaying
+	_state = STATE_ENDED_PLAYING
 	
 	if is_instance_valid(_GlobalTimer):
 		SetGameStatValue(LevelFinishTimeStat, _GlobalTimer.TimeSeconds)
 		_GlobalTimer.queue_free()
 		_GlobalTimer = null
 		GlobalTimerDestroyed.emit()
+	
+	WorldGlobals._level.handle_end_play()
 
 func InitNewLocalPlayer() -> PlayerController:
 	
 	var NewLocalPlayer = _GameModeData.PlayerControllerScene.instantiate() as PlayerController
-	WorldGlobals._Level.add_child(NewLocalPlayer)
+	WorldGlobals._level.add_child(NewLocalPlayer)
 	return NewLocalPlayer
 
 #func GetNewCreatureModifierNames(InCreature: Creature) -> Array[StringName]:

@@ -4,7 +4,7 @@ class_name ParticleSystem
 func _ready():
 	pass
 
-func InitAsOneShot(InPosition: Vector2, InParticlesNum: int, InLifetime: float, InParent: Node = WorldGlobals._Level):
+func InitAsOneShot(InPosition: Vector2, InParticlesNum: int, InLifetime: float, InParent: Node = WorldGlobals._level):
 	
 	if InParticlesNum > 0:
 		emitting = true

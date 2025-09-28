@@ -40,8 +40,8 @@ signal ConversionFinished()
 func _ready() -> void:
 	
 	if not Engine.is_editor_hint():
-		var _GameState := WorldGlobals._GameState
-		conversion_num_left = _GameState.GetGameStatValue(stat_type)
+		var _game_state := WorldGlobals._game_state
+		conversion_num_left = _game_state.GetGameStatValue(stat_type)
 	
 	UpdateAppearance()
 
@@ -51,8 +51,8 @@ func UpdateAppearance() -> void:
 
 func HandleAnimatedSequence() -> void:
 	
-	var _GameState := WorldGlobals._GameState
-	conversion_num_left = _GameState.GetGameStatValue(stat_type)
+	var _game_state := WorldGlobals._game_state
+	conversion_num_left = _game_state.GetGameStatValue(stat_type)
 	
 	if conversion_num_left > 0:
 		
@@ -61,7 +61,7 @@ func HandleAnimatedSequence() -> void:
 		
 		await ConversionFinished
 	
-	_GameState.ResetGameStatValue(stat_type)
+	_game_state.ResetGameStatValue(stat_type)
 
 func OnConvertTimerTimeout() -> void:
 	

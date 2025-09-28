@@ -30,6 +30,8 @@ func _ready() -> void:
 	
 	assert(tabs)
 	
+	tabs.current_tab = -1
+	
 	if GameGlobals_Class.IsWeb():
 		quit_option.queue_free()
 	else:

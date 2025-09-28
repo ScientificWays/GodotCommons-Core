@@ -52,12 +52,12 @@ func OnControlledPawnTreeExited() -> void:
 
 func Restart() -> void:
 	
-	var _Level := WorldGlobals._Level as LevelBase2D
-	var RestartPosition := _Level.GetPlayerSpawnPosition(self)
+	var _level := WorldGlobals._level as LevelBase2D
+	var RestartPosition := _level.get_player_spawn_position(self)
 	
 	ControlledPawn = DefaultPawnScene.instantiate()
 	ControlledPawn.position = RestartPosition
-	_Level.add_child.call_deferred(ControlledPawn)
+	_level.add_child.call_deferred(ControlledPawn)
 	
 	ControlledPawn._Controller = self
 
