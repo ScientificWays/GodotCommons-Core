@@ -11,6 +11,8 @@ func _ready() -> void:
 	
 	assert(OwnerHUD)
 	
+	TextLabel.SetInstantLerpVisible(false)
+	
 	OwnerHUD.OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
 	OnOwnerControlledPawnChanged()
 

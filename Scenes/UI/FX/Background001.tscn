@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://by0scmspmhlye"]
 
 [ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="1_xg5x2"]
-[ext_resource type="Texture2D" uid="uid://dm1ecj5l13e6l" path="res://Assets/UI/Menu/Background001a.tres" id="2_pgscy"]
+[ext_resource type="Texture2D" uid="uid://dm1ecj5l13e6l" path="res://addons/GodotCommons-Core/Assets/UI/Backgrounds/Background001a.tres" id="2_pgscy"]
 [ext_resource type="Script" uid="uid://dxde86tixhw2j" path="res://addons/GodotCommons-Core/Scripts/UI/FX/BackgroundUI.gd" id="3_i4th2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jacxv"]
@@ -10,7 +10,6 @@ shader_parameter/time_speed = 1.0
 shader_parameter/split_amount = 1.5
 shader_parameter/flicker_intensity = 0.2
 shader_parameter/noise_strength = 0.05
-shader_parameter/modulate = Color(1, 1, 1, 1)
 
 [sub_resource type="Animation" id="Animation_hjd41"]
 resource_name = "Pulse"

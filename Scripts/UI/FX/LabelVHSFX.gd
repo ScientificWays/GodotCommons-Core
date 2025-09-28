@@ -35,6 +35,11 @@ class_name VHSLabel
 		label_vertical_alignment = InAlignment
 		Update()
 
+@export var label_autowrap_mode: TextServer.AutowrapMode = TextServer.AutowrapMode.AUTOWRAP_OFF:
+	set(in_mode):
+		label_autowrap_mode = in_mode
+		Update()
+
 @export var target_texture: TextureRect 
 @export var sub_viewport: SubViewport
 @export var use_forced_anchors_preset: bool = false:
@@ -47,9 +52,15 @@ class_name VHSLabel
 		forced_anchors_preset = InPreset
 		Update()
 
+func _ready() -> void:
+	resized.connect(on_resized)
+
 func _exit_tree() -> void:
 	if label_settings and label_settings.changed.is_connected(Update):
 		label_settings.changed.disconnect(Update)
+
+func on_resized() -> void:
+	Update()
 
 func GetPositionTarget() -> Control:
 	return target_texture
@@ -67,21 +78,25 @@ func Update() -> void:
 	label_target.label_settings = label_settings
 	label_target.horizontal_alignment = label_horizontal_alignment
 	label_target.vertical_alignment = label_vertical_alignment
+	label_target.autowrap_mode = label_autowrap_mode
 	
 	sub_viewport.size = label_target.size * (1.1 + scale_offset)
 	custom_minimum_size = label_target.size
 	pivot_offset = custom_minimum_size * 0.5
 	
+	target_texture.size = sub_viewport.size
+	target_texture.pivot_offset = target_texture.size * 0.5
+	
 	if get_parent() is Container:
-		pass
+		target_texture.set_anchors_and_offsets_preset.call_deferred(forced_anchors_preset)
 	else:
-		size = custom_minimum_size
+		target_texture.set_anchors_and_offsets_preset.call_deferred(Control.PRESET_CENTER)
+		
 		if use_forced_anchors_preset:
 			set_anchors_and_offsets_preset(forced_anchors_preset, Control.PRESET_MODE_MINSIZE)
-	label_target.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
 	
-	if target_texture:
-		target_texture.size = sub_viewport.size
-		target_texture.pivot_offset = target_texture.size * 0.5
+	if label_target.autowrap_mode != TextServer.AutowrapMode.AUTOWRAP_OFF:
+		label_target.size = size
+	label_target.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
 	
 	super()

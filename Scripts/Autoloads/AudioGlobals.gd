@@ -65,6 +65,8 @@ func _ready():
 		Bridge.advertisement.interstitial_state_changed.connect(on_advertisement_interstitial_state_changed)
 		Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
 		
+		GameGlobals.web_is_paused_changed.connect(update_web_mute)
+		
 		update_web_mute()
 
 func update_bus_indices():
@@ -73,26 +75,37 @@ func update_bus_indices():
 	WorldBusIndex = AudioServer.get_bus_index(WorldBusName)
 	UIBusIndex = AudioServer.get_bus_index(UIBusName)
 
-func on_game_visibility_state_changed(InState: String) -> void:
+func on_game_visibility_state_changed(in_state: String) -> void:
 	update_web_mute()
 
-func on_advertisement_interstitial_state_changed(InState: String) -> void:
+func on_advertisement_interstitial_state_changed(in_state: String) -> void:
 	update_web_mute()
 
-func on_advertisement_rewarded_state_changed(InState: String) -> void:
+func on_advertisement_rewarded_state_changed(in_state: String) -> void:
 	update_web_mute()
+
+func on_audio_state_changed(in_is_enabled: bool) -> void:
+	update_web_mute()
+
+var web_mute: bool = false:
+	set(in_mute):
+		
+		web_mute = in_mute
+		
+		if web_mute:
+			AudioServer.set_bus_mute(MasterBusIndex, true)
+			#WebMusicPlayer.stream_paused = true
+		else:
+			AudioServer.set_bus_mute(MasterBusIndex, false)
+			#WebMusicPlayer.stream_paused = false
 
 func update_web_mute() -> void:
-	
-	if Bridge.game.visibility_state == Bridge.VisibilityState.HIDDEN \
-	#or not get_window().has_focus() \
-	or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
-	or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED:
-		AudioServer.set_bus_mute(MasterBusIndex, true)
-		WebMusicPlayer.stream_paused = true
-	else:
-		AudioServer.set_bus_mute(MasterBusIndex, false)
-		WebMusicPlayer.stream_paused = false
+	web_mute = Bridge.game.visibility_state == Bridge.VisibilityState.HIDDEN \
+		#or not get_window().has_focus() \
+		or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
+		or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED \
+		or not Bridge.platform.is_audio_enabled \
+		or GameGlobals.web_is_paused
 
 func handle_music_volume_changed():
 
@@ -141,14 +154,14 @@ func TryPlaySound_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEvent
 func IsAnyMusicPlaying() -> bool:
 	
 	if GameGlobals.IsWeb():
-		return WebMusicPlayer.playing
+		return WebMusicPlayer.playing or (web_mute and is_instance_valid(WebMusicPlayer.stream))
 	else:
 		return MusicManager._is_playing_music()
 
 func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bool:
 	
 	if GameGlobals.IsWeb():
-		return WebMusicPlayer.playing and WebMusicPlayer.stream == InMusicTrack.stems[0].stream
+		return (WebMusicPlayer.playing or web_mute) and WebMusicPlayer.stream == InMusicTrack.stems[0].stream
 	else:
 		return MusicManager.is_playing(InBankLabel, InMusicTrack.name)
 

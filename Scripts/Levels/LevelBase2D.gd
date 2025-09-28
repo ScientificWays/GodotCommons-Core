@@ -15,6 +15,9 @@ class_name LevelBase2D
 @export var StartLevelMusicOnBeginPlay: bool = true
 @export var StopLevelMusicOnEndPlay: bool = true
 
+@export_category("Hints")
+@export var TriggerTutorialHints: bool = false
+
 #const ForceMoodMeta: StringName = &"ForceMood"
 
 const WorldBankLabel: String = "World"

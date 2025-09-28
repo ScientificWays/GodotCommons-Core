@@ -10,7 +10,6 @@ shader_parameter/time_speed = 1.0
 shader_parameter/split_amount = 1.5
 shader_parameter/flicker_intensity = 0.2
 shader_parameter/noise_strength = 0.05
-shader_parameter/modulate = Color(1, 1, 1, 1)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_8okjb"]
 viewport_path = NodePath("SubViewport")
@@ -55,6 +54,8 @@ offset_bottom = 21.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(7.5, 21)
+mouse_default_cursor_shape = 2
+shortcut_in_tooltip = false
 flat = true
 script = ExtResource("2_8okjb")
 target_texture = NodePath("RenderTarget")
@@ -70,15 +71,15 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -8.0
-offset_top = -21.504007
+offset_top = -21.786446
 offset_right = 8.0
-offset_bottom = 25.495995
+offset_bottom = 25.213554
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(8, 23.5)
 mouse_filter = 2
 texture = SubResource("ViewportTexture_8okjb")
-stretch_mode = 5
+stretch_mode = 3
 
 [node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
@@ -97,7 +98,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="TargetLabel" type="Label" parent="SubViewport/TargetLabelControl"]
-modulate = Color(1, 1, 1, 0.9064857)
+modulate = Color(1, 1, 1, 0.9233514)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -110,8 +111,8 @@ offset_right = 7.5
 offset_bottom = 21.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.019959921
-scale = Vector2(1.0050116, 1.0050116)
+rotation = 0.017135538
+scale = Vector2(0.9834532, 0.9834532)
 pivot_offset = Vector2(7.5, 21)
 text = "-"
 horizontal_alignment = 1

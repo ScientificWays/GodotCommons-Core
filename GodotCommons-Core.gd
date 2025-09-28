@@ -15,8 +15,13 @@ func _enter_tree():
 	add_autoload_singleton("SaveGlobals", "Scripts/Autoloads/SaveGlobals.gd")
 	
 	add_project_setting(
-		GodotCommonsCore_Settings.PAUSE_MENU_SETTING_NAME,
-		GodotCommonsCore_Settings.PAUSE_MENU_SETTING_DEFAULT,
+		GodotCommonsCore_Settings.PAUSE_MENU_UI_SETTING_NAME,
+		GodotCommonsCore_Settings.PAUSE_MENU_UI_SETTING_DEFAULT,
+		TYPE_STRING)
+	
+	add_project_setting(
+		GodotCommonsCore_Settings.CONFIRM_UI_SETTING_NAME,
+		GodotCommonsCore_Settings.CONFIRM_UI_SETTING_DEFAULT,
 		TYPE_STRING)
 	
 

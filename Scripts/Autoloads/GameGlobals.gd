@@ -42,6 +42,8 @@ func _ready():
 		
 		if Bridge.advertisement.is_rewarded_supported:
 			Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
+		
+		Bridge.platform.pause_state_changed.connect(on_web_pause_state_changed)
 	
 	RewardedAdProxy = Node.new()
 	add_child(RewardedAdProxy)
@@ -58,6 +60,21 @@ func _ready():
 		#Engine.max_fps = 120
 	
 	#SaveGlobals.SettingsProfile_PhysicsTickRateChanged_ConnectAndTryEmit(OnPhysicsTickRateSettingChanged)
+
+var web_is_paused: bool = false:
+	set(in_is_paused):
+		
+		web_is_paused = in_is_paused
+		
+		if web_is_paused:
+			AddPauseSource(Bridge)
+		else:
+			RemovePauseSource(Bridge)
+		web_is_paused_changed.emit()
+signal web_is_paused_changed()
+
+func on_web_pause_state_changed(in_is_paused: bool) -> void:
+	web_is_paused = in_is_paused
 
 ##
 ## Timers

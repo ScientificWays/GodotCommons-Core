@@ -29,7 +29,7 @@ var pause_menu_ui: PauseMenuUI
 
 func try_create_pause_menu_ui() -> bool:
 	
-	var pause_menu_scene_path := ProjectSettings.get_setting(GodotCommonsCore_Settings.PAUSE_MENU_SETTING_NAME, GodotCommonsCore_Settings.PAUSE_MENU_SETTING_DEFAULT) as String
+	var pause_menu_scene_path := ProjectSettings.get_setting(GodotCommonsCore_Settings.PAUSE_MENU_UI_SETTING_NAME, GodotCommonsCore_Settings.PAUSE_MENU_UI_SETTING_DEFAULT) as String
 	if ResourceLoader.exists(pause_menu_scene_path, "PackedScene"):
 		var pause_menu_ui_scene := ResourceLoader.load(pause_menu_scene_path) as PackedScene
 		pause_menu_ui = pause_menu_ui_scene.instantiate()
@@ -37,6 +37,23 @@ func try_create_pause_menu_ui() -> bool:
 		add_child(pause_menu_ui)
 		return is_instance_valid(pause_menu_ui)
 	push_error("UIGlobals.try_create_pause_menu_ui(): Failed to create PauseMenuUI!")
+	return false
+
+##
+## ConfirmUI
+##
+var confirm_ui: ConfirmUI
+
+func try_create_confirm_ui() -> bool:
+	
+	var confirm_scene_path := ProjectSettings.get_setting(GodotCommonsCore_Settings.CONFIRM_UI_SETTING_NAME, GodotCommonsCore_Settings.CONFIRM_UI_SETTING_DEFAULT) as String
+	if ResourceLoader.exists(confirm_scene_path, "PackedScene"):
+		var confirm_ui_scene := ResourceLoader.load(confirm_scene_path) as PackedScene
+		confirm_ui = confirm_ui_scene.instantiate()
+		confirm_ui.is_enabled = false
+		add_child(confirm_ui)
+		return is_instance_valid(confirm_ui)
+	push_error("UIGlobals.try_create_confirm_ui(): Failed to create PauseMenuUI!")
 	return false
 
 func IsPointInsideControlArea(InPoint: Vector2, InControl: Control) -> bool:
@@ -52,6 +69,7 @@ func _ready() -> void:
 	Input.set_custom_mouse_cursor(load("res://addons/GodotCommons-Core/Assets/UI/Cursors/Cross001a.png"), Input.CURSOR_CROSS, Vector2(8.0, 8.0))
 	
 	try_create_pause_menu_ui.call_deferred()
+	try_create_confirm_ui.call_deferred()
 
 func _notification(InCode: int) -> void:
 	match InCode:

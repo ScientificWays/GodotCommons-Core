@@ -1,6 +1,6 @@
 @tool
 extends CanvasLayer
-class_name PauseMenuUI
+class_name ConfirmUI
 
 @export_category("Visiblity")
 @export var visibility_control: Control
@@ -25,9 +25,15 @@ class_name PauseMenuUI
 		else:
 			_handle_disabled()
 
+@export_category("Prompt")
+@export var prompt_label: VHSLabel
+
 @export_category("Options")
-@export var continue_option: Button
-@export var quit_option: Button
+@export var confirm_option: Button
+@export var cancel_option: Button
+
+var confirm_callable: Callable = _dummy_callable
+var cancel_callable: Callable = _dummy_callable
 
 func _ready() -> void:
 	
@@ -36,15 +42,11 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	assert(continue_option)
-	assert(quit_option)
+	assert(confirm_option)
+	assert(cancel_option)
 	
-	continue_option.pressed.connect(on_continue_option_pressed)
-	
-	if GameGlobals_Class.IsWeb():
-		quit_option.queue_free()
-	else:
-		quit_option.pressed.connect(on_quit_option_pressed)
+	confirm_option.pressed.connect(_resolve_callable.bind(true))
+	cancel_option.pressed.connect(_resolve_callable.bind(false))
 
 func _process(in_delta: float) -> void:
 	
@@ -57,18 +59,6 @@ func _process(in_delta: float) -> void:
 		pass
 	else:
 		visible = false
-
-func _notification(in_what: int) -> void:
-	
-	if in_what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		toggle()
-
-func _unhandled_input(in_event: InputEvent) -> void:
-	
-	if in_event.is_action_pressed(&"Back"):
-		if not is_enabled:
-			toggle()
-			get_viewport().set_input_as_handled()
 
 func _handle_enabled() -> void:
 	
@@ -84,18 +74,33 @@ func _handle_disabled() -> void:
 	if not Engine.is_editor_hint():
 		GameGlobals.RemovePauseSource(self)
 
-func toggle() -> void:
-	is_enabled = not is_enabled
+func toggle(in_prompt_text: String, in_confirm_callable: Callable, in_cancel_callable: Callable = _dummy_callable) -> void:
+	
+	if is_enabled:
+		_resolve_callable(false)
+	else:
+		prompt_label.label_text = in_prompt_text
+		
+		confirm_callable = in_confirm_callable
+		cancel_callable = in_cancel_callable
+		
+		is_enabled = true
 
 func on_visibility_changed() -> void:
 	set_process(visible)
 
-func on_continue_option_pressed() -> void:
+func _resolve_callable(in_confirmed: bool) -> void:
+	
+	if in_confirmed:
+		confirm_callable.call()
+	else:
+		cancel_callable.call()
+	
+	confirm_callable = _dummy_callable
+	cancel_callable = _dummy_callable
+	
 	is_enabled = false
 
-func on_quit_option_pressed() -> void:
-	UIGlobals.confirm_ui.toggle("QUIT_PROMPT", handle_confirm_quit)
-
-func handle_confirm_quit() -> void:
-	SaveGlobals.save_local_data(true)
-	get_tree().quit()
+func _dummy_callable() -> void:
+	#push_warning("%s _dummy_callable() was called!" % self)
+	pass
