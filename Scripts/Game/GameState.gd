@@ -21,7 +21,7 @@ const STATE_ENDED_PLAYING: int = 1
 var _state: int = STATE_UNKNOWN
 
 var ShouldCreateGlobalTimer: bool = true
-var _GlobalTimer: GameState_GlobalTimer
+var _global_timer: GameState_GlobalTimer
 const GlobalTimer_OverrideTimeMeta: StringName = &"GlobalTimer_OverrideTime"
 
 signal GlobalTimerCreated()
@@ -40,8 +40,6 @@ func OnNewSceneLoaded():
 
 func handle_level_ready():
 	
-	load_current_score()
-	
 	InitNewLocalPlayer()
 	
 	if BeginPlayOnLevelReady:
@@ -53,11 +51,11 @@ func begin_play():
 	
 	_state = STATE_BEGAN_PLAYING
 	
-	assert(not _GlobalTimer)
+	assert(not _global_timer)
 	if ShouldCreateGlobalTimer:
-		_GlobalTimer = GameState_GlobalTimer.new()
+		_global_timer = GameState_GlobalTimer.new()
 		GlobalTimerCreated.emit()
-		WorldGlobals._level.add_child(_GlobalTimer)
+		WorldGlobals._level.add_child(_global_timer)
 	
 	on_begin_play.emit()
 
@@ -67,10 +65,10 @@ func end_play():
 	
 	_state = STATE_ENDED_PLAYING
 	
-	if is_instance_valid(_GlobalTimer):
-		SetGameStatValue(LevelFinishTimeStat, _GlobalTimer.TimeSeconds)
-		_GlobalTimer.queue_free()
-		_GlobalTimer = null
+	if is_instance_valid(_global_timer):
+		SetGameStatValue(LevelFinishTimeStat, _global_timer.time_seconds)
+		_global_timer.queue_free()
+		_global_timer = null
 		GlobalTimerDestroyed.emit()
 	
 	on_end_play.emit()
@@ -119,18 +117,5 @@ var current_score: int = 0:
 
 signal current_score_changed()
 
-func load_current_score() -> void:
-	pass
-	#if Bridge.leaderboards.type != Bridge.LeaderboardType.NOT_AVAILABLE:
-		#Bridge.leaderboards.get_entries("levelscore")
-
-func OnLeaderboardPlayerEntryLoaded(InData) -> void:
-	print("GameState OnLeaderboardPlayerEntryLoaded(), ", InData)
-	current_score = InData["score"]
-
 func add_score(in_score: int) -> void:
-	
 	current_score += in_score
-	
-	#if Bridge.leaderboards.type != Bridge.LeaderboardType.NOT_AVAILABLE:
-	#	Bridge.leaderboards.set_score("levelscore", current_score)

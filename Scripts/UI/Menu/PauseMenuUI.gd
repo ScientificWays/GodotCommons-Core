@@ -56,10 +56,10 @@ func _ready() -> void:
 	
 	continue_option.pressed.connect(_on_continue_option_pressed)
 	
-	if GameGlobals_Class.IsWeb():
-		main_menu_option.queue_free()
-	else:
-		main_menu_option.pressed.connect(_on_main_menu_option_pressed)
+	#if GameGlobals_Class.IsWeb():
+	#	main_menu_option.queue_free()
+	#else:
+	main_menu_option.pressed.connect(_on_main_menu_option_pressed)
 
 func _process(in_delta: float) -> void:
 	

@@ -32,10 +32,10 @@ func _ready() -> void:
 	
 	tabs.current_tab = -1
 	
-	if GameGlobals_Class.IsWeb():
-		quit_option.queue_free()
-	else:
-		quit_option.pressed.connect(_on_quit_option_pressed)
+	#if GameGlobals_Class.IsWeb():
+	#	quit_option.queue_free()
+	#else:
+	quit_option.pressed.connect(_on_quit_option_pressed)
 
 func _on_campaigns_option_pressed() -> void:
 	tabs.current_tab = campaigns_tab_index if (tabs.current_tab != campaigns_tab_index) else -1

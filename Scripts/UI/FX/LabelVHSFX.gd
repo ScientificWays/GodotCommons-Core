@@ -5,23 +5,25 @@ class_name VHSLabel
 @export var label_text: String = "-":
 	set(InText):
 		label_text = InText
-		Update()
+		Update.call_deferred()
 
 @export var label_text_mobile: String:
 	set(InText):
 		label_text_mobile = InText
-		Update()
+		Update.call_deferred()
 
 @export var label_settings: LabelSettings:
 	set(InSettings):
 		
-		if label_settings and label_settings.changed.is_connected(Update):
-			label_settings.changed.disconnect(Update)
+		if Engine.is_editor_hint():
+			if label_settings and label_settings.changed.is_connected(Update):
+				label_settings.changed.disconnect(Update)
 		
 		label_settings = InSettings
 		
-		if label_settings:
-			label_settings.changed.connect(Update)
+		if Engine.is_editor_hint():
+			if label_settings:
+				label_settings.changed.connect(Update)
 		
 		Update()
 
@@ -56,8 +58,9 @@ func _ready() -> void:
 	resized.connect(on_resized)
 
 func _exit_tree() -> void:
-	if label_settings and label_settings.changed.is_connected(Update):
-		label_settings.changed.disconnect(Update)
+	if Engine.is_editor_hint():
+		if label_settings and label_settings.changed.is_connected(Update):
+			label_settings.changed.disconnect(Update)
 
 func on_resized() -> void:
 	Update.call_deferred()

@@ -3,6 +3,7 @@ class_name TransitionUI
 
 @export_category("Score")
 @export var score_ui: ScoreUI
+@export var leaderboard_ui: LeaderboardUI
 
 @export_category("Continue")
 @export var ContinueLabel: VHSLabel
@@ -32,11 +33,15 @@ func _input(InEvent: InputEvent) -> void:
 		
 		ContinueRequested.emit()
 
-func HandleAnimatedSequence() -> void:
+func handle_animated_sequence() -> void:
 	
 	assert(is_node_ready())
 	
-	await score_ui.HandleAnimatedSequence()
+	if is_instance_valid(score_ui):
+		await score_ui.handle_animated_sequence()
+	
+	if is_instance_valid(leaderboard_ui):
+		await leaderboard_ui.handle_animated_sequence()
 	
 	ContinueLabel.lerp_visible = true
 	set_process_input(true)

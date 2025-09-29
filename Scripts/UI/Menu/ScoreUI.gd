@@ -8,27 +8,28 @@ class_name ScoreUI
 @export_category("Score")
 @export var ScoreLabel: VHSLabel
 
+var prev_score: int = 0
+var add_score: float = 0.0:
+	set(InScore):
+		add_score = InScore
+		ScoreLabel.label_text = "%d + %d" % [ prev_score, add_score ]
+
 func _ready() -> void:
 	ExperienceConversion.Converted.connect(OnStatConverted)
 	TimeConversion.Converted.connect(OnStatConverted)
 
-func HandleAnimatedSequence() -> void:
+func handle_animated_sequence() -> void:
 	
-	CumulatedPlayerScore = 0.0
-	
-	await get_tree().create_timer(0.5).timeout
-	await ExperienceConversion.HandleAnimatedSequence()
+	prev_score = WorldGlobals._game_state.current_score
+	add_score = 0.0
 	
 	await get_tree().create_timer(0.5).timeout
-	await TimeConversion.HandleAnimatedSequence()
+	await ExperienceConversion.handle_animated_sequence()
 	
-	var _game_state := WorldGlobals._game_state
-	_game_state.add_score(ceili(CumulatedPlayerScore))
-
-var CumulatedPlayerScore: float = 0.0:
-	set(InScore):
-		CumulatedPlayerScore = InScore
-		ScoreLabel.label_text = String.num_int64(CumulatedPlayerScore)
+	await get_tree().create_timer(0.5).timeout
+	await TimeConversion.handle_animated_sequence()
+	
+	WorldGlobals._game_state.add_score(ceili(add_score))
 
 func OnStatConverted(InScore: float) -> void:
-	CumulatedPlayerScore += InScore
+	add_score += InScore

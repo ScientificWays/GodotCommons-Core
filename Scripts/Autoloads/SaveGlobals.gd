@@ -23,10 +23,6 @@ func _ready() -> void:
 	
 	load_local_data()
 	
-	get_tree().scene_changed.connect(on_scene_changed)
-	
-	WorldGlobals.pending_scene_path_changed.connect(on_pending_scene_path_changed)
-	
 	AudioGlobals.music_volume_linear_changed.connect(on_music_volume_linear_changed)
 	AudioGlobals.game_volume_linear_changed.connect(on_game_volume_linear_changed)
 	AudioGlobals.ui_volume_linear_changed.connect(on_ui_volume_linear_changed)
@@ -47,18 +43,6 @@ func _process(in_delta: float) -> void:
 	elif pending_save:
 		pending_save = false
 		save_local_data()
-
-func on_scene_changed() -> void:
-	
-	var CurrentScene := get_tree().current_scene
-	if CurrentScene is LevelBase2D:
-		local_data[last_level_path_key] = CurrentScene.scene_file_path
-		save_local_data(true)
-
-func on_pending_scene_path_changed() -> void:
-	
-	if ResourceLoader.exists(WorldGlobals.pending_scene_path):
-		local_data[last_level_path_key] = WorldGlobals.pending_scene_path
 
 func on_music_volume_linear_changed() -> void:
 	local_data[music_volume_linear_key] = AudioGlobals.music_volume_linear
@@ -108,13 +92,6 @@ func load_local_data() -> void:
 	
 	if local_data.has(default_camera_zoom_key):
 		PlayerGlobals.default_camera_zoom = local_data[default_camera_zoom_key]
-
-func IsLastLevelFromSaveDataValid() -> bool:
-	var LastLevelPath := GetLastLevelFromSaveData()
-	return ResourceLoader.exists(LastLevelPath, "PackedScene")
-
-func GetLastLevelFromSaveData() -> String:
-	return local_data.get(last_level_path_key, "")
 
 ##
 ## Storage

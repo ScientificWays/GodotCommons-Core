@@ -110,17 +110,19 @@ func SetOutlineButtonColor(InColor: Color):
 		for SampleFocusStyleBox: StyleBox in SampleData.FocusVariants:
 			SampleFocusStyleBox.modulate_color = FocusColor
 
-func FormatTimeString(InTimeSeconds: int) -> String:
+func format_time_seconds(in_time_seconds: int) -> String:
 	
-	var NewTimeSeconds := InTimeSeconds
-	var Seconds := NewTimeSeconds % 60
-	var Minutes := (NewTimeSeconds / 60) % 60
-	var Hours := NewTimeSeconds / (60 * 60)
+	var seconds := in_time_seconds % 60
+	var minutes := (in_time_seconds / 60) % 60
+	var hours := in_time_seconds / (60 * 60)
 	
-	if Hours > 0:
-		return "%02d:%02d:%02d" % [ Hours, Minutes, Seconds ]
+	if hours > 0:
+		return "%02d:%02d:%02d" % [ hours, minutes, seconds ]
 	else:
-		return "%02d:%02d" % [ Minutes, Seconds ]
+		return "%02d:%02d" % [ minutes, seconds ]
+
+func format_time_milliseconds(in_time_seconds: float) -> String:
+	return "%s:%s" % [ format_time_seconds(floori(in_time_seconds)), String.num(fmod(in_time_seconds, 1.0), 3).pad_decimals(3) ]
 
 ##
 ## BackgroundUI

@@ -27,10 +27,11 @@ var coversion_timer: Timer
 
 var conversion_num_left: int = 0:
 	set(InNum):
+		
 		conversion_num_left = InNum
 		
 		if format_as_time_string:
-			TargetLabel.label_text = UIGlobals.FormatTimeString(conversion_num_left)
+			TargetLabel.label_text = UIGlobals.format_time_seconds(conversion_num_left)
 		else:
 			TargetLabel.label_text = String.num_int64(conversion_num_left)
 
@@ -49,7 +50,7 @@ func UpdateAppearance() -> void:
 	if TargetImage:
 		TargetImage.texture = image_texture
 
-func HandleAnimatedSequence() -> void:
+func handle_animated_sequence() -> void:
 	
 	var _game_state := WorldGlobals._game_state
 	conversion_num_left = _game_state.GetGameStatValue(stat_type)
