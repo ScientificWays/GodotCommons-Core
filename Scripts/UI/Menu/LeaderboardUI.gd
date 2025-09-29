@@ -4,6 +4,7 @@ class_name LeaderboardUI
 @export_category("List")
 @export var entries_container: Container
 @export var entry_scene: PackedScene = preload("res://Scenes/UI/Menu/LeaderboardUI_Entry.tscn")
+@export var empty_label: VHSLabel
 
 func _ready():
 	
@@ -16,8 +17,10 @@ func _ready():
 		queue_free()
 
 func handle_animated_sequence() -> void:
-	
-	Bridge.leaderboards.get_entries(WorldGlobals._campaign_data.get_leaderboard_best_score(), _on_leaderboard_get_entries_completed)
+	update_for_campaign_data(WorldGlobals._campaign_data)
+
+func update_for_campaign_data(in_data: CampaignData) -> void:
+	Bridge.leaderboards.get_entries(in_data.get_leaderboard_best_score(), _on_leaderboard_get_entries_completed)
 
 func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array):
 	
@@ -26,8 +29,15 @@ func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array):
 	
 	print("%s _on_leaderboard_get_entries_completed() in_success == %s" % [ self, in_success ])
 	
-	for sample_entry_data: Dictionary in in_entries:
+	if in_entries.is_empty():
+		entries_container.visible = false
+		empty_label.lerp_visible = true
+	else:
+		entries_container.visible = true
+		empty_label.lerp_visible = false
 		
-		var new_entry := entry_scene.instantiate() as LeaderboardUI_Entry
-		new_entry.data = sample_entry_data
-		entries_container.add_child(new_entry)
+		for sample_entry_data: Dictionary in in_entries:
+			
+			var new_entry := entry_scene.instantiate() as LeaderboardUI_Entry
+			new_entry.data = sample_entry_data
+			entries_container.add_child(new_entry)

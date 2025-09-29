@@ -6,7 +6,7 @@ class_name ScoreUI_Conversion
 @export var TargetImage: TextureRect:
 	set(InImage):
 		TargetImage = InImage
-		UpdateAppearance()
+		_update_appearance()
 
 @export var TargetLabel: VHSLabel
 
@@ -14,7 +14,7 @@ class_name ScoreUI_Conversion
 @export var image_texture: Texture2D:
 	set(InTexture):
 		image_texture = InTexture
-		UpdateAppearance()
+		_update_appearance()
 
 @export_category("Stat")
 @export var stat_type: String = GameState.LevelFinishTimeStat
@@ -44,11 +44,20 @@ func _ready() -> void:
 		var _game_state := WorldGlobals._game_state
 		conversion_num_left = _game_state.GetGameStatValue(stat_type)
 	
-	UpdateAppearance()
+	_update_appearance.call_deferred()
 
-func UpdateAppearance() -> void:
+func _update_appearance() -> void:
+	
+	if not is_node_ready():
+		return
+	
 	if TargetImage:
 		TargetImage.texture = image_texture
+	
+	if Engine.is_editor_hint():
+		return
+	
+	conversion_num_left = conversion_num_left
 
 func handle_animated_sequence() -> void:
 	

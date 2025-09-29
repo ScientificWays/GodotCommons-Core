@@ -87,8 +87,8 @@ func Update() -> void:
 	custom_minimum_size = label_target.size
 	pivot_offset = custom_minimum_size * 0.5
 	
-	target_texture.size = sub_viewport.size
-	target_texture.pivot_offset = target_texture.size * 0.5
+	target_texture.set_deferred("size", sub_viewport.size)
+	target_texture.pivot_offset = sub_viewport.size * 0.5
 	
 	if get_parent() is Container:
 		target_texture.set_anchors_and_offsets_preset.call_deferred(forced_anchors_preset)

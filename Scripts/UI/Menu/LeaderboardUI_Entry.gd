@@ -21,7 +21,6 @@ func _ready() -> void:
 	player_name.label_text = data.name
 	player_score.label_text = String.num_int64(data.score)
 	
-	player_photo.visible = false
 	_handle_photo_http_request()
 
 func _handle_photo_http_request() -> void:
@@ -34,6 +33,7 @@ func _handle_photo_http_request() -> void:
 	var error = http_request.request(data.photo)
 	if error != OK:
 		push_error("%s _handle_photo_http_request() error code %d" % [ self, error ] )
+		player_photo.visible = false
 
 func _photo_http_request_completed(in_result, in_response_code, in_headers, in_body) -> void:
 	
@@ -45,6 +45,7 @@ func _photo_http_request_completed(in_result, in_response_code, in_headers, in_b
 	
 	if error != OK:
 		push_error("%s _photo_http_request_completed() error code %d" % [ self, error ] )
+		player_photo.visible = false
 	else:
 		player_photo.texture = ImageTexture.create_from_image(image)
 		player_photo.visible = true

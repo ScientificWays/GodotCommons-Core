@@ -6,6 +6,8 @@ class_name StartGameEntryUI
 @export var completed_label: VHSLabel
 @export var foldable_container: FoldableContainer
 @export var start_button: Button
+@export var leaderboard_button: Button
+@export var leaderboard_ui: LeaderboardUI
 
 @export_category("Data")
 @export var data: CampaignData:
@@ -28,6 +30,13 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	
+	start_button.pressed.connect(_on_start_button_pressed)
+	
+	if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
+		leaderboard_button.toggled.connect(_on_leaderboard_button_toggled)
+		_on_leaderboard_button_toggled(leaderboard_button.button_pressed)
+	else:
+		leaderboard_button.queue_free()
 
 func _update() -> void:
 	
@@ -37,13 +46,9 @@ func _update() -> void:
 		foldable_container.title = data.display_title
 	
 	if data.can_start:
-		
-		start_button.modulate.a = 1.0
-		
-		if not Engine.is_editor_hint():
-			start_button.pressed.connect(_on_start_button_pressed)
+		start_button.visible = true
 	else:
-		start_button.modulate.a = 0.5
+		start_button.visible = false
 	
 	if Engine.is_editor_hint():
 		return
@@ -56,6 +61,10 @@ func _update() -> void:
 
 func _on_start_button_pressed() -> void:
 	UIGlobals.confirm_ui.toggle(data.confirm_title, _handle_confirm_start)
+
+func _on_leaderboard_button_toggled(in_toggled_on: bool) -> void:
+	leaderboard_ui.visible = in_toggled_on
+	leaderboard_ui.update_for_campaign_data(data)
 
 func _handle_confirm_start() -> void:
 	data.start_game(randi(), extra_game_mode_args)
