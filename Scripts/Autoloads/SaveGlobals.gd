@@ -1,7 +1,7 @@
 extends Node
 class_name SaveGlobals_Class
 
-var shaders_compiled_flag_key: String = "shaders_compiled_flag"
+var shaders_compiled_flag: bool = false
 
 var last_level_path_key: String = "last_level_path"
 
@@ -60,22 +60,6 @@ func save_settings() -> void:
 		ui_volume_linear_key: AudioGlobals.ui_volume_linear,
 		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
 	})
-
-func get_local_shaders_compiled() -> bool:
-	
-	if not FileAccess.file_exists(shaders_compiled_flag_key):
-		return false
-	
-	var loaded_file = FileAccess.open(shaders_compiled_flag_key, FileAccess.READ)
-	var out_compiled := loaded_file.get_var()
-	loaded_file.close()
-	return out_compiled
-
-func save_local_shaders_compiled() -> void:
-	
-	var new_file = FileAccess.open(shaders_compiled_flag_key, FileAccess.WRITE)
-	new_file.store_var(true)
-	new_file.close()
 
 ##
 ## Storage
