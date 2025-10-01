@@ -29,7 +29,7 @@ func handle_animated_sequence() -> void:
 	await get_tree().create_timer(0.5).timeout
 	await TimeConversion.handle_animated_sequence()
 	
-	WorldGlobals._game_state.add_score(ceili(add_score))
+	await WorldGlobals._game_state.add_score(ceili(add_score))
 
 func OnStatConverted(InScore: float) -> void:
 	add_score += InScore

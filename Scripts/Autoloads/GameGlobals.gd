@@ -37,20 +37,12 @@ func _ready():
 		
 		TranslationServer.set_locale(Bridge.platform.language)
 		
-		if Bridge.advertisement.is_interstitial_supported:
-			Bridge.advertisement.interstitial_state_changed.connect(on_advertisement_interstitial_state_changed)
-		
-		if Bridge.advertisement.is_rewarded_supported:
-			Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
-		
 		Bridge.platform.pause_state_changed.connect(on_web_pause_state_changed)
+		Bridge.advertisement.interstitial_state_changed.connect(on_advertisement_interstitial_state_changed)
+		Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
+		
+		update_web_is_paused()
 	
-	RewardedAdProxy = Node.new()
-	add_child(RewardedAdProxy)
-	
-	InterstitialAdProxy = Node.new()
-	add_child(InterstitialAdProxy)
-
 	#DebugMenu.style = DebugMenu.Style.VISIBLE_DETAILED
 	#if OS.get_name() == &"Windows":
 		#get_window().content_scale_size = Vector2i(1280, 1280) * 2
@@ -74,7 +66,34 @@ var web_is_paused: bool = false:
 signal web_is_paused_changed()
 
 func on_web_pause_state_changed(in_is_paused: bool) -> void:
-	web_is_paused = in_is_paused
+	update_web_is_paused()
+
+func update_web_is_paused() -> void:
+	web_is_paused = Bridge.game.visibility_state == Bridge.VisibilityState.HIDDEN \
+		#or not get_window().has_focus() \
+		or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
+		or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED
+
+##
+## Ads
+##
+func on_advertisement_interstitial_state_changed(in_state: String) -> void:
+	update_web_is_paused()
+
+func on_advertisement_rewarded_state_changed(in_state: String) -> void:
+	update_web_is_paused()
+
+var WebInterstitialAdShowCooldownTicksMs: int = 60000
+var NextWebInterstitialAdShowTimeTicksMs: int = -WebInterstitialAdShowCooldownTicksMs
+
+func ShouldShowWebInterstitialAd() -> bool:
+	return IsWeb() \
+		and Bridge.advertisement.is_interstitial_supported \
+		and Time.get_ticks_msec() > NextWebInterstitialAdShowTimeTicksMs
+
+func TriggerShowWebInterstitialAd() -> void:
+	Bridge.advertisement.show_interstitial()
+	NextWebInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + WebInterstitialAdShowCooldownTicksMs
 
 ##
 ## Timers
@@ -333,35 +352,3 @@ static func IsPC(InCheckWeb: bool = true) -> bool:
 
 static func IsWeb() -> bool:
 	return OS.has_feature("web")
-
-##
-## Ads
-##
-var WebInterstitialAdShowCooldownTicksMs: int = 60000
-var NextWebInterstitialAdShowTimeTicksMs: int = -WebInterstitialAdShowCooldownTicksMs
-
-func ShouldShowWebInterstitialAd() -> bool:
-	return IsWeb() \
-		and Bridge.advertisement.is_interstitial_supported \
-		and Time.get_ticks_msec() > NextWebInterstitialAdShowTimeTicksMs
-
-func TriggerShowWebInterstitialAd() -> void:
-	Bridge.advertisement.show_interstitial()
-	NextWebInterstitialAdShowTimeTicksMs = Time.get_ticks_msec() + WebInterstitialAdShowCooldownTicksMs
-
-var InterstitialAdProxy: Node = Node.new()
-var RewardedAdProxy: Node = Node.new()
-
-func on_advertisement_interstitial_state_changed(InResult: String) -> void:
-	
-	if InResult == "opened":
-		AddPauseSource(InterstitialAdProxy)
-	else:
-		RemovePauseSource(InterstitialAdProxy)
-
-func on_advertisement_rewarded_state_changed(InResult: String) -> void:
-	
-	if InResult == "opened":
-		AddPauseSource(RewardedAdProxy)
-	else:
-		RemovePauseSource(RewardedAdProxy)

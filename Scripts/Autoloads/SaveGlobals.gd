@@ -1,7 +1,7 @@
 extends Node
 class_name SaveGlobals_Class
 
-var local_data_path: String = "user://local_data.save"
+var shaders_compiled_flag_key: String = "shaders_compiled_flag"
 
 var last_level_path_key: String = "last_level_path"
 
@@ -11,135 +11,140 @@ var ui_volume_linear_key: String = "ui_volume_linear"
 
 var default_camera_zoom_key: String = "default_camera_zoom"
 
-var local_data: Dictionary
-
-var save_delay_time_left: float = 0.0:
-	set(in_time):
-		save_delay_time_left = in_time
-		set_process(save_delay_time_left > 0.0)
-var pending_save: bool = false
-
 func _ready() -> void:
 	
-	load_local_data()
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(not storage_save_queued_data.is_empty())
 	
 	AudioGlobals.music_volume_linear_changed.connect(on_music_volume_linear_changed)
 	AudioGlobals.game_volume_linear_changed.connect(on_game_volume_linear_changed)
 	AudioGlobals.ui_volume_linear_changed.connect(on_ui_volume_linear_changed)
-	
 	PlayerGlobals.default_camera_zoom_changed.connect(on_default_camera_zoom_changed)
-
-func _notification(in_what: int) -> void:
 	
-	if in_what == NOTIFICATION_WM_CLOSE_REQUEST:
-		save_local_data(true)
+	load_settings()
 
 func _process(in_delta: float) -> void:
-	
-	save_delay_time_left -= in_delta
-	
-	if save_delay_time_left > 0.0:
-		pass
-	elif pending_save:
-		pending_save = false
-		save_local_data()
+	flush_set_data_in_storage()
+	set_process(false)
 
 func on_music_volume_linear_changed() -> void:
-	local_data[music_volume_linear_key] = AudioGlobals.music_volume_linear
-	save_local_data()
+	save_settings()
 
 func on_game_volume_linear_changed() -> void:
-	local_data[game_volume_linear_key] = AudioGlobals.game_volume_linear
-	save_local_data()
+	save_settings()
 
 func on_ui_volume_linear_changed() -> void:
-	local_data[ui_volume_linear_key] = AudioGlobals.ui_volume_linear
-	save_local_data()
+	save_settings()
 
 func on_default_camera_zoom_changed() -> void:
-	local_data[default_camera_zoom_key] = PlayerGlobals.default_camera_zoom
-	save_local_data()
+	save_settings()
 
-func save_local_data(in_forced: bool = false) -> void:
+func load_settings() -> void:
 	
-	if (save_delay_time_left > 0.0) and (not in_forced):
-		pending_save = true
-		return
-	
-	var NewFile = FileAccess.open(local_data_path, FileAccess.WRITE)
-	NewFile.store_var(local_data)
-	NewFile.close()
-	
-	#print("Saved local data")
-	
-	save_delay_time_left = 2.0
+	var data_array := await SaveGlobals.get_data_from_storage({
+		music_volume_linear_key: AudioGlobals.music_volume_linear,
+		game_volume_linear_key: AudioGlobals.game_volume_linear,
+		ui_volume_linear_key: AudioGlobals.ui_volume_linear,
+		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
+	})
+	AudioGlobals.music_volume_linear = data_array[0]
+	AudioGlobals.game_volume_linear = data_array[1]
+	AudioGlobals.ui_volume_linear = data_array[2]
+	PlayerGlobals.default_camera_zoom = data_array[3]
 
-func load_local_data() -> void:
+func save_settings() -> void:
 	
-	if not FileAccess.file_exists(local_data_path):
-		return
+	set_data_in_storage({
+		music_volume_linear_key: AudioGlobals.music_volume_linear,
+		game_volume_linear_key: AudioGlobals.game_volume_linear,
+		ui_volume_linear_key: AudioGlobals.ui_volume_linear,
+		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
+	})
+
+func get_local_shaders_compiled() -> bool:
 	
-	var LoadedFile = FileAccess.open(local_data_path, FileAccess.READ)
-	local_data = LoadedFile.get_var()
-	LoadedFile.close()
+	if not FileAccess.file_exists(shaders_compiled_flag_key):
+		return false
 	
-	if local_data.has(music_volume_linear_key):
-		AudioGlobals.music_volume_linear = local_data[music_volume_linear_key]
-	if local_data.has(game_volume_linear_key):
-		AudioGlobals.game_volume_linear = local_data[game_volume_linear_key]
-	if local_data.has(ui_volume_linear_key):
-		AudioGlobals.ui_volume_linear = local_data[ui_volume_linear_key]
+	var loaded_file = FileAccess.open(shaders_compiled_flag_key, FileAccess.READ)
+	var out_compiled := loaded_file.get_var()
+	loaded_file.close()
+	return out_compiled
+
+func save_local_shaders_compiled() -> void:
 	
-	if local_data.has(default_camera_zoom_key):
-		PlayerGlobals.default_camera_zoom = local_data[default_camera_zoom_key]
+	var new_file = FileAccess.open(shaders_compiled_flag_key, FileAccess.WRITE)
+	new_file.store_var(true)
+	new_file.close()
 
 ##
 ## Storage
 ##
-var _get_data_from_storage_pending: Variant
-signal on_get_data_from_storage_callback()
+var is_loading_data_from_storage: bool = false
+signal loaded_data_from_storage(in_success: bool)
 
-func get_data_from_storage(in_key: String, in_default: Variant) -> Variant:
+func get_data_from_storage(in_keys_with_defaults: Dictionary[String, Variant]) -> Array[Variant]:
 	
-	Bridge.storage.get(in_key, _get_data_from_storage_callback.bind(in_default))
+	while is_loading_data_from_storage:
+		await loaded_data_from_storage
 	
-	if _get_data_from_storage_pending == null:
-		await on_get_data_from_storage_callback
+	#print(in_keys_with_defaults)
+	var out_array := in_keys_with_defaults.values()
+	#print(loading_data_from_storage_array)
 	
-	var out_data = _get_data_from_storage_pending
-	_get_data_from_storage_pending = null
-	return out_data
+	is_loading_data_from_storage = true
+	Bridge.storage.get(in_keys_with_defaults.keys(), _get_data_from_storage_callback.bind(out_array))
+	
+	if is_loading_data_from_storage:
+		await loaded_data_from_storage
+	return out_array
 
-func _get_data_from_storage_callback(in_success: bool, in_data: Variant, in_default: Variant) -> void:
-	
+func _get_data_from_storage_callback(in_success: bool, in_data: Array, out_array: Array[Variant]) -> void:
+		
 	if not in_success:
-		push_error("%s _get_data_from_storage_callback() in_success == false!" % self)
+		push_error("get_data_from_storage() failed!")
 	
-	assert(in_default != null)
+	for sample_index: int in range(in_data.size()):
+		
+		var sample_data = in_data[sample_index]
+		#print(in_data.size(), " ", sample_index)
+		var sample_default = out_array[sample_index]
+		
+		if sample_data == null:
+			pass
+		else:
+			var sample_converted := type_convert(sample_data, typeof(sample_default))
+			out_array[sample_index] = sample_converted
 	
-	if in_data == null:
-		in_data = in_default
-	
-	var converted_data := convert(in_data, typeof(in_default))
-	
-	_get_data_from_storage_pending = converted_data
-	on_get_data_from_storage_callback.emit()
+	is_loading_data_from_storage = false
+	loaded_data_from_storage.emit(in_success)
 
-var _on_set_data_in_storage_finished: bool = false
-signal on_set_data_from_storage_callback()
+var storage_save_queued_data: Dictionary[String, Variant]
 
-func set_data_in_storage(in_key: String, in_data: Variant) -> void:
-	
-	Bridge.storage.set(in_key, in_data, _on_set_data_in_storage_callback)
-	
-	if not _on_set_data_in_storage_finished:
-		await on_set_data_from_storage_callback
-	_on_set_data_in_storage_finished = false
+func set_data_in_storage(in_data: Dictionary[String, Variant]) -> void:
+	storage_save_queued_data.merge(in_data, true)
+	set_process(true)
 
-func _on_set_data_in_storage_callback(in_success: bool) -> void:
+var is_saving_data_in_storage: bool = false
+signal saved_data_in_storage(in_success: bool)
+
+func flush_set_data_in_storage() -> void:
 	
-	if not in_success:
-		push_error("%s _on_set_data_in_storage_callback() in_success == false!" % self)
+	if is_saving_data_in_storage:
+		await saved_data_in_storage
+		if not storage_save_queued_data.is_empty():
+			set_process(true)
+		return
 	
-	_on_set_data_in_storage_finished = true
-	on_set_data_from_storage_callback.emit()
+	is_saving_data_in_storage = true
+	
+	assert(not storage_save_queued_data.is_empty())
+	Bridge.storage.set(storage_save_queued_data.keys(), storage_save_queued_data.values(), func(in_success: bool) -> void:
+		
+		if not in_success:
+			push_error("flush_set_data_in_storage() failed!")
+		
+		is_saving_data_in_storage = false
+		saved_data_in_storage.emit(in_success)
+	)
+	storage_save_queued_data.clear()

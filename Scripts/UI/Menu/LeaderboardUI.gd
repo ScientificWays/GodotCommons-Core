@@ -4,22 +4,32 @@ class_name LeaderboardUI
 @export_category("List")
 @export var entries_container: Container
 @export var entry_scene: PackedScene = preload("res://Scenes/UI/Menu/LeaderboardUI_Entry.tscn")
-@export var empty_label: VHSLabel
+@export var tabs: TabContainer
+
+var last_campaign_data: CampaignData
 
 func _ready():
 	
 	assert(entries_container)
 	assert(entry_scene)
 	
+	assert(tabs)
+	
+	tabs.current_tab = 1
+	tabs.visible = false
+	
 	if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
-		pass
+		Bridge.leaderboards.on_set_score_finished.connect(on_set_score_finished)
+		on_set_score_finished(true)
 	else:
 		queue_free()
 
 func handle_animated_sequence() -> void:
-	update_for_campaign_data(WorldGlobals._campaign_data)
+	await update_for_campaign_data(WorldGlobals._campaign_data)
 
 func update_for_campaign_data(in_data: CampaignData) -> void:
+	
+	last_campaign_data = in_data
 	Bridge.leaderboards.get_entries(in_data.get_leaderboard_best_score(), _on_leaderboard_get_entries_completed)
 
 func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array):
@@ -30,14 +40,17 @@ func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array):
 	print("%s _on_leaderboard_get_entries_completed() in_success == %s" % [ self, in_success ])
 	
 	if in_entries.is_empty():
-		entries_container.visible = false
-		empty_label.lerp_visible = true
+		tabs.current_tab = 1
 	else:
-		entries_container.visible = true
-		empty_label.lerp_visible = false
+		tabs.current_tab = 0
 		
 		for sample_entry_data: Dictionary in in_entries:
 			
 			var new_entry := entry_scene.instantiate() as LeaderboardUI_Entry
 			new_entry.data = sample_entry_data
 			entries_container.add_child(new_entry)
+	tabs.visible = true
+
+func on_set_score_finished(in_success: bool) -> void:
+	if in_success and is_instance_valid(last_campaign_data):
+		update_for_campaign_data(last_campaign_data)

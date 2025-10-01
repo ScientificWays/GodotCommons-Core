@@ -55,15 +55,20 @@ class_name VHSLabel
 		Update()
 
 func _ready() -> void:
-	resized.connect(on_resized)
+	Update()
+
+func _notification(in_what: int) -> void:
+	
+	if is_node_ready():
+		if in_what == NOTIFICATION_RESIZED \
+		or in_what == NOTIFICATION_VISIBILITY_CHANGED \
+		or in_what == NOTIFICATION_RESIZED:
+			Update()
 
 func _exit_tree() -> void:
 	if Engine.is_editor_hint():
 		if label_settings and label_settings.changed.is_connected(Update):
 			label_settings.changed.disconnect(Update)
-
-func on_resized() -> void:
-	Update.call_deferred()
 
 func GetPositionTarget() -> Control:
 	return target_texture

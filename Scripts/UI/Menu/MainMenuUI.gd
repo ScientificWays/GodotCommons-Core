@@ -50,5 +50,4 @@ func _on_quit_option_pressed() -> void:
 	UIGlobals.confirm_ui.toggle("QUIT_PROMPT", _handle_confirm_quit)
 
 func _handle_confirm_quit() -> void:
-	SaveGlobals.save_local_data(true)
 	get_tree().quit()

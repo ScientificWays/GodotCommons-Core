@@ -53,7 +53,7 @@ func _ready() -> void:
 	_sync_with_game_state()
 	WorldGlobals._game_state.handle_level_ready()
 	
-	print(WorldGlobals._game_state._game_args)
+	#print(self, " _ready() WorldGlobals._game_state._game_args = ", WorldGlobals._game_state._game_args)
 
 func _enter_tree() -> void:
 	WorldGlobals._level = self
@@ -73,10 +73,10 @@ func _sync_with_game_state() -> void:
 		WorldGlobals._game_state = DefaultGameMode.init_new_game_state(new_game_seed, DefaultGameModeArgs)
 	
 	assert(WorldGlobals._game_state)
-	WorldGlobals._game_state.on_begin_play.connect(handle_begin_play)
-	WorldGlobals._game_state.on_end_play.connect(handle_end_play)
+	WorldGlobals._game_state.on_begin_play.connect(_handle_begin_play)
+	WorldGlobals._game_state.on_end_play.connect(_handle_end_play)
 
-func handle_begin_play() -> void:
+func _handle_begin_play() -> void:
 	
 	if RespawnAllPlayersOnBeginPlay:
 		PlayerGlobals.RespawnAllPlayers()
@@ -89,7 +89,7 @@ func handle_begin_play() -> void:
 	
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STARTED)
 
-func handle_end_play() -> void:
+func _handle_end_play() -> void:
 	
 	if StopLevelMusicOnEndPlay and MusicManager._is_playing_music():
 		MusicManager.stop(1.0)
