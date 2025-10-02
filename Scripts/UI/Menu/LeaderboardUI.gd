@@ -25,6 +25,9 @@ func _ready():
 		queue_free()
 
 func handle_animated_sequence() -> void:
+	
+	#await GameGlobals.SpawnAwaitTimer(self, 0.5).timeout
+	
 	await update_for_campaign_data(WorldGlobals._campaign_data)
 
 func update_for_campaign_data(in_data: CampaignData) -> void:

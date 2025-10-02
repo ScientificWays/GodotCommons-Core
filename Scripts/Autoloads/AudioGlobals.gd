@@ -64,6 +64,7 @@ func _ready():
 		Bridge.game.visibility_state_changed.connect(on_game_visibility_state_changed)
 		Bridge.advertisement.interstitial_state_changed.connect(on_advertisement_interstitial_state_changed)
 		Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
+		Bridge.platform.audio_state_changed.connect(on_audio_state_changed)
 		
 		GameGlobals.web_is_paused_changed.connect(update_web_mute)
 		

@@ -15,21 +15,22 @@ var add_score: float = 0.0:
 		ScoreLabel.label_text = "%d + %d" % [ prev_score, add_score ]
 
 func _ready() -> void:
-	ExperienceConversion.Converted.connect(OnStatConverted)
-	TimeConversion.Converted.connect(OnStatConverted)
+	ExperienceConversion.Converted.connect(on_stat_converted)
+	TimeConversion.Converted.connect(on_stat_converted)
 
 func handle_animated_sequence() -> void:
 	
 	prev_score = WorldGlobals._game_state.current_score
 	add_score = 0.0
 	
-	await get_tree().create_timer(0.5).timeout
+	var final_add_score := ExperienceConversion.conversion_num_left + TimeConversion.conversion_num_left
+	await WorldGlobals._game_state.add_score(ceili(final_add_score))
+	
+	await get_tree().create_timer(0.25).timeout
 	await ExperienceConversion.handle_animated_sequence()
 	
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.25).timeout
 	await TimeConversion.handle_animated_sequence()
-	
-	await WorldGlobals._game_state.add_score(ceili(add_score))
 
-func OnStatConverted(InScore: float) -> void:
-	add_score += InScore
+func on_stat_converted(in_score: float) -> void:
+	add_score += in_score
