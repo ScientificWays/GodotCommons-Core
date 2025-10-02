@@ -352,3 +352,40 @@ static func IsPC(InCheckWeb: bool = true) -> bool:
 
 static func IsWeb() -> bool:
 	return OS.has_feature("web")
+
+##
+## Social
+##
+var is_pending_rate: bool = false
+signal rate_finished()
+
+func should_request_rate_game() -> bool:
+	print(Time.get_ticks_msec())
+	return Bridge.social.is_rate_supported \
+		and (Time.get_ticks_msec() > (60000 * 3)) \
+		and (not is_pending_rate)
+
+func handle_rate_game() -> void:
+	
+	assert(not is_pending_rate)
+	
+	if should_request_rate_game():
+		
+		print("is_pending_rate = true")
+		is_pending_rate = true
+		
+		Bridge.social.rate(_on_rate_game_finished)
+		
+		if is_pending_rate:
+			print("await rate_finished")
+			await rate_finished
+			print("emitted rate_finished")
+		else:
+			print("immediate rate finish")
+
+func _on_rate_game_finished(in_success: bool) -> void:
+	
+	print("_on_rate_game_finished() in_success == ", in_success)
+	
+	is_pending_rate = false
+	rate_finished.emit()

@@ -21,7 +21,10 @@ func _ready() -> void:
 	player_name.label_text = data.name
 	player_score.label_text = String.num_int64(data.score)
 	
-	_handle_photo_http_request()
+	if data.photo == null:
+		player_photo.visible = false
+	else:
+		_handle_photo_http_request()
 
 func _handle_photo_http_request() -> void:
 	
