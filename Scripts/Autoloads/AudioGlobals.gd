@@ -10,7 +10,7 @@ var MusicBusIndex: int = -1
 var WorldBusIndex: int = -1
 var UIBusIndex: int = -1
 
-var music_volume_linear: float = 1.0:
+var music_volume_linear: float = 0.5:
 	set(in_volume):
 		if music_volume_linear != in_volume:
 			music_volume_linear = in_volume
@@ -86,6 +86,7 @@ func on_advertisement_rewarded_state_changed(in_state: String) -> void:
 	update_web_mute()
 
 func on_audio_state_changed(in_is_enabled: bool) -> void:
+	print("on_audio_state_changed() in_is_enabled == ", in_is_enabled)
 	update_web_mute()
 
 var web_mute: bool = false:
@@ -110,12 +111,13 @@ func update_web_mute() -> void:
 
 func handle_music_volume_changed():
 
-	var NormalGainPart := minf(music_volume_linear, 0.6)
-	var ExtraGainPart := music_volume_linear - NormalGainPart
+	#var NormalGainPart := minf(music_volume_linear, 0.6)
+	#var ExtraGainPart := music_volume_linear - NormalGainPart
 	
-	var NewVolumeDb := linear_to_db(NormalGainPart / 0.6 + ExtraGainPart / 0.4)
+	#var NewVolumeDb := linear_to_db(NormalGainPart / 0.6 + ExtraGainPart / 0.4)
 	#print(NewVolumeDb)
-	AudioServer.set_bus_volume_db(MusicBusIndex, NewVolumeDb)
+	#AudioServer.set_bus_volume_db(MusicBusIndex, NewVolumeDb)
+	AudioServer.set_bus_volume_db(MusicBusIndex, linear_to_db(music_volume_linear))
 	music_volume_linear_changed.emit()
 
 func handle_game_volume_changed():

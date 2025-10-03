@@ -31,6 +31,8 @@ var GibsSetting: GraphicsOption = GraphicsOption.Average if OS.has_feature("mobi
 		GibsSetting = InOption
 		GibsSettingChanged.emit()
 
+var _custom_logger: CustomLogger
+
 func _ready():
 	
 	if IsWeb():
@@ -42,6 +44,8 @@ func _ready():
 		Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
 		
 		update_web_is_paused()
+	
+	_custom_logger = CustomLogger.new()
 	
 	#DebugMenu.style = DebugMenu.Style.VISIBLE_DETAILED
 	#if OS.get_name() == &"Windows":
@@ -73,6 +77,43 @@ func update_web_is_paused() -> void:
 		#or not get_window().has_focus() \
 		or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
 		or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED
+
+##
+## Social
+##
+var is_pending_rate: bool = false
+signal rate_finished()
+
+func should_request_rate_game() -> bool:
+	print(Time.get_ticks_msec())
+	return Bridge.social.is_rate_supported \
+		and (Time.get_ticks_msec() > (60000 * 3)) \
+		and (not is_pending_rate)
+
+func handle_rate_game() -> void:
+	
+	assert(not is_pending_rate)
+	
+	if should_request_rate_game():
+		
+		print("is_pending_rate = true")
+		is_pending_rate = true
+		
+		Bridge.social.rate(_on_rate_game_finished)
+		
+		if is_pending_rate:
+			print("await rate_finished")
+			await rate_finished
+			print("emitted rate_finished")
+		else:
+			print("immediate rate finish")
+
+func _on_rate_game_finished(in_success: bool) -> void:
+	
+	print("_on_rate_game_finished() in_success == ", in_success)
+	
+	is_pending_rate = false
+	rate_finished.emit()
 
 ##
 ## Ads
@@ -352,40 +393,3 @@ static func IsPC(InCheckWeb: bool = true) -> bool:
 
 static func IsWeb() -> bool:
 	return OS.has_feature("web")
-
-##
-## Social
-##
-var is_pending_rate: bool = false
-signal rate_finished()
-
-func should_request_rate_game() -> bool:
-	print(Time.get_ticks_msec())
-	return Bridge.social.is_rate_supported \
-		and (Time.get_ticks_msec() > (60000 * 3)) \
-		and (not is_pending_rate)
-
-func handle_rate_game() -> void:
-	
-	assert(not is_pending_rate)
-	
-	if should_request_rate_game():
-		
-		print("is_pending_rate = true")
-		is_pending_rate = true
-		
-		Bridge.social.rate(_on_rate_game_finished)
-		
-		if is_pending_rate:
-			print("await rate_finished")
-			await rate_finished
-			print("emitted rate_finished")
-		else:
-			print("immediate rate finish")
-
-func _on_rate_game_finished(in_success: bool) -> void:
-	
-	print("_on_rate_game_finished() in_success == ", in_success)
-	
-	is_pending_rate = false
-	rate_finished.emit()
