@@ -62,6 +62,7 @@ func _notification(in_what: int) -> void:
 	if is_node_ready():
 		if in_what == NOTIFICATION_RESIZED \
 		or in_what == NOTIFICATION_VISIBILITY_CHANGED \
+		or in_what == NOTIFICATION_TRANSLATION_CHANGED \
 		or in_what == NOTIFICATION_RESIZED:
 			Update()
 
@@ -73,13 +74,26 @@ func _exit_tree() -> void:
 func GetPositionTarget() -> Control:
 	return target_texture
 
+var _doing_update: bool = false
+
 func Update() -> void:
+	
+	if not is_node_ready() or not is_inside_tree():
+		return
+	
+	if not Engine.is_editor_hint():
+		while _doing_update:
+			await get_tree().process_frame
+			if not is_inside_tree():
+				return
 	
 	var use_mobile_text := (not label_text_mobile.is_empty()) and GameGlobals_Class.IsMobile()
 	
 	var label_target := target as Label
 	if not label_target:
 		return
+	
+	_doing_update = true
 	
 	label_target.text = label_text_mobile if use_mobile_text else label_text
 	
@@ -88,23 +102,31 @@ func Update() -> void:
 	label_target.vertical_alignment = label_vertical_alignment
 	label_target.autowrap_mode = label_autowrap_mode
 	
-	sub_viewport.size = label_target.size * (1.1 + scale_offset)
+	if not Engine.is_editor_hint():
+		await get_tree().process_frame ## Wait for label_target update
+		if not is_inside_tree():
+			return
+	
+	var new_size := label_target.size * (1.1 + scale_offset)
+	sub_viewport.size = new_size
 	custom_minimum_size = label_target.size
 	pivot_offset = custom_minimum_size * 0.5
 	
-	target_texture.set_deferred("size", sub_viewport.size)
-	target_texture.pivot_offset = sub_viewport.size * 0.5
+	target_texture.set_deferred("size", new_size)
+	target_texture.pivot_offset = new_size * 0.5
 	
 	if get_parent() is Container:
-		target_texture.set_anchors_and_offsets_preset.call_deferred(forced_anchors_preset)
+		target_texture.set_anchors_and_offsets_preset.call_deferred(forced_anchors_preset, Control.PRESET_MODE_KEEP_SIZE)
 	else:
-		target_texture.set_anchors_and_offsets_preset.call_deferred(Control.PRESET_CENTER)
+		target_texture.set_anchors_and_offsets_preset.call_deferred(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
 		
 		if use_forced_anchors_preset:
-			set_anchors_and_offsets_preset(forced_anchors_preset, Control.PRESET_MODE_MINSIZE)
+			set_anchors_and_offsets_preset(forced_anchors_preset, Control.PRESET_MODE_KEEP_SIZE)
 	
 	if label_target.autowrap_mode != TextServer.AutowrapMode.AUTOWRAP_OFF:
 		label_target.size = size
 	label_target.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
 	
 	super()
+	
+	_doing_update = false

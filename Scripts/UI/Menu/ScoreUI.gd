@@ -8,11 +8,11 @@ class_name ScoreUI
 @export_category("Score")
 @export var ScoreLabel: VHSLabel
 
-var prev_score: int = 0
-var add_score: float = 0.0:
-	set(InScore):
-		add_score = InScore
-		ScoreLabel.label_text = "%d + %d" % [ prev_score, add_score ]
+var visual_prev_score: int = 0
+var visual_add_score: float = 0.0:
+	set(in_score):
+		visual_add_score = in_score
+		ScoreLabel.label_text = "%d + %d" % [ visual_prev_score, ceili(visual_add_score) ]
 
 func _ready() -> void:
 	ExperienceConversion.Converted.connect(on_stat_converted)
@@ -20,10 +20,12 @@ func _ready() -> void:
 
 func handle_animated_sequence() -> void:
 	
-	prev_score = WorldGlobals._game_state.current_score
-	add_score = 0.0
+	visual_prev_score = WorldGlobals._game_state.current_score
+	visual_add_score = 0.0
 	
-	var final_add_score := ExperienceConversion.conversion_num_left + TimeConversion.conversion_num_left
+	var final_add_score := ExperienceConversion.get_final_add_score()
+	final_add_score += TimeConversion.get_final_add_score()
+	
 	await WorldGlobals._game_state.add_score(ceili(final_add_score))
 	
 	await get_tree().create_timer(0.25).timeout
@@ -33,4 +35,4 @@ func handle_animated_sequence() -> void:
 	await TimeConversion.handle_animated_sequence()
 
 func on_stat_converted(in_score: float) -> void:
-	add_score += in_score
+	visual_add_score += in_score

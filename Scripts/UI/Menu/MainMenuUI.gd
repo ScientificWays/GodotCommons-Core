@@ -6,6 +6,7 @@ class_name MainMenuUI
 @export var campaigns_option: Button
 @export var challenges_option: Button
 @export var settings_option: Button
+@export var extras_option: Button
 @export var quit_option: Button
 
 @export_category("Tabs")
@@ -13,20 +14,23 @@ class_name MainMenuUI
 @export var campaigns_tab_index: int = 0
 @export var challenges_tab_index: int = 1
 @export var settings_tab_index: int = 2
+@export var extras_tab_index: int = 3
 
 func _ready() -> void:
 	
 	assert(campaigns_option)
 	assert(challenges_option)
 	assert(settings_option)
+	assert(extras_option)
 	assert(quit_option)
 	
 	if Engine.is_editor_hint():
 		return
 	
-	campaigns_option.pressed.connect(_on_campaigns_option_pressed)
-	challenges_option.pressed.connect(_on_challenges_option_pressed)
-	settings_option.pressed.connect(_on_settings_option_pressed)
+	campaigns_option.pressed.connect(_on_tab_option_pressed.bind(campaigns_tab_index))
+	challenges_option.pressed.connect(_on_tab_option_pressed.bind(challenges_tab_index))
+	settings_option.pressed.connect(_on_tab_option_pressed.bind(settings_tab_index))
+	extras_option.pressed.connect(_on_tab_option_pressed.bind(extras_tab_index))
 	
 	assert(tabs)
 	
@@ -37,14 +41,8 @@ func _ready() -> void:
 	#else:
 	quit_option.pressed.connect(_on_quit_option_pressed)
 
-func _on_campaigns_option_pressed() -> void:
-	tabs.current_tab = campaigns_tab_index if (tabs.current_tab != campaigns_tab_index) else -1
-
-func _on_challenges_option_pressed() -> void:
-	tabs.current_tab = challenges_tab_index if (tabs.current_tab != challenges_tab_index) else -1
-
-func _on_settings_option_pressed() -> void:
-	tabs.current_tab = settings_tab_index if (tabs.current_tab != settings_tab_index) else -1
+func _on_tab_option_pressed(in_index: int) -> void:
+	tabs.current_tab = in_index if (tabs.current_tab != in_index) else -1
 
 func _on_quit_option_pressed() -> void:
 	UIGlobals.confirm_ui.toggle("QUIT_PROMPT", _handle_confirm_quit)

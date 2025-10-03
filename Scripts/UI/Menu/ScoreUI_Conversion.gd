@@ -59,6 +59,9 @@ func _update_appearance() -> void:
 	
 	conversion_num_left = conversion_num_left
 
+func get_final_add_score() -> Variant:
+	return WorldGlobals._game_state.GetGameStatValue(stat_type) * stat_to_score_ratio
+
 func handle_animated_sequence() -> void:
 	
 	var _game_state := WorldGlobals._game_state

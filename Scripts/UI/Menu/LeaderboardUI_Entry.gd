@@ -11,11 +11,11 @@ var data: Dictionary
 
 func _ready() -> void:
 	
-	print("ID: " + str(data.id))
-	print("Name: " + str(data.name))
-	print("Score: " + str(data.score))
-	print("Rank: " + str(data.rank))
-	print("Photo: " + str(data.photo))
+	#print("ID: " + str(data.id))
+	#print("Name: " + str(data.name))
+	#print("Score: " + str(data.score))
+	#print("Rank: " + str(data.rank))
+	#print("Photo: " + str(data.photo))
 	
 	player_rank.label_text = String.num_int64(data.rank)
 	player_name.label_text = data.name

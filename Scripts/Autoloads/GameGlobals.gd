@@ -216,6 +216,20 @@ func CalcRadialImpulseWithOffsetForTarget(InTarget: Node2D, InOrigin: Vector2, I
 	return Vector4(OutImpulse.x, OutImpulse.y, ImpulseOffset.x, ImpulseOffset.y)
 
 ##
+## Metrics
+##
+func send_to_yandex_metrics(in_code: int, in_type: String, in_target_name: String):
+	
+	if not IsWeb():
+		return
+	
+	print("GameGlobals.send_to_yandex_metrics() in_target_name == ", in_target_name)
+	
+	var js_window := JavaScriptBridge.get_interface("window")
+	js_window.ym(in_code, in_type, in_target_name)
+
+
+##
 ## Arrays
 ##
 func ArrayIsValidIndex(InArray: Array, InIndex: int) -> bool:

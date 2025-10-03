@@ -9,6 +9,8 @@ var music_volume_linear_key: String = "music_volume_linear"
 var game_volume_linear_key: String = "game_volume_linear"
 var ui_volume_linear_key: String = "ui_volume_linear"
 
+var locale_key: String = "auto"
+
 var default_camera_zoom_key: String = "default_camera_zoom"
 
 func _ready() -> void:
@@ -26,6 +28,12 @@ func _ready() -> void:
 func _process(in_delta: float) -> void:
 	flush_set_data_in_storage()
 	set_process(false)
+
+func _notification(in_what: int) -> void:
+	
+	if in_what == NOTIFICATION_TRANSLATION_CHANGED:
+		if is_node_ready():
+			save_settings()
 
 func on_music_volume_linear_changed() -> void:
 	save_settings()
@@ -45,12 +53,20 @@ func load_settings() -> void:
 		music_volume_linear_key: AudioGlobals.music_volume_linear,
 		game_volume_linear_key: AudioGlobals.game_volume_linear,
 		ui_volume_linear_key: AudioGlobals.ui_volume_linear,
+		locale_key: TranslationServer.get_locale(),
 		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
 	})
 	AudioGlobals.music_volume_linear = data_array[0]
 	AudioGlobals.game_volume_linear = data_array[1]
 	AudioGlobals.ui_volume_linear = data_array[2]
-	PlayerGlobals.default_camera_zoom = data_array[3]
+	
+	if GameGlobals.IsWeb():
+		pass
+	else:
+		if data_array[3] != TranslationServer.get_locale():
+			TranslationServer.set_locale(data_array[3])
+	
+	PlayerGlobals.default_camera_zoom = data_array[4]
 
 func save_settings() -> void:
 	
@@ -58,6 +74,7 @@ func save_settings() -> void:
 		music_volume_linear_key: AudioGlobals.music_volume_linear,
 		game_volume_linear_key: AudioGlobals.game_volume_linear,
 		ui_volume_linear_key: AudioGlobals.ui_volume_linear,
+		locale_key: TranslationServer.get_locale(),
 		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
 	})
 

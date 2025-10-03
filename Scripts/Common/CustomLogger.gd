@@ -21,6 +21,10 @@ func _log_error(
 	in_error_type: int, 
 	in_script_backtraces: Array[ScriptBacktrace]
 ) -> void:
+	
+	if not Output.config.debug_enabled:
+		return
+	
 	_mutex.lock()
 	
 	var sb := PackedStringArray()
@@ -50,6 +54,9 @@ func _log_error(
 	_mutex.unlock()
 
 func _log_message(in_message: String, in_error: bool) -> void:
+	
+	if not Output.config.debug_enabled:
+		return
 	
 	_mutex.lock()
 	
