@@ -23,7 +23,7 @@ func _input(InEvent: InputEvent) -> void:
 	
 	if Time.get_ticks_msec() > RestartEnableTicksMs and not InEvent.is_echo():
 		
-		if GameGlobals.IsPC():
+		if PlatformGlobals_Class.IsPC():
 			if InEvent.is_action_pressed(&"Restart"):
 				pass
 			else:

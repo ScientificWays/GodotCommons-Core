@@ -28,7 +28,7 @@ func _input(InEvent: InputEvent) -> void:
 	if InEvent.is_echo():
 		return
 	
-	if GameGlobals_Class.IsPC():
+	if PlatformGlobals_Class.IsPC():
 		if InEvent.is_action_pressed(&"Continue"):
 			pass
 		else:

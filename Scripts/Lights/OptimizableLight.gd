@@ -8,7 +8,7 @@ class_name OptimizableLight
 var _SpriteLight: Sprite2D
 
 func _ready():
-	if optimize_on_web_mobile and GameGlobals.IsMobile() and GameGlobals.IsWeb():
+	if optimize_on_web_mobile and PlatformGlobals.IsMobile() and PlatformGlobals.IsWeb():
 		EnableSpriteLight()
 
 func EnableSpriteLight():

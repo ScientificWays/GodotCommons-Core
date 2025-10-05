@@ -39,7 +39,7 @@ func _ready() -> void:
 	
 	if not WorldGlobals._level.TriggerTutorialHints \
 	or GameGlobals.get_meta(HintFinishedMeta, false) \
-	or not GameGlobals.IsPC(true):
+	or not PlatformGlobals_Class.IsPC(true):
 		queue_free()
 		return
 	

@@ -55,7 +55,7 @@ func _ready():
 	AudioServer.bus_layout_changed.connect(update_bus_indices)
 	update_bus_indices()
 	
-	if GameGlobals.IsWeb():
+	if PlatformGlobals.IsWeb():
 		
 		WebMusicPlayer = AudioStreamPlayer.new()
 		WebMusicPlayer.bus = MusicBusName
@@ -66,7 +66,7 @@ func _ready():
 		Bridge.advertisement.rewarded_state_changed.connect(on_advertisement_rewarded_state_changed)
 		Bridge.platform.audio_state_changed.connect(on_audio_state_changed)
 		
-		GameGlobals.web_is_paused_changed.connect(update_web_mute)
+		PlatformGlobals.web_is_paused_changed.connect(update_web_mute)
 		
 		update_web_mute()
 
@@ -107,7 +107,7 @@ func update_web_mute() -> void:
 		or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
 		or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED \
 		or not Bridge.platform.is_audio_enabled \
-		or GameGlobals.web_is_paused
+		or PlatformGlobals.web_is_paused
 
 func handle_music_volume_changed():
 
@@ -156,14 +156,14 @@ func TryPlaySound_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEvent
 
 func IsAnyMusicPlaying() -> bool:
 	
-	if GameGlobals.IsWeb():
+	if PlatformGlobals.IsWeb():
 		return WebMusicPlayer.playing or (web_mute and is_instance_valid(WebMusicPlayer.stream))
 	else:
 		return MusicManager._is_playing_music()
 
 func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bool:
 	
-	if GameGlobals.IsWeb():
+	if PlatformGlobals.IsWeb():
 		return (WebMusicPlayer.playing or web_mute) and WebMusicPlayer.stream == InMusicTrack.stems[0].stream
 	else:
 		return MusicManager.is_playing(InBankLabel, InMusicTrack.name)
@@ -177,7 +177,7 @@ func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffse
 		push_error("AudioGlobals.TryPlayMusic() InMusicTrack is invalid!")
 		return false
 	
-	if GameGlobals.IsWeb():
+	if PlatformGlobals.IsWeb():
 		WebMusicPlayer.stream = InMusicTrack.stems[0].stream
 		WebMusicPlayer.volume_db = InMusicTrack.stems[0].volume
 		WebMusicPlayer.play()
@@ -194,7 +194,7 @@ func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffse
 
 func TryStopMusic(InCrossfadeTime: float = 2.0) -> bool:
 	
-	if GameGlobals.IsWeb():
+	if PlatformGlobals.IsWeb():
 		if WebMusicPlayer.playing:
 			WebMusicPlayer.stop()
 			CurrentMusicName = ""

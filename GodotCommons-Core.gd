@@ -3,6 +3,7 @@ extends EditorPlugin
 
 func _enter_tree():
 	
+	add_autoload_singleton("PlatformGlobals", "Scripts/Autoloads/PlatformGlobals.gd")
 	add_autoload_singleton("ResourceGlobals", "Scripts/Autoloads/ResourceGlobals.gd")
 	add_autoload_singleton("ModularGlobals", "Scripts/Autoloads/ModularGlobals.gd")
 	add_autoload_singleton("GameGlobals", "Scripts/Autoloads/GameGlobals.gd")
@@ -32,6 +33,7 @@ func _enter_tree():
 
 func _exit_tree():
 	
+	remove_autoload_singleton("PlatformGlobals")
 	remove_autoload_singleton("ResourceGlobals")
 	remove_autoload_singleton("ModularGlobals")
 	remove_autoload_singleton("GameGlobals")

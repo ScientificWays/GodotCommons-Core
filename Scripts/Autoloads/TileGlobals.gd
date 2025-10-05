@@ -12,9 +12,9 @@ enum TileDirection
 func IsOppositeTileDirections(InA: TileDirection, InB: TileDirection) -> bool:
 	return InA == -InB
 
-func GetTileDirection(InTileMap: TileMap, InLayer: int, InCoords: Vector2) -> int:
+func GetTileDirection(InLayer: TileMapLayer, InCoords: Vector2) -> int:
 	
-	var AlternativeTile := InTileMap.get_cell_alternative_tile(InLayer, InCoords)
+	var AlternativeTile := InLayer.get_cell_alternative_tile(InCoords)
 	
 	match AlternativeTile:
 		0: return TileDirection.Right
