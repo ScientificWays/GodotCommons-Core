@@ -138,17 +138,17 @@ func update_web_is_paused() -> void:
 var is_pending_rate: bool = false
 signal rate_finished()
 
-func should_request_rate_game() -> bool:
+func can_request_rate_game() -> bool:
 	print(Time.get_ticks_msec())
 	return Bridge.social.is_rate_supported \
 		and (Time.get_ticks_msec() > (60000 * 3)) \
 		and (not is_pending_rate)
 
-func handle_rate_game() -> void:
+func request_rate_game() -> void:
 	
 	assert(not is_pending_rate)
 	
-	if should_request_rate_game():
+	if can_request_rate_game():
 		
 		print("is_pending_rate = true")
 		is_pending_rate = true
@@ -263,12 +263,16 @@ func _on_yandex_ads_interstitial_closed() -> void:
 ##
 ## Metrics
 ##
-func send_to_yandex_metrics(in_code: int, in_type: String, in_target_name: String):
+func send_metrics(in_code: int, in_type: String, in_target_name: String):
 	
 	if not IsWeb():
 		return
 	
-	print("PlatformGlobals.send_to_yandex_metrics() code = %d, target_name = %s", [ in_code, in_target_name ])
+	#print("PlatformGlobals.send_metrics() code = %d, target_name = %s", [ in_code, in_target_name ])
 	
-	var js_window := JavaScriptBridge.get_interface("window")
-	js_window.ym(in_code, in_type, in_target_name)
+	#var js_window := JavaScriptBridge.get_interface("window")
+	#js_window.ym(in_code, in_type, in_target_name)
+	
+	var eval_js_code := "ym(%d, \"%s\", \"%s\")" % [ in_code, in_type, in_target_name ]
+	print("PlatformGlobals.send_metrics() eval_js_code = ", eval_js_code)
+	JavaScriptBridge.eval(eval_js_code)

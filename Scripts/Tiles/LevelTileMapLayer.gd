@@ -40,7 +40,14 @@ func _enter_tree() -> void:
 	GameGlobals.PostBarrelRamImpact.connect(HandleBarrelRamImpact)
 
 func _exit_tree() -> void:
+	GameGlobals.PreExplosionImpact.disconnect(HandleExplosionImpact)
 	GameGlobals.PostBarrelRamImpact.disconnect(HandleBarrelRamImpact)
+
+func _notification(in_what: int) -> void:
+	
+	## Easiest fix for emit_signalp: Can't emit non-existing signal "changed"
+	if in_what == NOTIFICATION_PREDELETE:
+		tile_set = null
 
 func _physics_process(InDelta: float):
 	if PendingTilePlaceArray.is_empty():
