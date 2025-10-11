@@ -3,8 +3,8 @@ extends Control
 class_name VHSFX
 
 @export var target: Control:
-	set(InTarget):
-		target = InTarget
+	set(in_target):
+		target = in_target
 		Update()
 
 @export var scale_speed: float = 6.0

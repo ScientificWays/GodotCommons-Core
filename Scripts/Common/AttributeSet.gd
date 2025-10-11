@@ -11,14 +11,14 @@ const FireDamageMul: StringName = &"FireDamageMul"
 const PoisonDamageMul: StringName = &"PoisonDamageMul"
 const RollSpeedAdditive: StringName = &"RollSpeedAdditive"
 
-static func TryGetFrom(InNode: Node) -> AttributeSet:
-	return ModularGlobals.TryGetFrom(InNode, AttributeSet)
+static func try_get_from(in_node: Node) -> AttributeSet:
+	return ModularGlobals.try_get_from(in_node, AttributeSet)
 
 func _enter_tree():
-	ModularGlobals.InitModularNode(self)
+	ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.DeInitModularNode(self)
+	ModularGlobals.deinit_modular_node(self)
 
 class AttributeData:
 	

@@ -7,12 +7,12 @@ func _ready() -> void:
 	area_entered.connect(OnTargetEntered)
 	body_entered.connect(OnTargetEntered)
 
-func OnTargetEntered(InTarget: Node2D) -> void:
-	TryApplyDamageToTarget(InTarget)
+func OnTargetEntered(in_target: Node2D) -> void:
+	TryApplyDamageToTarget(in_target)
 
-func TryApplyDamageToTarget(InTarget: Node2D) -> bool:
+func TryApplyDamageToTarget(in_target: Node2D) -> bool:
 	
-	var TargetDamageReceiver := DamageReceiver.TryGetFrom(InTarget)
+	var TargetDamageReceiver := DamageReceiver.try_get_from(in_target)
 	if not TargetDamageReceiver:
 		return false
 	

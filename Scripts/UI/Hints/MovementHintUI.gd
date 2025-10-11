@@ -20,6 +20,7 @@ const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
 @export_category("Visiblity")
 @export var lerp_visible: bool = true
 @export var lerp_visible_speed: float = 4.0
+@export var highlight_animation_player: AnimationPlayer
 
 signal Finished()
 
@@ -45,6 +46,8 @@ func _ready() -> void:
 	
 	assert(OwnerHUD)
 	assert(KeysTextureRect)
+	
+	assert(highlight_animation_player)
 	
 	SetInstantLerpVisible(lerp_visible)
 	Update()
@@ -79,7 +82,13 @@ func _process(InDelta: float) -> void:
 	display_time_left -= InDelta
 
 func Update():
+	
+	var prev_lerp_visible := lerp_visible
 	lerp_visible = (display_time_left > 0.0)
+	
+	if lerp_visible != prev_lerp_visible:
+		highlight_animation_player.play(&"highlight")
+	
 	VHSControl.lerp_visible = lerp_visible
 
 func SetInstantLerpVisible(InLerpVisible: bool) -> void:

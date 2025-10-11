@@ -3,8 +3,8 @@ class_name Explosion2D_Impact
 
 const DefaultImpactEase: float = 2.0
 
-const ReceiveImpulseMethodName: StringName = &"Explosion2D_ReceiveImpulse"
-const ReceiveDamageMethod: StringName = &"Explosion2D_ReceiveDamage"
+const ReceiveImpulseMethodName: StringName = &"Explosion2D_receive_impulse"
+const ReceiveDamageMethod: StringName = &"Explosion2D_receive_damage"
 
 @export_category("Owner")
 @export var OwnerExplosion: Explosion2D
@@ -85,7 +85,12 @@ func HandleImpact():
 		smoke_particles.modulate = _SmokeParticlesModulate
 	
 	if _ShouldCreateBurn:
-		ExplosionBurn2D.Spawn(GlobalPosition, _BurnScene, OwnerExplosion._Radius)
+		
+		if WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 2):
+			ExplosionBurn2D.Spawn(GlobalPosition, _BurnScene, OwnerExplosion._Radius)
+		elif WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 1):
+			var snapped_position = WorldGlobals._level.snap_position_to_tile_floor(GlobalPosition)
+			ExplosionBurn2D.Spawn(snapped_position, _BurnScene, OwnerExplosion._Radius * 0.5)
 	
 	#if _Data.ImpactSoundEvent:
 	#	var VolumeDb := -12.0 + _Radius * 0.1
@@ -94,47 +99,47 @@ func HandleImpact():
 
 var AffectedTargetsDictionary: Dictionary = {}
 
-func TryApplyImpact(InTarget: Node2D) -> void:
+func TryApplyImpact(in_target: Node2D) -> void:
 	
-	if AffectedTargetsDictionary.has(InTarget):
-		printerr("Target ", InTarget, " was already affected by an explosion! Skipping.")
+	if AffectedTargetsDictionary.has(in_target):
+		printerr("Target ", in_target, " was already affected by an explosion! Skipping.")
 		return
-	AffectedTargetsDictionary[InTarget] = true
+	AffectedTargetsDictionary[in_target] = true
 	
-	if _ShouldIgnoreInstigator and InTarget == OwnerExplosion._Instigator:
+	if _ShouldIgnoreInstigator and in_target == OwnerExplosion._Instigator:
 		return
 	
-	TryApplyImpulseTo(InTarget)
-	TryApplyDamageTo(InTarget)
+	TryApplyImpulseTo(in_target)
+	TryApplyDamageTo(in_target)
 
-func TryApplyImpulseTo(InTarget: Node2D) -> void:
+func TryApplyImpulseTo(in_target: Node2D) -> void:
 	
 	assert(not is_nan(OwnerExplosion._MaxImpulse))
 	if OwnerExplosion._MaxImpulse <= 0.0:
 		return
 	
-	var HasReceiveMethod := InTarget.has_method(ReceiveImpulseMethodName)
-	if HasReceiveMethod or (InTarget is RigidBody2D):
+	var HasReceiveMethod := in_target.has_method(ReceiveImpulseMethodName)
+	if HasReceiveMethod or (in_target is RigidBody2D):
 		
-		var TargetImpulseWithOffset := GameGlobals.calc_radial_impulse_with_offset_for_target(InTarget, OwnerExplosion.global_position, OwnerExplosion._MaxImpulse, OwnerExplosion._Radius, DefaultImpactEase)
+		var TargetImpulseWithOffset := GameGlobals.calc_radial_impulse_with_offset_for_target(in_target, OwnerExplosion.global_position, OwnerExplosion._MaxImpulse, OwnerExplosion._Radius, DefaultImpactEase)
 		var TargetImpulse := Vector2(TargetImpulseWithOffset.x, TargetImpulseWithOffset.y)
 		var ImpulseOffset := Vector2(TargetImpulseWithOffset.z, TargetImpulseWithOffset.w)
 		
-		if HasReceiveMethod and InTarget.call(ReceiveImpulseMethodName, OwnerExplosion, TargetImpulse, ImpulseOffset):
+		if HasReceiveMethod and in_target.call(ReceiveImpulseMethodName, OwnerExplosion, TargetImpulse, ImpulseOffset):
 			pass
-		elif InTarget is RigidBody2D:
-			InTarget.apply_impulse(TargetImpulse, ImpulseOffset)
-		GameGlobals.post_explosion_apply_impulse.emit(self, InTarget, TargetImpulse, ImpulseOffset)
+		elif in_target is RigidBody2D:
+			in_target.apply_impulse(TargetImpulse, ImpulseOffset)
+		GameGlobals.post_explosion_apply_impulse.emit(self, in_target, TargetImpulse, ImpulseOffset)
 
-func TryApplyDamageTo(InTarget: Node) -> void:
+func TryApplyDamageTo(in_target: Node) -> void:
 	
 	if not _ShouldApplyDamage or OwnerExplosion._MaxDamage <= 0.0:
 		return
 	
-	var TargetReceiver := DamageReceiver.TryGetFrom(InTarget)
+	var TargetReceiver := DamageReceiver.try_get_from(in_target)
 	if TargetReceiver:
 		
-		var TargetDistance := InTarget.global_position.distance_to(global_position) - TargetReceiver.get_meta(DamageReceiver.BoundsRadiusMeta, 4.0) as float
+		var TargetDistance := in_target.global_position.distance_to(global_position) - TargetReceiver.get_meta(DamageReceiver.BoundsRadiusMeta, 4.0) as float
 		var DistanceMul: float = 1.0 - ease(minf(TargetDistance / OwnerExplosion._Radius, 1.0), DefaultImpactEase)
 		
 		if DistanceMul > 0.0:

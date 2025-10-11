@@ -1,8 +1,8 @@
 extends Path2D
 class_name ImpulsePoints2D
 
-static func TryGetFrom(InNode: Node) -> ImpulsePoints2D:
-	return ModularGlobals.TryGetFrom(InNode, ImpulsePoints2D)
+static func try_get_from(in_node: Node) -> ImpulsePoints2D:
+	return ModularGlobals.try_get_from(in_node, ImpulsePoints2D)
 
 @export var LerpToCenterOfMassValue: float = 0.5
 
@@ -10,10 +10,10 @@ func _ready():
 	pass
 
 func _enter_tree():
-	ModularGlobals.InitModularNode(self)
+	ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.DeInitModularNode(self)
+	ModularGlobals.deinit_modular_node(self)
 
 func GetLocalImpulsePosition(InGlobalSourcePosition: Vector2) -> Vector2:
 	

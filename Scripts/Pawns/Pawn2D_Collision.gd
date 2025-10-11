@@ -18,6 +18,6 @@ func _ready() -> void:
 	shape = ResourceGlobals.GetOrCreateScaledShape(shape, SizeScale, 0.0)
 	position *= SizeScale
 	
-	var OwnerDamageReceiver := DamageReceiver.TryGetFrom(OwnerPawn)
+	var OwnerDamageReceiver := DamageReceiver.try_get_from(OwnerPawn)
 	if OwnerDamageReceiver:
 		OwnerDamageReceiver.set_meta(DamageReceiver.BoundsRadiusMeta, shape.get_rect().size.x * 0.5)

@@ -42,9 +42,9 @@ func _notification(InCode: int) -> void:
 ##
 func init_custom_cursors() -> void:
 	
-	Input.set_custom_mouse_cursor(mouse_cursor_arrow, Input.CURSOR_ARROW, Vector2(0.5, 0.5))
-	Input.set_custom_mouse_cursor(mouse_cursor_cross, Input.CURSOR_CROSS, Vector2(15.5, 15.5))
-	Input.set_custom_mouse_cursor(mouse_cursor_cross, Input.CURSOR_POINTING_HAND, Vector2(15.5, 15.5))
+	Input.set_custom_mouse_cursor(mouse_cursor_arrow, Input.CURSOR_ARROW, Vector2(0.0, 0.0))
+	Input.set_custom_mouse_cursor(mouse_cursor_cross, Input.CURSOR_CROSS, Vector2(16.0, 16.0))
+	Input.set_custom_mouse_cursor(mouse_cursor_cross, Input.CURSOR_POINTING_HAND, Vector2(16.0, 16.0))
 
 ##
 ## PauseMenuUI

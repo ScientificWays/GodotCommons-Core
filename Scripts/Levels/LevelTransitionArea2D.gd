@@ -12,7 +12,7 @@ func _ready() -> void:
 	area_entered.connect(OnTargetEntered)
 	body_entered.connect(OnTargetEntered)
 
-func OnTargetEntered(InTarget: Node2D):
+func OnTargetEntered(in_target: Node2D):
 	BeginTransition.call_deferred()
 
 func BeginTransition():

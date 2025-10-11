@@ -19,10 +19,17 @@ func _ready():
 	tabs.visible = false
 	
 	if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
-		Bridge.leaderboards.on_set_score_finished.connect(on_set_score_finished)
 		on_set_score_finished(true)
 	else:
 		queue_free()
+
+func _enter_tree() -> void:
+	if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
+		Bridge.leaderboards.on_set_score_finished.connect(on_set_score_finished)
+
+func _exit_tree() -> void:
+	if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
+		Bridge.leaderboards.on_set_score_finished.disconnect(on_set_score_finished)
 
 func handle_animated_sequence() -> void:
 	

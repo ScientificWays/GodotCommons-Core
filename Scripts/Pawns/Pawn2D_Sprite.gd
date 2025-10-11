@@ -62,10 +62,10 @@ var MoveAnimationBaseSpeed: float = 25.0
 signal LookAtTargetChanged()
 
 var LookAtTarget: Node2D:
-	set(InTarget):
+	set(in_target):
 		if LookAtTarget:
 			LookAtTarget.tree_exited.disconnect(OnLookAtTargetTreeExited)
-		LookAtTarget = InTarget
+		LookAtTarget = in_target
 		if LookAtTarget:
 			LookAtTarget.tree_exited.connect(OnLookAtTargetTreeExited)
 		LookAtTargetChanged.emit()

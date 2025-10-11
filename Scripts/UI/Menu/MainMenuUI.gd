@@ -16,7 +16,14 @@ class_name MainMenuUI
 @export var settings_tab_index: int = 2
 @export var extras_tab_index: int = 3
 
+@export_category("Links")
+@export var telegram_link: LinkUI
+@export var vk_link: LinkUI
+
 func _ready() -> void:
+	
+	if Engine.is_editor_hint():
+		return
 	
 	assert(campaigns_option)
 	assert(challenges_option)
@@ -24,8 +31,8 @@ func _ready() -> void:
 	assert(extras_option)
 	assert(quit_option)
 	
-	if Engine.is_editor_hint():
-		return
+	assert(telegram_link)
+	assert(vk_link)
 	
 	campaigns_option.pressed.connect(_on_tab_option_pressed.bind(campaigns_tab_index))
 	challenges_option.pressed.connect(_on_tab_option_pressed.bind(challenges_tab_index))

@@ -29,7 +29,7 @@ func GetLevelPlayerCurrentCameraRect() -> Rect2:
 
 func ResetAllPlayersZoom() -> void:
 	for SampelPlayer: PlayerController in PlayerArray:
-		SampelPlayer._Camera.ResetZoom()
+		SampelPlayer._camera.ResetZoom()
 
 ##
 ## Fade

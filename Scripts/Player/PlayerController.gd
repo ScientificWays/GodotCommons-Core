@@ -3,18 +3,24 @@ class_name PlayerController
 
 const PlayerControllerMeta: StringName = &"PlayerController"
 
-static func TryGetFrom(InNode: Node) -> PlayerController:
-	return InNode.get_meta(PlayerControllerMeta) if is_instance_valid(InNode) and InNode.has_meta(PlayerControllerMeta) else null
+static func try_get_from(in_node: Node) -> PlayerController:
+	return in_node.get_meta(PlayerControllerMeta) if is_instance_valid(in_node) and in_node.has_meta(PlayerControllerMeta) else null
 
-@export var _Camera: PlayerCamera2D
-@export var DefaultPawnScene: PackedScene
+@export_category("Camera")
+@export var _camera: PlayerCamera2D
+
+@export_category("Pawn")
+@export var default_pawn_scene: PackedScene
+
+@export_category("Inventory")
+@export var default_item_containers: Array[PackedScene]
 
 var _UniqueName: String = "zana"
 
 func _ready() -> void:
 	
-	assert(_Camera)
-	assert(DefaultPawnScene)
+	assert(_camera)
+	assert(default_pawn_scene)
 	
 
 func _process(InDelta: float) -> void:
@@ -55,7 +61,7 @@ func Restart() -> void:
 	var _level := WorldGlobals._level as LevelBase2D
 	var RestartPosition := _level.get_player_spawn_position(self)
 	
-	ControlledPawn = DefaultPawnScene.instantiate()
+	ControlledPawn = default_pawn_scene.instantiate()
 	ControlledPawn.position = RestartPosition
 	_level.add_child.call_deferred(ControlledPawn)
 	
@@ -77,7 +83,7 @@ var MovementInput: Vector2
 
 func ProcessMovementInputs(InDelta: float) -> void:
 	
-	if DisableMovementInputs or _Camera.ShouldBlockMovementInputs():
+	if DisableMovementInputs or _camera.ShouldBlockMovementInputs():
 		MovementInput = Vector2.ZERO
 	else:
 		MovementInput = Input.get_vector(&"Left", &"Right", &"Up", &"Down")
@@ -86,7 +92,7 @@ func _unhandled_input(InEvent: InputEvent) -> void:
 	
 	if InEvent is InputEventScreenTouch:
 		
-		if DisableTapInputs or _Camera.ShouldBlockTapInputs():
+		if DisableTapInputs or _camera.ShouldBlockTapInputs():
 			pass
 		else:
 			HandleTapInput(InEvent.position, InEvent.is_released())

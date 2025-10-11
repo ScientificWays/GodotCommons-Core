@@ -43,7 +43,7 @@ func _physics_process(InDelta: float):
 		if not _ShakeReceiver:
 			continue
 		
-		var SampleCamera := _ShakeReceiver.GetPlayerCamera()
+		var SampleCamera := _ShakeReceiver._camera
 		if SampleCamera:
 			var TargetGlobalPosition := SampleTarget.global_position
 			var DistanceMul := _DistanceMulCurve.sample_baked(TargetGlobalPosition.distance_squared_to(SourceGlobalPosition) / MaxDistanceSquared)

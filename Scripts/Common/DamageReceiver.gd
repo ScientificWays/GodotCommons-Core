@@ -3,8 +3,8 @@ class_name DamageReceiver
 
 const BoundsRadiusMeta: StringName = &"DamageReceiver_BoundsRadius"
 
-static func TryGetFrom(InNode: Node) -> DamageReceiver:
-	return ModularGlobals.TryGetFrom(InNode, DamageReceiver)
+static func try_get_from(in_node: Node) -> DamageReceiver:
+	return ModularGlobals.try_get_from(in_node, DamageReceiver)
 
 @export_category("Owner")
 @export var OwnerBody2D: Node2D
@@ -43,8 +43,8 @@ func TryGetLastDamagePosition(InPrioritiseInstigator: bool) -> Vector2:
 var DamageImmunityEndTime: float = 0.0
 var ReceivedLethalDamage: bool = false
 
-signal ReceiveDamage(InSource: Node, InDamage: float, InIgnoredImmunityTime: bool)
-signal ReceiveLethalDamage(InSource: Node, InDamage: float, InIgnoredImmunityTime: bool)
+signal ReceiveDamage(in_source: Node, InDamage: float, InIgnoredImmunityTime: bool)
+signal ReceiveLethalDamage(in_source: Node, InDamage: float, InIgnoredImmunityTime: bool)
 
 func _ready():
 	
@@ -54,10 +54,10 @@ func _ready():
 		DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
 
 func _enter_tree():
-	ModularGlobals.InitModularNode(self)
+	ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.DeInitModularNode(self)
+	ModularGlobals.deinit_modular_node(self)
 
 func GetHealth() -> float:
 	return OwnerAttributes.GetAttributeCurrentValue(AttributeSet.Health)
@@ -68,7 +68,7 @@ func GetMaxHealth() -> float:
 func IsDamageLethal(InDamage: float) -> bool:
 	return GetHealth() <= InDamage
 
-func CanReceiveDamage(InSource: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+func CanReceiveDamage(in_source: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
 	
 	var CurrentTime := Time.get_unix_time_from_system()
 	if not InShouldIgnoreImmunityTime and CurrentTime < DamageImmunityEndTime:
@@ -76,29 +76,29 @@ func CanReceiveDamage(InSource: Node, InInstigator: Node, InDamage: float, InDam
 	else:
 		return InDamageType & DamageImmunityMask == 0
 
-func AdjustReceivedDamage(InSource: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> float:
+func AdjustReceivedDamage(in_source: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> float:
 	return InDamage
 
 ## Can be called in physics frame in BarrelPawn.HandleImpactWith()
-func TryReceiveDamage(InSource: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+func TryReceiveDamage(in_source: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
 	
-	InDamage = AdjustReceivedDamage(InSource, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime)
+	InDamage = AdjustReceivedDamage(in_source, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime)
 	assert(InDamage > 0.0)
 	
-	if CanReceiveDamage(InSource, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime):
+	if CanReceiveDamage(in_source, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime):
 		
 		LastDamage = InDamage
 		LastDamageTime = Time.get_unix_time_from_system()
-		LastDamageSource = InSource
+		LastDamageSource = in_source
 		LastDamageInstigator = InInstigator
 		LastDamageType = InDamageType
 		DamageImmunityEndTime = LastDamageTime + PostDamageImmunityDuration
 		
 		HandleReceivedDamage(InShouldIgnoreImmunityTime)
-		ReceiveDamage.emit(InSource, InDamage, InShouldIgnoreImmunityTime)
+		ReceiveDamage.emit(in_source, InDamage, InShouldIgnoreImmunityTime)
 		
 		if ReceivedLethalDamage:
-			ReceiveLethalDamage.emit(InSource, InDamage, InShouldIgnoreImmunityTime)
+			ReceiveLethalDamage.emit(in_source, InDamage, InShouldIgnoreImmunityTime)
 		return true
 	return false
 

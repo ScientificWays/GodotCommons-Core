@@ -1,73 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://dfqix3v74ujxe"]
+[gd_scene load_steps=3 format=3 uid="uid://dfqix3v74ujxe"]
 
 [ext_resource type="Script" uid="uid://bvj1y1sgxn5et" path="res://addons/GodotCommons-Core/Scripts/Tiles/FallTriggerArea2D.gd" id="1_mipvu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k75er"]
 size = Vector2(24, 24)
 
-[sub_resource type="Animation" id="Animation_mipvu"]
-resource_name = "TargetFall"
-length = 0.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:TargetFallAlpha")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [0.0, 1.0]
-}
-tracks/1/type = "method"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.4),
-"transitions": PackedFloat32Array(1),
-"values": [{
-"args": [],
-"method": &"FinishFallSequence"
-}]
-}
-
-[sub_resource type="Animation" id="Animation_jmhgr"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:TargetFallAlpha")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [0.0]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_jmhgr"]
-_data = {
-&"Fall": SubResource("Animation_mipvu"),
-&"RESET": SubResource("Animation_jmhgr")
-}
-
-[node name="FallTriggerArea001" type="Area2D" node_paths=PackedStringArray("FallAP")]
+[node name="FallTriggerArea001" type="Area2D"]
 collision_layer = 0
-collision_mask = 3
+collision_mask = 19
 monitorable = false
 script = ExtResource("1_mipvu")
-FallAP = NodePath("AnimationPlayer")
 
 [node name="Collision" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_k75er")
 debug_color = Color(0.93844, 0.248962, 5.77569e-07, 0.42)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_jmhgr")
-}

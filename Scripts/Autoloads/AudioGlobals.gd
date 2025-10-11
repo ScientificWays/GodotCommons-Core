@@ -55,7 +55,9 @@ func _ready():
 	AudioServer.bus_layout_changed.connect(update_bus_indices)
 	update_bus_indices()
 	
-	if PlatformGlobals.IsWeb():
+	if PlatformGlobals_Class.IsWeb():
+		
+		MusicManager.queue_free()
 		
 		WebMusicPlayer = AudioStreamPlayer.new()
 		WebMusicPlayer.bus = MusicBusName

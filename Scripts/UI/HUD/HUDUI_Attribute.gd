@@ -20,7 +20,7 @@ func _ready() -> void:
 	
 	if UseControllerAttributeSet:
 		
-		var OwnerAS := AttributeSet.TryGetFrom(OwnerHUD.OwnerPlayerController)
+		var OwnerAS := AttributeSet.try_get_from(OwnerHUD.OwnerPlayerController)
 		OwnerAttributeData = OwnerAS.GetOrInitAttribute(AttributeName) if OwnerAS else null
 		assert(OwnerAttributeData)
 	else:
@@ -46,7 +46,7 @@ func OnOwnerPawnChanged() -> void:
 	if is_instance_valid(NewPawn) and not NewPawn.is_node_ready():
 		await NewPawn.ready
 	
-	var OwnerAS := AttributeSet.TryGetFrom(NewPawn)
+	var OwnerAS := AttributeSet.try_get_from(NewPawn)
 	OwnerAttributeData = OwnerAS.GetOrInitAttribute(AttributeName) if OwnerAS else null
 
 func OnOwnerCurrentValueChanged(InOldValue: float, InNewValue: float) -> void:

@@ -25,13 +25,13 @@ func _unhandled_input(InEvent: InputEvent):
 		get_viewport().set_input_as_handled()
 		
 	elif InEvent.is_action_pressed(&"DebugScrollUp"):
-		OwnerPlayerController._Camera.PendingZoom *= 1.25
-		print("Set camera zoom to ", OwnerPlayerController._Camera.PendingZoom)
+		OwnerPlayerController._camera.PendingZoom *= 1.25
+		print("Set camera zoom to ", OwnerPlayerController._camera.PendingZoom)
 		get_viewport().set_input_as_handled()
 		
 	elif InEvent.is_action_pressed(&"DebugScrollDown"):
-		OwnerPlayerController._Camera.PendingZoom *= 0.8
-		print("Set camera zoom to ", OwnerPlayerController._Camera.PendingZoom)
+		OwnerPlayerController._camera.PendingZoom *= 0.8
+		print("Set camera zoom to ", OwnerPlayerController._camera.PendingZoom)
 		get_viewport().set_input_as_handled()
 		
 

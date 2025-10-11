@@ -3,27 +3,32 @@ class_name ModularGlobals_Class
 
 class ModularNodeData:
 	
-	var TryGetFromMeta: StringName
+	var try_get_from_meta: StringName
 	
-	func _init(InScript: Script):
-		TryGetFromMeta = InScript.get_global_name()
+	func _init(in_script: Script):
+		
+		try_get_from_meta = in_script.get_global_name()
+		
+		if try_get_from_meta.is_empty():
+			try_get_from_meta = in_script.get_base_script().get_global_name()
+		assert(not try_get_from_meta.is_empty())
 
-var ModularNodeDataDictionary: Dictionary[Script, ModularNodeData]
+var modular_node_data_dictionary: Dictionary[Script, ModularNodeData]
 
-func GetOrCreateModularNodeData(InScript: Script) -> ModularNodeData:
+func get_or_create_modular_node_data(in_script: Script) -> ModularNodeData:
 	
-	if not ModularNodeDataDictionary.has(InScript):
-		ModularNodeDataDictionary[InScript] = ModularNodeData.new(InScript)
-	return ModularNodeDataDictionary[InScript]
+	if not modular_node_data_dictionary.has(in_script):
+		modular_node_data_dictionary[in_script] = ModularNodeData.new(in_script)
+	return modular_node_data_dictionary[in_script]
 
-func TryGetFrom(InOwner: Node, InModularNodeScript: Script) -> Node:
-	var Data := GetOrCreateModularNodeData(InModularNodeScript)
-	return InOwner.get_meta(Data.TryGetFromMeta) if is_instance_valid(InOwner) and InOwner.has_meta(Data.TryGetFromMeta) else null
+func try_get_from(in_owner: Node, InModularNodeScript: Script) -> Node:
+	var Data := get_or_create_modular_node_data(InModularNodeScript)
+	return in_owner.get_meta(Data.try_get_from_meta) if is_instance_valid(in_owner) and in_owner.has_meta(Data.try_get_from_meta) else null
 
-func InitModularNode(InNode: Node, InOwner: Node = InNode.get_parent()) -> void:
-	var Data := GetOrCreateModularNodeData(InNode.get_script())
-	InOwner.set_meta(Data.TryGetFromMeta, InNode)
+func init_modular_node(in_node: Node, in_owner: Node = in_node.get_parent()) -> void:
+	var Data := get_or_create_modular_node_data(in_node.get_script())
+	in_owner.set_meta(Data.try_get_from_meta, in_node)
 
-func DeInitModularNode(InNode: Node, InOwner: Node = InNode.get_parent()) -> void:
-	var Data := GetOrCreateModularNodeData(InNode.get_script())
-	InOwner.remove_meta(Data.TryGetFromMeta)
+func deinit_modular_node(in_node: Node, in_owner: Node = in_node.get_parent()) -> void:
+	var Data := get_or_create_modular_node_data(in_node.get_script())
+	in_owner.remove_meta(Data.try_get_from_meta)

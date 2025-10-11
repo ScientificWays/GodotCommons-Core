@@ -4,7 +4,7 @@ class_name GameGlobals_Class
 @export var ShakeSource2DScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Shake/ShakeSource2D.tscn")
 
 signal PreExplosionImpact(InExplosionImpact: Explosion2D_Impact)
-signal post_explosion_apply_impulse(InExplosionImpact: Explosion2D_Impact, InTarget: Node2D, InImpulse: Vector2, InOffset: Vector2)
+signal post_explosion_apply_impulse(InExplosionImpact: Explosion2D_Impact, in_target: Node2D, InImpulse: Vector2, InOffset: Vector2)
 
 signal PostBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll)
 
@@ -50,7 +50,7 @@ func _ready():
 ##
 ## Timers
 ##
-func SpawnOneShotTimerFor(InOwner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
+func SpawnOneShotTimerFor(in_owner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
 	
 	if InDelay > 0.0:
 		
@@ -63,12 +63,12 @@ func SpawnOneShotTimerFor(InOwner: Node, InCallable: Callable, InDelay: float, I
 			NewTimer.timeout.connect(NewTimer.queue_free)
 		
 		NewTimer.wait_time = InDelay
-		InOwner.add_child(NewTimer)
+		in_owner.add_child(NewTimer)
 		return NewTimer
 	InCallable.call()
 	return null
 
-func SpawnRegularTimerFor(InOwner: Node, InCallable: Callable, InDelay: float, InAutostart: bool = true) -> Timer:
+func SpawnRegularTimerFor(in_owner: Node, InCallable: Callable, InDelay: float, InAutostart: bool = true) -> Timer:
 	
 	assert(InDelay > 0.0)
 	var NewTimer = Timer.new()
@@ -76,17 +76,17 @@ func SpawnRegularTimerFor(InOwner: Node, InCallable: Callable, InDelay: float, I
 	NewTimer.one_shot = false
 	NewTimer.timeout.connect(InCallable)
 	NewTimer.wait_time = InDelay
-	InOwner.add_child(NewTimer)
+	in_owner.add_child(NewTimer)
 	return NewTimer
 
-func SpawnAwaitTimer(InOwner: Node, InDelay: float) -> Timer:
+func SpawnAwaitTimer(in_owner: Node, InDelay: float) -> Timer:
 	
 	assert(InDelay > 0.0)
 	var NewTimer = Timer.new()
 	NewTimer.autostart = true
 	NewTimer.one_shot = false
 	NewTimer.wait_time = InDelay
-	InOwner.add_child(NewTimer)
+	in_owner.add_child(NewTimer)
 	return NewTimer
 
 func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, InDelay: float, InTimerParent: Node):
@@ -101,25 +101,25 @@ func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable:
 	else:
 		InRigidBody.body_entered.connect(InBodyEnteredCallable)
 
-func calc_radial_impulse_with_offset_for_target(InTarget: Node2D, InOrigin: Vector2, InMaxImpulse: float, InRadius: float, InImpactEase: float) -> Vector4:
+func calc_radial_impulse_with_offset_for_target(in_target: Node2D, InOrigin: Vector2, InMaxImpulse: float, InRadius: float, InImpactEase: float) -> Vector4:
 	
 	var ImpulseOffset := Vector2(0.0, 0.0)
 	var ImpulsePosition := Vector2.INF
 	
-	var TargetImpulsePoints := ImpulsePoints2D.TryGetFrom(InTarget)
+	var TargetImpulsePoints := ImpulsePoints2D.try_get_from(in_target)
 	if TargetImpulsePoints:
 		
 		var ImpulseLocalPosition := TargetImpulsePoints.GetLocalImpulsePosition(InOrigin)
-		ImpulsePosition = InTarget.to_global(ImpulseLocalPosition)
-		ImpulseOffset = ImpulseLocalPosition.rotated(InTarget.global_rotation)
+		ImpulsePosition = in_target.to_global(ImpulseLocalPosition)
+		ImpulseOffset = ImpulseLocalPosition.rotated(in_target.global_rotation)
 	else:
-		ImpulsePosition = InTarget.global_position
+		ImpulsePosition = in_target.global_position
 	
 	var ImpulseVector := ImpulsePosition - InOrigin
 	var ImpulseDistance := ImpulseVector.length()
 	var ImpulseDirection := ImpulseVector / ImpulseDistance
 	
-	var TargetDistance := ImpulseDistance - InTarget.get_meta(DamageReceiver.BoundsRadiusMeta, 4.0) as float
+	var TargetDistance := ImpulseDistance - in_target.get_meta(DamageReceiver.BoundsRadiusMeta, 4.0) as float
 	var DistanceMul := (1.0 - ease(clampf(TargetDistance / InRadius, 0.0, 1.0), InImpactEase))
 	var FinalImpulseAmplitude := InMaxImpulse * DistanceMul
 	
@@ -212,16 +212,16 @@ func CallAllCancellable(InArray: Array[Callable], InArguments: Array = []) -> bo
 var PauseSources: Array[Node] = []
 signal pause_sources_changed()
 
-func AddPauseSource(InNode: Node):
-	if not PauseSources.has(InNode):
-		PauseSources.append(InNode)
-		InNode.tree_exiting.connect(RemovePauseSource.bind(InNode))
+func AddPauseSource(in_node: Node):
+	if not PauseSources.has(in_node):
+		PauseSources.append(in_node)
+		in_node.tree_exiting.connect(RemovePauseSource.bind(in_node))
 		OnPauseSourcesChanged()
 
-func RemovePauseSource(InNode: Node):
-	if PauseSources.has(InNode):
-		PauseSources.erase(InNode)
-		InNode.tree_exiting.disconnect(RemovePauseSource)
+func RemovePauseSource(in_node: Node):
+	if PauseSources.has(in_node):
+		PauseSources.erase(in_node)
+		in_node.tree_exiting.disconnect(RemovePauseSource)
 		OnPauseSourcesChanged()
 
 func RemoveAllPauseSources():

@@ -1,74 +1,23 @@
 extends Area2D
 class_name FallTriggerArea2D
 
-const IsFallingMeta: StringName = &"FallTriggerArea2D_IsFalling"
-
-@export var FallAP: AnimationPlayer
-
-signal FallSequenceBegin(InTarget: Node2D)
-signal FallSequenceFinished(InTarget: Node2D)
+@export var default_sequence_scene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Tiles/FallTriggerTile001_DefaultSequence.tscn")
 
 func _ready() -> void:
-	area_entered.connect(OnTargetEntered)
-	body_entered.connect(OnTargetEntered)
+	area_entered.connect(_on_target_entered)
+	body_entered.connect(_on_target_entered)
 
-func OnTargetEntered(InTarget: Node2D) -> void:
-	TryTriggerTargetFall(InTarget)
+func _on_target_entered(in_target: Node2D) -> void:
+	try_trigger_target_fall(in_target)
 
-func TryTriggerTargetFall(InTarget: Node2D) -> bool:
+func try_trigger_target_fall(in_target: Node2D) -> bool:
 	
-	assert(InTarget)
+	assert(in_target)
 	
-	if InTarget.get_meta(IsFallingMeta, false):
-		return false
+	var target_sequence := FallTriggerTile_Sequence.try_get_from(in_target)
+	if not is_instance_valid(target_sequence):
+		target_sequence = default_sequence_scene.instantiate()
+		in_target.add_child(target_sequence)
 	
-	if CurrentTarget != null:
-		push_warning("TODO: Add support for multiple targets (Create separate Node per target?)")
-		return false
-	
-	CurrentTarget = InTarget
-	
-	FallSequenceBegin.emit(InTarget)
-	
-	var TargetAP := FallTriggerTile_TargetAP.TryGetFrom(CurrentTarget)
-	if TargetAP:
-		TargetAP.TriggerFall(self)
-	FallAP.play(&"Fall")
+	target_sequence.try_trigger_sequence(self)
 	return true
-
-var CurrentTarget: Node2D:
-	set(InTarget):
-		
-		if CurrentTarget:
-			CurrentTarget.remove_meta(IsFallingMeta)
-			CurrentTarget.tree_exited.disconnect(OnCurrentTargetTreeExited)
-		
-		CurrentTarget = InTarget
-		
-		if CurrentTarget:
-			CurrentTarget.set_meta(IsFallingMeta, true)
-			CurrentTarget.tree_exited.connect(OnCurrentTargetTreeExited)
-
-func OnCurrentTargetTreeExited():
-	FallAP.stop()
-
-@export var TargetFallAlpha: float = 0.0:
-	set(InAlpha):
-		TargetFallAlpha = InAlpha
-		HandleFallAlphaChanged()
-
-func HandleFallAlphaChanged():
-	pass
-
-func FinishFallSequence():
-	
-	var TargetAP := FallTriggerTile_TargetAP.TryGetFrom(CurrentTarget)
-	if TargetAP:
-		TargetAP.FinishFall(self)
-	
-	var PrevTarget = CurrentTarget
-	
-	FallAP.stop()
-	CurrentTarget = null
-	
-	FallSequenceFinished.emit(PrevTarget)

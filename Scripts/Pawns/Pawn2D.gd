@@ -52,11 +52,11 @@ func _ready() -> void:
 	if HealthDamageReceiver:
 		HealthDamageReceiver.ReceiveLethalDamage.connect(OnReceiveLethalDamage)
 
-func Explosion2D_ReceiveImpulse(InExplosion: Explosion2D, InImpulse: Vector2, InOffset: Vector2) -> bool:
+func Explosion2D_receive_impulse(InExplosion: Explosion2D, InImpulse: Vector2, InOffset: Vector2) -> bool:
 	assert(false)
 	return false
 
-func OnReceiveLethalDamage(InSource: Node, InDamage: float, InIgnoredImmunityTime: bool):
+func OnReceiveLethalDamage(in_source: Node, InDamage: float, InIgnoredImmunityTime: bool):
 	HandleLethalDamage()
 
 func HandleLethalDamage():
