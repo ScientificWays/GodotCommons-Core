@@ -9,6 +9,7 @@ class_name ItemData
 @export_category("Item Container")
 @export var target_container_script: Script
 @export var use_controller_container: bool = true
+@export var max_stack: int = -1
 
 func can_pick_up(in_target: Node) -> bool:
 	
@@ -30,10 +31,10 @@ func can_pick_up(in_target: Node) -> bool:
 
 func handle_pick_up(in_target: Node) -> void:
 	
-	if target_container_script:
-		
-		if use_controller_container:
-			in_target = PlayerController.try_get_from(in_target)
-		
-		var target_container := ModularGlobals.try_get_from(in_target, target_container_script)
-		target_container._handle_add_item(self)
+	assert(target_container_script)
+	
+	if use_controller_container:
+		in_target = PlayerController.try_get_from(in_target)
+	
+	var target_container := ModularGlobals.try_get_from(in_target, target_container_script) as ItemContainer
+	target_container._handle_add_item(self, 1)
