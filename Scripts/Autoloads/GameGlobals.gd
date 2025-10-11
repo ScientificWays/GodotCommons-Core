@@ -210,6 +210,7 @@ func CallAllCancellable(InArray: Array[Callable], InArguments: Array = []) -> bo
 ## Pause 
 ##
 var PauseSources: Array[Node] = []
+signal pause_sources_changed()
 
 func AddPauseSource(InNode: Node):
 	if not PauseSources.has(InNode):
@@ -245,6 +246,7 @@ func OnPauseSourcesChanged():
 		get_tree().paused = false
 	else:
 		get_tree().paused = true
+	pause_sources_changed.emit()
 
 func OnPhysicsTickRateSettingChanged(InValue: int):
 	if InValue < 30 or InValue > 120:

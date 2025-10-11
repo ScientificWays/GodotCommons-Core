@@ -11,6 +11,9 @@ extends Node
 	preload("res://addons/GodotCommons-Core/Assets/UI/Buttons/Styles/Button002c.tres")
 ]
 
+@export var mouse_cursor_arrow: Resource = preload("res://addons/GodotCommons-Core/Assets/UI/Cursors/Arrow001a.png")
+@export var mouse_cursor_cross: Resource = preload("res://addons/GodotCommons-Core/Assets/UI/Cursors/Crosshair001a.png")
+
 #var _MainMenu: MainMenu:
 #	set(InMainMenu):
 #		assert(is_instance_valid(InMainMenu) != is_instance_valid(_MainMenu))
@@ -21,6 +24,27 @@ extends Node
 #	set(InSettingsUI):
 #		assert(is_instance_valid(InSettingsUI) != is_instance_valid(_SettingsUI))
 #		_SettingsUI = InSettingsUI
+
+func _ready() -> void:
+	
+	init_custom_cursors()
+	
+	try_create_pause_menu_ui.call_deferred()
+	try_create_confirm_ui.call_deferred()
+
+func _notification(InCode: int) -> void:
+	match InCode:
+		Node.NOTIFICATION_WM_GO_BACK_REQUEST:
+			Input.parse_input_event(load("res://addons/GodotCommons-Core/Assets/UI/Shortcuts/BackAction.tres"))
+
+##
+## Cursors
+##
+func init_custom_cursors() -> void:
+	
+	Input.set_custom_mouse_cursor(mouse_cursor_arrow, Input.CURSOR_ARROW, Vector2(0.5, 0.5))
+	Input.set_custom_mouse_cursor(mouse_cursor_cross, Input.CURSOR_CROSS, Vector2(15.5, 15.5))
+	Input.set_custom_mouse_cursor(mouse_cursor_cross, Input.CURSOR_POINTING_HAND, Vector2(15.5, 15.5))
 
 ##
 ## PauseMenuUI
@@ -65,20 +89,8 @@ func IsPointInsideControlArea(InPoint: Vector2, InControl: Control) -> bool:
 	var y: bool = InPoint.y >= InControl.global_position.y and InPoint.y <= InControl.global_position.y + (InControl.size.y * InControl.get_global_transform_with_canvas().get_scale().y)
 	return x and y
 
-func IsLeftMouseClick(InEvent: InputEvent) -> bool:
+func is_left_mouse_button_press_event(InEvent: InputEvent) -> bool:
 	return (InEvent is InputEventMouseButton) and InEvent.is_pressed() and (InEvent.button_index == MouseButton.MOUSE_BUTTON_LEFT)
-
-func _ready() -> void:
-	
-	Input.set_custom_mouse_cursor(load("res://addons/GodotCommons-Core/Assets/UI/Cursors/Cross001a.png"), Input.CURSOR_CROSS, Vector2(8.0, 8.0))
-	
-	try_create_pause_menu_ui.call_deferred()
-	try_create_confirm_ui.call_deferred()
-
-func _notification(InCode: int) -> void:
-	match InCode:
-		Node.NOTIFICATION_WM_GO_BACK_REQUEST:
-			Input.parse_input_event(load("res://addons/GodotCommons-Core/Assets/UI/Shortcuts/BackAction.tres"))
 
 signal BombStockPreferenceChanged()
 

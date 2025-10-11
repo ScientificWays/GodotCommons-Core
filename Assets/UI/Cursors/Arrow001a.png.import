@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b6gd207i5xlp0"
-path="res://.godot/imported/Cross002a.png-47ddee0c4ae2d466215e579a39a2dacd.ctex"
+uid="uid://bykjtq1x7eyg6"
+path="res://.godot/imported/Arrow001a.png-04e4074381af13ff645e9e0134aba7f6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/GodotCommons-Core/Assets/UI/Cursors/Cross002a.png"
-dest_files=["res://.godot/imported/Cross002a.png-47ddee0c4ae2d466215e579a39a2dacd.ctex"]
+source_file="res://addons/GodotCommons-Core/Assets/UI/Cursors/Arrow001a.png"
+dest_files=["res://.godot/imported/Arrow001a.png-04e4074381af13ff645e9e0134aba7f6.ctex"]
 
 [params]
 
