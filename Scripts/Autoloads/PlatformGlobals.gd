@@ -214,7 +214,7 @@ func request_show_interstitial_ad() -> void:
 func get_interstitial_ad_cooldown_ticks_ms() -> int:
 	
 	if IsWeb():
-		return floori(Bridge.advertisement.minimum_delay_between_interstitial * 1000.0)
+		return ceili(Bridge.advertisement.minimum_delay_between_interstitial * 1000.0)
 	else:
 		return 60000
 

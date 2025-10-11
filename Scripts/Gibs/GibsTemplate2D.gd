@@ -86,7 +86,7 @@ func InitGib(InGib: Gib2D) -> bool:
 	if ParticlesScene:
 		var SampleParticlesNum := randi_range(ParticlesMinMax.x, ParticlesMinMax.y)
 		if SampleParticlesNum > 0:
-			var SampleParticles := ParticlesScene.instantiate() as ParticleSystem
+			var SampleParticles := ParticlesScene.instantiate() as ParticleSystem2D
 			#SampleParticles.InitAsOneShot(Vector2.ZERO, SampleParticlesNum, 4.0, InGib)
 			SampleParticles.InitAsOneShot(Vector2.ZERO, 0, 4.0, InGib)
 			SampleParticles.EmitParticlesWithVelocity(SampleParticlesNum, SampleGibImpulse * 0.5)

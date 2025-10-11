@@ -1,0 +1,15 @@
+[gd_scene load_steps=5 format=3 uid="uid://c4a4qqaxqinf5"]
+
+[ext_resource type="Material" uid="uid://c3vtonw0bntbw" path="res://addons/GodotCommons-Core/Assets/Particles/Smoke/Smoke001_Material.tres" id="1_16jig"]
+[ext_resource type="Texture2D" uid="uid://c1d8c812ykb6c" path="res://addons/GodotCommons-Core/Assets/Particles/Smoke/Smoke001.png" id="2_yk22p"]
+[ext_resource type="Material" uid="uid://b30ttk1kuhjj8" path="res://addons/GodotCommons-Core/Assets/Particles/Smoke/Smoke001a.tres" id="3_nhgqb"]
+[ext_resource type="Script" uid="uid://dvlmq0jrtnpfm" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticleSystem2D.gd" id="4_6wlmj"]
+
+[node name="Smoke" type="GPUParticles2D"]
+material = ExtResource("1_16jig")
+texture = ExtResource("2_yk22p")
+lifetime = 5.0
+explosiveness = 1.0
+visibility_rect = Rect2(-200, -50, 400, 100)
+process_material = ExtResource("3_nhgqb")
+script = ExtResource("4_6wlmj")

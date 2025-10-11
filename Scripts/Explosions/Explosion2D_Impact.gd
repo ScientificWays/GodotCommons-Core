@@ -22,7 +22,8 @@ const ReceiveDamageMethod: StringName = &"Explosion2D_ReceiveDamage"
 
 @export_category("Smoke")
 @export var _ShouldCreateSmokeParticles: bool = true
-@export var _SmokeParticlesScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Smoke001.tscn")
+@export var _smoke_particles_scene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Smoke/Smoke001.tscn")
+@export var _smoke_particles_scene_web: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Smoke/Smoke001_CPU.tscn")
 @export var _SmokeParticlesModulate: Color = Color.WHITE
 
 @export_category("Burn")
@@ -76,9 +77,12 @@ func HandleImpact():
 		ShakeSource2D.Spawn(GlobalPosition, OwnerExplosion._Radius * _ShakeRadiusScale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
 	
 	if _ShouldCreateSmokeParticles:
-		var NewSmokeParticles := _SmokeParticlesScene.instantiate() as ParticleSystem
-		NewSmokeParticles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)
-		NewSmokeParticles.modulate = _SmokeParticlesModulate
+		
+		var smoke_particles := (_smoke_particles_scene_web.instantiate() as ParticleSystem2D_CPU) \
+			if PlatformGlobals.IsWeb() \
+			else (_smoke_particles_scene.instantiate() as ParticleSystem2D)
+		smoke_particles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)
+		smoke_particles.modulate = _SmokeParticlesModulate
 	
 	if _ShouldCreateBurn:
 		ExplosionBurn2D.Spawn(GlobalPosition, _BurnScene, OwnerExplosion._Radius)
@@ -112,7 +116,7 @@ func TryApplyImpulseTo(InTarget: Node2D) -> void:
 	var HasReceiveMethod := InTarget.has_method(ReceiveImpulseMethodName)
 	if HasReceiveMethod or (InTarget is RigidBody2D):
 		
-		var TargetImpulseWithOffset := GameGlobals.CalcRadialImpulseWithOffsetForTarget(InTarget, OwnerExplosion.global_position, OwnerExplosion._MaxImpulse, OwnerExplosion._Radius, DefaultImpactEase)
+		var TargetImpulseWithOffset := GameGlobals.calc_radial_impulse_with_offset_for_target(InTarget, OwnerExplosion.global_position, OwnerExplosion._MaxImpulse, OwnerExplosion._Radius, DefaultImpactEase)
 		var TargetImpulse := Vector2(TargetImpulseWithOffset.x, TargetImpulseWithOffset.y)
 		var ImpulseOffset := Vector2(TargetImpulseWithOffset.z, TargetImpulseWithOffset.w)
 		

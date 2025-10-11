@@ -1,5 +1,5 @@
 extends GPUParticles2D
-class_name ParticleSystem
+class_name ParticleSystem2D
 
 func _ready():
 	pass

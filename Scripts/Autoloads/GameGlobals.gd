@@ -89,7 +89,7 @@ func SpawnAwaitTimer(InOwner: Node, InDelay: float) -> Timer:
 	InOwner.add_child(NewTimer)
 	return NewTimer
 
-func DelayedCollisionActivate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, InDelay: float, InTimerParent: Node):
+func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, InDelay: float, InTimerParent: Node):
 	
 	if InDelay > 0.0:
 		GameGlobals.SpawnOneShotTimerFor(InTimerParent, func():
@@ -101,7 +101,7 @@ func DelayedCollisionActivate(InRigidBody: RigidBody2D, InBodyEnteredCallable: C
 	else:
 		InRigidBody.body_entered.connect(InBodyEnteredCallable)
 
-func CalcRadialImpulseWithOffsetForTarget(InTarget: Node2D, InOrigin: Vector2, InMaxImpulse: float, InRadius: float, InImpactEase: float) -> Vector4:
+func calc_radial_impulse_with_offset_for_target(InTarget: Node2D, InOrigin: Vector2, InMaxImpulse: float, InRadius: float, InImpactEase: float) -> Vector4:
 	
 	var ImpulseOffset := Vector2(0.0, 0.0)
 	var ImpulsePosition := Vector2.INF

@@ -28,7 +28,7 @@ class TilePlaceData:
 var PendingTilePlaceArray: Array[TilePlaceData]
 @onready var PendingTilePlaceArrayMutex: Mutex = Mutex.new()
 
-@export var FloorIgniteParticlesScene: PackedScene = preload("res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002_TileIgnite.tscn")
+@export var FloorIgniteFXScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire002_TileIgnite.tscn")
 
 signal ImpactApplied(InCell: Vector2i)
 
@@ -221,7 +221,7 @@ func UtilHandleCellBreak(InCell: Vector2i, InImpulse: Vector2, InCanIgniteDebris
 
 func UtilHandleCellIgnite(InCell: Vector2i):
 	
-	var IgniteParticles := FloorIgniteParticlesScene.instantiate()
+	var IgniteParticles := FloorIgniteFXScene.instantiate()
 	IgniteParticles.position = map_to_local(InCell)
 	add_child(IgniteParticles)
 	

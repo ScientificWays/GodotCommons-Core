@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3 uid="uid://djhucnr4u1bjm"]
+
+[ext_resource type="Material" uid="uid://bdr8fpexgwbu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001_Material.tres" id="1_i0ywv"]
+[ext_resource type="Texture2D" uid="uid://usjo5eqyqwpu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001.png" id="2_ugayq"]
+
+[sub_resource type="Curve" id="Curve_tgbbl"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_vtmnd"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Fire" type="CPUParticles2D"]
+z_index = 1
+material = ExtResource("1_i0ywv")
+amount = 16
+texture = ExtResource("2_ugayq")
+lifetime = 3.0
+lifetime_randomness = 0.5
+fixed_fps = 30
+emission_shape = 1
+emission_sphere_radius = 16.0
+direction = Vector2(0, -1)
+gravity = Vector2(0, -9.8)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0
+scale_amount_min = 0.2
+scale_amount_max = 0.4
+scale_amount_curve = SubResource("Curve_tgbbl")
+anim_offset_max = 1.0
+
+[node name="Motes" type="CPUParticles2D" parent="."]
+amount = 16
+lifetime = 3.0
+lifetime_randomness = 0.5
+fixed_fps = 30
+emission_shape = 1
+emission_sphere_radius = 16.0
+direction = Vector2(0, -1)
+gravity = Vector2(0, -9.8)
+initial_velocity_min = 5.0
+initial_velocity_max = 15.0
+scale_amount_min = 0.2
+scale_amount_max = 0.4
+scale_amount_curve = SubResource("Curve_vtmnd")
+color = Color(1, 1, 0, 1)

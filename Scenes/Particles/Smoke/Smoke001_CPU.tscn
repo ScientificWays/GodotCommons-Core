@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://c50lrscjlr0po"]
+
+[ext_resource type="Material" uid="uid://c3vtonw0bntbw" path="res://addons/GodotCommons-Core/Assets/Particles/Smoke/Smoke001_Material.tres" id="1_y0srq"]
+[ext_resource type="Texture2D" uid="uid://c1d8c812ykb6c" path="res://addons/GodotCommons-Core/Assets/Particles/Smoke/Smoke001.png" id="2_7p1gk"]
+[ext_resource type="Script" uid="uid://8hawa0is1j4f" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticleSystem2D_CPU.gd" id="3_0e2un"]
+
+[sub_resource type="Curve" id="Curve_msqf8"]
+_data = [Vector2(0, 1), 0.0, -0.0920589, 0, 0, Vector2(1, 0.5), -1.46999, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_duyhh"]
+colors = PackedColorArray(0.5, 0.5, 0.5, 1, 1, 1, 1, 1)
+
+[node name="Smoke" type="CPUParticles2D"]
+material = ExtResource("1_y0srq")
+texture = ExtResource("2_7p1gk")
+lifetime = 5.0
+explosiveness = 1.0
+lifetime_randomness = 0.8
+fixed_fps = 30
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 32.0
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, -1)
+initial_velocity_min = 3.0
+initial_velocity_max = 6.0
+scale_amount_min = 0.25
+scale_amount_max = 0.5
+scale_amount_curve = SubResource("Curve_msqf8")
+color = Color(0.6, 0.6, 0.6, 1)
+color_initial_ramp = SubResource("Gradient_duyhh")
+anim_speed_min = 0.5
+anim_speed_max = 1.0
+anim_offset_max = 0.5
+script = ExtResource("3_0e2un")
