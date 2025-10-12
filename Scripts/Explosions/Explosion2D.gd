@@ -1,39 +1,37 @@
 extends Area2D
 class_name Explosion2D
 
-const BaseRadius: float = 64.0
-const BaseDamage: float = 50.0
-const BaseImpulse: float = 100.0
+const base_radius: float = 64.0
+const base_damage: float = 50.0
+const base_impulse: float = 200.0
 
-static func Spawn(InGlobalPosition: Vector2, InScene: PackedScene, InLevel: int, InRadius: float, InMaxDamage: float, InMaxImpulse: float, InInstigator: Node):
+static func spawn(in_global_position: Vector2, in_data: ExplosionData2D, in_level: int, in_radius: float, in_max_damage: float, in_max_impulse: float, in_instigator: Node):
 	
-	assert(InScene)
+	assert(in_data)
+	assert(in_data.scene)
 	
-	var NewExplosion := InScene.instantiate() as Explosion2D
-	NewExplosion._level = InLevel
-	NewExplosion._Radius = InRadius
-	NewExplosion._MaxDamage = InMaxDamage
-	NewExplosion._MaxImpulse = InMaxImpulse
-	NewExplosion._Instigator = InInstigator
-	NewExplosion.set_position(InGlobalPosition)
+	var out_exlosion := in_data.scene.instantiate() as Explosion2D
+	out_exlosion.data = in_data
+	out_exlosion._level = in_level
+	out_exlosion._radius = in_radius
+	out_exlosion._max_damage = in_max_damage
+	out_exlosion._max_impulse = in_max_impulse
+	out_exlosion._instigator = in_instigator
+	out_exlosion.set_position(in_global_position)
 	
-	WorldGlobals._level.call_deferred("add_child", NewExplosion)
-	return NewExplosion
+	WorldGlobals._level.add_child.call_deferred(out_exlosion)
+	return out_exlosion
 
-@export_category("Audio")
-@export var SoundBankLabel: String = "Explosion"
+var data: ExplosionData2D
 
-@export_category("Synergy")
-@export var _SynergyPriority: int = 0
-
-var _Instigator: Node
+var _instigator: Node
 var _level: int = 0
 
-var _Radius: float = BaseRadius
-var _MaxDamage: float = BaseDamage
-var _MaxImpulse: float = BaseImpulse
+var _radius: float = base_radius
+var _max_damage: float = base_damage
+var _max_impulse: float = base_impulse
 
-var DamageReceiverCallableArray: Array[Callable]
+var damage_receiver_callable_array: Array[Callable]
 
 func _ready():
 	

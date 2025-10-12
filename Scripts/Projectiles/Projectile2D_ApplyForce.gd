@@ -2,7 +2,7 @@ extends Node
 class_name Projectile2D_ApplyForce
 
 @export_category("Owner")
-@export var OwnerProjectile: Projectile2D
+@export var owner_projectile: Projectile2D
 
 @export_category("Initial")
 @export var InitialImpulseMul: float = 0.25
@@ -15,7 +15,7 @@ class_name Projectile2D_ApplyForce
 @export var ApplyConstantAsVelocity: bool = false
 
 func GetConstantMagnitudeMul() -> float:
-	return ConstantMagnitudeMul + ConstantMagnitudeMul_PerLevelGain * OwnerProjectile._level
+	return ConstantMagnitudeMul + ConstantMagnitudeMul_PerLevelGain * owner_projectile._level
 
 @export_category("Pattern")
 @export var PatternDirectionCurve: Curve2D = null
@@ -26,7 +26,7 @@ func GetConstantMagnitudeMul() -> float:
 @export var ApplyPatternAsVelocity: bool = false
 
 func GetPatternMagnitudeMul() -> float:
-	return PatternMagnitudeMul + PatternMagnitudeMul_PerLevelGain * OwnerProjectile._level
+	return PatternMagnitudeMul + PatternMagnitudeMul_PerLevelGain * owner_projectile._level
 
 var ForceOffsetNode: Marker2D = null
 var ForcePatternDelta: float = 0.0
@@ -36,16 +36,16 @@ static func GetForceFromMul(InMul: float) -> float:
 
 func _ready() -> void:
 	
-	assert(OwnerProjectile)
+	assert(owner_projectile)
 	
 	ForceOffsetNode = Marker2D.new()
 	ForceOffsetNode.transform = Transform2D(deg_to_rad(ConstantLocalAngleDegrees), ConstantLocalOffset)
-	OwnerProjectile.add_child(ForceOffsetNode)
+	owner_projectile.add_child(ForceOffsetNode)
 	
 	if InitialImpulseMul > 0.0:
 		var Direction := Vector2.from_angle(ForceOffsetNode.global_rotation)
 		var InitialImpulse := Direction * GetForceFromMul(GetConstantMagnitudeMul()) * InitialImpulseMul
-		OwnerProjectile.apply_impulse(InitialImpulse, ForceOffsetNode.global_position)
+		owner_projectile.apply_impulse(InitialImpulse, ForceOffsetNode.global_position)
 
 func _physics_process(InDelta: float) -> void:
 	
@@ -84,6 +84,6 @@ func _physics_process(InDelta: float) -> void:
 		ForcePatternDelta = fmod(ForcePatternDelta + get_physics_process_delta_time() * PatternLoopSpeed, float(PatternDirectionCurve.point_count - 1))
 	
 	if ShouldUpdateVelocity:
-		OwnerProjectile.linear_velocity = NewVelocity
+		owner_projectile.linear_velocity = NewVelocity
 	if ShouldUpdateForce:
-		OwnerProjectile.apply_force(ApplyForce, ForceOffsetNode.global_position - OwnerProjectile.global_position)
+		owner_projectile.apply_force(ApplyForce, ForceOffsetNode.global_position - owner_projectile.global_position)

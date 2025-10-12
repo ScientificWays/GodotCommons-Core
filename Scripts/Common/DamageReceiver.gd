@@ -43,8 +43,8 @@ func TryGetLastDamagePosition(InPrioritiseInstigator: bool) -> Vector2:
 var DamageImmunityEndTime: float = 0.0
 var ReceivedLethalDamage: bool = false
 
-signal ReceiveDamage(in_source: Node, InDamage: float, InIgnoredImmunityTime: bool)
-signal ReceiveLethalDamage(in_source: Node, InDamage: float, InIgnoredImmunityTime: bool)
+signal ReceiveDamage(in_source: Node, in_damage: float, InIgnoredImmunityTime: bool)
+signal ReceiveLethalDamage(in_source: Node, in_damage: float, InIgnoredImmunityTime: bool)
 
 func _ready():
 	
@@ -65,10 +65,10 @@ func GetHealth() -> float:
 func GetMaxHealth() -> float:
 	return OwnerAttributes.GetAttributeCurrentValue(AttributeSet.MaxHealth)
 
-func IsDamageLethal(InDamage: float) -> bool:
-	return GetHealth() <= InDamage
+func IsDamageLethal(in_damage: float) -> bool:
+	return GetHealth() <= in_damage
 
-func CanReceiveDamage(in_source: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
 	
 	var CurrentTime := Time.get_unix_time_from_system()
 	if not InShouldIgnoreImmunityTime and CurrentTime < DamageImmunityEndTime:
@@ -76,29 +76,29 @@ func CanReceiveDamage(in_source: Node, InInstigator: Node, InDamage: float, InDa
 	else:
 		return InDamageType & DamageImmunityMask == 0
 
-func AdjustReceivedDamage(in_source: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> float:
-	return InDamage
+func AdjustReceivedDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> float:
+	return in_damage
 
 ## Can be called in physics frame in BarrelPawn.HandleImpactWith()
-func TryReceiveDamage(in_source: Node, InInstigator: Node, InDamage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+func TryReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
 	
-	InDamage = AdjustReceivedDamage(in_source, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime)
-	assert(InDamage > 0.0)
+	in_damage = AdjustReceivedDamage(in_source, in_instigator, in_damage, InDamageType, InShouldIgnoreImmunityTime)
+	assert(in_damage > 0.0)
 	
-	if CanReceiveDamage(in_source, InInstigator, InDamage, InDamageType, InShouldIgnoreImmunityTime):
+	if CanReceiveDamage(in_source, in_instigator, in_damage, InDamageType, InShouldIgnoreImmunityTime):
 		
-		LastDamage = InDamage
+		LastDamage = in_damage
 		LastDamageTime = Time.get_unix_time_from_system()
 		LastDamageSource = in_source
-		LastDamageInstigator = InInstigator
+		LastDamageInstigator = in_instigator
 		LastDamageType = InDamageType
 		DamageImmunityEndTime = LastDamageTime + PostDamageImmunityDuration
 		
 		HandleReceivedDamage(InShouldIgnoreImmunityTime)
-		ReceiveDamage.emit(in_source, InDamage, InShouldIgnoreImmunityTime)
+		ReceiveDamage.emit(in_source, in_damage, InShouldIgnoreImmunityTime)
 		
 		if ReceivedLethalDamage:
-			ReceiveLethalDamage.emit(in_source, InDamage, InShouldIgnoreImmunityTime)
+			ReceiveLethalDamage.emit(in_source, in_damage, InShouldIgnoreImmunityTime)
 		return true
 	return false
 

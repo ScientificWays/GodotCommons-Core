@@ -1,11 +1,11 @@
 extends Area2D
 class_name ShakeSource2D
 
-static func Spawn(InPosition: Vector2, InRadius: float, InMaxOffset: Vector2 = Vector2(2.0, 2.0), InMaxRotation: float = 0.004, InDecaySpeed: float = 0.4, InParent: Node = WorldGlobals._level) -> ShakeSource2D:
+static func Spawn(InPosition: Vector2, in_radius: float, InMaxOffset: Vector2 = Vector2(2.0, 2.0), InMaxRotation: float = 0.004, InDecaySpeed: float = 0.4, InParent: Node = WorldGlobals._level) -> ShakeSource2D:
 	
 	var NewShakeSource := GameGlobals.ShakeSource2DScene.instantiate() as ShakeSource2D
 	NewShakeSource.position = InPosition
-	NewShakeSource.ready.connect(NewShakeSource.Init.bind(InRadius, InMaxOffset, InMaxRotation, InDecaySpeed), Object.CONNECT_ONE_SHOT)
+	NewShakeSource.ready.connect(NewShakeSource.Init.bind(in_radius, InMaxOffset, InMaxRotation, InDecaySpeed), Object.CONNECT_ONE_SHOT)
 	InParent.add_child.call_deferred(NewShakeSource)
 	return NewShakeSource
  
@@ -56,13 +56,13 @@ func _physics_process(InDelta: float):
 	if DecayAlpha < 0.0:
 		queue_free()
 
-func Init(InRadius: float, InMaxOffset: Vector2, InMaxRotation: float, InDecaySpeed: float):
+func Init(in_radius: float, InMaxOffset: Vector2, InMaxRotation: float, InDecaySpeed: float):
 	
 	assert(is_node_ready())
 	
 	var _CircleShape := _Collision.shape as CircleShape2D
-	_CircleShape.radius = InRadius
-	MaxDistanceSquared = InRadius * InRadius
+	_CircleShape.radius = in_radius
+	MaxDistanceSquared = in_radius * in_radius
 	
 	MaxOffset = InMaxOffset
 	MaxRotation = InMaxRotation

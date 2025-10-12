@@ -33,7 +33,7 @@ func _exit_tree() -> void:
 
 func handle_animated_sequence() -> void:
 	
-	#await GameGlobals.SpawnAwaitTimer(self, 0.5).timeout
+	#await GameGlobals.spawn_await_timer(self, 0.5).timeout
 	
 	await update_for_campaign_data(WorldGlobals._campaign_data)
 

@@ -24,22 +24,22 @@ func InitAsOneShot(InPosition: Vector2, InParticlesNum: int, InLifetime: float, 
 	position = InPosition
 	InParent.add_child(self)
 
-func OverrideRadius(InRadius: float):
+func OverrideRadius(in_radius: float):
 	
 	var BasePPM := process_material as ParticleProcessMaterial
-	if InRadius != BasePPM.emission_sphere_radius:
-		process_material = ResourceGlobals.GetOrCreatePPMWithRadius(BasePPM, InRadius)
+	if in_radius != BasePPM.emission_sphere_radius:
+		process_material = ResourceGlobals.GetOrCreatePPMWithRadius(BasePPM, in_radius)
 		#process_material = BasePPM.duplicate()
-		#process_material.emission_sphere_radius = InRadius
+		#process_material.emission_sphere_radius = in_radius
 	
 	for SampleChild: Node in get_children():
 		var SampleParticles := SampleChild as GPUParticles2D
 		if SampleParticles:
 			var SampleBasePPM := SampleParticles.process_material as ParticleProcessMaterial
-			if InRadius != SampleBasePPM.emission_sphere_radius:
-				SampleParticles.process_material = ResourceGlobals.GetOrCreatePPMWithRadius(SampleBasePPM, InRadius)
+			if in_radius != SampleBasePPM.emission_sphere_radius:
+				SampleParticles.process_material = ResourceGlobals.GetOrCreatePPMWithRadius(SampleBasePPM, in_radius)
 				#SampleParticles.process_material = SampleBasePPM.duplicate()
-				#SampleParticles.process_material.emission_sphere_radius = InRadius
+				#SampleParticles.process_material.emission_sphere_radius = in_radius
 
 func EmitParticlesWithVelocity(InParticlesNum: int, InVelocity: Vector2):
 	

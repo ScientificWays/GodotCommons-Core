@@ -21,7 +21,7 @@ enum Type
 @export var LethalDamageSoundEvent: SoundEventResource
 
 @export_category("Audio")
-@export var SoundBankLabel: String = "Pawn"
+@export var sound_bank_label: String = "Pawn"
 
 var _level: int = 0
 
@@ -52,17 +52,17 @@ func _ready() -> void:
 	if HealthDamageReceiver:
 		HealthDamageReceiver.ReceiveLethalDamage.connect(OnReceiveLethalDamage)
 
-func Explosion2D_receive_impulse(InExplosion: Explosion2D, InImpulse: Vector2, InOffset: Vector2) -> bool:
+func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2, in_offset: Vector2) -> bool:
 	assert(false)
 	return false
 
-func OnReceiveLethalDamage(in_source: Node, InDamage: float, InIgnoredImmunityTime: bool):
+func OnReceiveLethalDamage(in_source: Node, in_damage: float, InIgnoredImmunityTime: bool):
 	HandleLethalDamage()
 
 func HandleLethalDamage():
 	
 	if LethalDamageSoundEvent:
-		AudioGlobals.TryPlaySound_AtGlobalPosition(SoundBankLabel, LethalDamageSoundEvent, global_position)
+		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, LethalDamageSoundEvent, global_position)
 	
 	queue_free()
 

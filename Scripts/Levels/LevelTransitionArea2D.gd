@@ -26,7 +26,7 @@ func BeginTransition():
 		UIGlobals.BackgroundTextureOverride = OverrideBackgroundGradient
 	
 	WorldGlobals.TransitionAreaEnterBegin.emit(self)
-	GameGlobals.SpawnOneShotTimerFor(self, FinishTranstiion, TransitionDelay)
+	GameGlobals.spawn_one_shot_timer_for(self, FinishTranstiion, TransitionDelay)
 
 func FinishTranstiion() -> void:
 	

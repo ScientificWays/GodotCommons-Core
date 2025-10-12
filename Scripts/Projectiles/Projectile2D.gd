@@ -1,78 +1,75 @@
 extends RigidBody2D
 class_name Projectile2D
 
-static func Spawn(InTransform: Transform2D, InScene: PackedScene, InLevel: int, InInstigator: Node, InParent: Node = WorldGlobals._level._YSorted) -> Projectile2D:
+static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level: int, in_instigator: Node, in_parent: Node = WorldGlobals._level._YSorted) -> Projectile2D:
 	
-	assert(InScene)
-	var NewProjectile := InScene.instantiate() as Projectile2D
-	NewProjectile._level = InLevel
-	NewProjectile._Instigator = InInstigator
-	NewProjectile.transform = InTransform
-	InParent.add_child.call_deferred(NewProjectile)
-	return NewProjectile
+	assert(in_data)
+	assert(in_data.scene)
+	
+	var out_projectile := in_data.scene.instantiate() as Projectile2D
+	out_projectile.data = in_data
+	out_projectile._level = in_level
+	out_projectile._instigator = in_instigator
+	out_projectile.transform = in_transform
+	in_parent.add_child.call_deferred(out_projectile)
+	return out_projectile
 
-@export_category("Size")
-@export var SizeMul: float = 1.0
-@export var SizeMul_PerLevelGain: float = 0.0
-@export var SizeMulMassScaleFactor: float = 2.0
-
-@export_category("Audio")
-@export var SoundBankLabel: String = "Projectile"
-
-func GetSizeMul() -> float:
-	return SizeMul + SizeMul_PerLevelGain * _level
+var data: ProjectileData2D
 
 ##
 ## Instigator
 ##
-var _Instigator: Node = null:
-	set(InInstigator):
-		if _Instigator:
-			_Instigator.tree_exited.disconnect(OnInstigatorExitedTree)
-		_Instigator = InInstigator
-		if _Instigator:
-			_Instigator.tree_exited.connect(OnInstigatorExitedTree)
+var _instigator: Node:
+	set(in_instigator):
+		
+		if _instigator:
+			_instigator.tree_exited.disconnect(_on_instigator_tree_exited)
+		
+		_instigator = in_instigator
+		
+		if _instigator:
+			_instigator.tree_exited.connect(_on_instigator_tree_exited)
 
-func OnInstigatorExitedTree():
-	_Instigator = null
+func _on_instigator_tree_exited():
+	_instigator = null
 
 var _level: int = 0
-var _Power: float = 1.0
+var _power: float = 1.0
 
 func _ready() -> void:
 	
-	var SizeMul := GetSizeMul()
-	var ScaledSizeMul := SizeMul * _Power
+	var size_mul := data.get_size_mul(_level)
+	size_mul *= _power
 	
-	mass *= pow(SizeMul, SizeMulMassScaleFactor)
+	mass *= data.get_mass_mul(_level) * pow(size_mul, data.size_mul_mass_scale_factor)
 	
-	if _Instigator is PhysicsBody2D:
-		add_collision_exception_with(_Instigator)
-		GameGlobals.SpawnOneShotTimerFor(self, func():
-			if is_instance_valid(_Instigator):
-				remove_collision_exception_with(_Instigator), 1.0)
+	if _instigator is PhysicsBody2D:
+		add_collision_exception_with(_instigator)
+		GameGlobals.spawn_one_shot_timer_for(self, func():
+			if is_instance_valid(_instigator):
+				remove_collision_exception_with(_instigator), 1.0)
 	
-	if MaxLifetime > 0.0:
-		SetLifetime(MaxLifetime)
+	if data.max_lifetime > 0.0:
+		set_lifetime(data.max_lifetime)
 
 ##
 ## Lifetime
 ##
-@export_category("Lifetime")
-@export var MaxLifetime: float = -1.0
+var _lifetime_timer: Timer
 
-var _LifetimeTimer: Timer
-
-func SetLifetime(InLifetime: float):
+func set_lifetime(in_lifetime: float):
 	
-	if InLifetime > 0.0:
-		if not _LifetimeTimer:
-			_LifetimeTimer = GameGlobals.SpawnOneShotTimerFor(self, OnLifetimeTimerTimeout, InLifetime)
+	if _lifetime_timer:
+		_lifetime_timer.queue_free()
+		_lifetime_timer = null
+	
+	if in_lifetime > 0.0:
+		_lifetime_timer = GameGlobals.spawn_one_shot_timer_for(self, _on_lifetime_timer_timeout, in_lifetime)
 	else:
-		OnLifetimeTimerTimeout.call_deferred()
+		_on_lifetime_timer_timeout.call_deferred()
 
-func OnLifetimeTimerTimeout():
-	HandleRemoveFromScene(RemoveReason.Lifetime)
+func _on_lifetime_timer_timeout():
+	handle_remove_from_scene(RemoveReason.Lifetime)
 
 ##
 ## Remove
@@ -85,10 +82,10 @@ enum RemoveReason
 	Lifetime = 3,
 	Detonate = 4
 }
-signal PreRemovedFromScene(InReason: RemoveReason)
+signal pre_removed_from_scene(in_reason: RemoveReason)
 
-func HandleRemoveFromScene(InReason: RemoveReason):
+func handle_remove_from_scene(in_reason: RemoveReason):
 	
-	PreRemovedFromScene.emit(InReason)
+	pre_removed_from_scene.emit(in_reason)
 	
 	queue_free()

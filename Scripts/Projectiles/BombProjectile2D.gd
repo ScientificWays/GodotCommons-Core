@@ -1,201 +1,115 @@
 extends Projectile2D
 class_name BombProjectile2D
 
-const StockReplenishBaseTimeMul: float = 2.5
-const StockReplenishBaseMax: int = 4
-
-const BombletMeta: StringName = &"Bomblet"
+const bomblet_meta: StringName = &"Bomblet"
 
 @export_category("Owner")
-@export var BeepLight: PointLight2D
-@export var BeepAnimationPlayer: AnimationPlayer
+@export var beep_light: PointLight2D
+@export var beep_animation_player: AnimationPlayer
 
-@export_category("Audio")
-@export var BeepSoundEvent: SoundEventResource = preload("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Bombs/Beep001.tres")
-@export var ThrowSoundEvent: SoundEventResource = preload("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Throw001.tres")
-@export var DetonateSoundEvent: SoundEventResource
+var await_for_throw_impulse: bool = false
+signal throw_impulse_applied()
 
-func GetThrowSoundPitchMul() -> float:
-	return maxf(ThrowSoundEvent.pitch - 0.4 + AppliedThrowVectorScale * 0.8, 0.5) * randf_range(0.9, 1.1)
+var detonate_delay: float = 0.0
+signal detonate(in_is_timer_detonate: bool)
 
-func GetThrowSoundVolumeDb() -> float:
-	return minf(ThrowSoundEvent.volume - 12.0 + AppliedThrowVectorScale * 32.0, 0.0)
-
-func ShouldPlayDetonateSound(FromTimer: bool) -> bool:
-	return true
-
-func GetDetonateSoundPitchMul(FromTimer: bool) -> float:
-	return DetonateSoundEvent.pitch * randf_range(0.9, 1.1)
-
-func GetDetonateSoundVolumeDb(FromTimer: bool) -> float:
-	return DetonateSoundEvent.volume
-
-@export_category("Throw")
-@export var _ThrowPlayerImpulseScale: float = -0.1
-@export var _ThrowBombImpulseScale: float = 6.5
-@export var _ThrowAngularVelocityMinMax: Vector2 = Vector2(-10.0, 10.0)
-@export var _ThrowAngleMinMax: Vector2 = Vector2(-5.0, 5.0)
-
-@export_category("Detonate")
-@export var _ShouldDetonateOnHit: bool = false
-@export var _ShouldDetonateOnReceiveDamage: bool = false
-@export var _DetonateDelayCurve: Curve = preload("res://Assets/Projectiles/DefaultBomb_DetonateCurve.tres")
-@export var _DetonateBeepTime: float = 0.4
-
-@export_category("Explosion")
-@export var _ExplosionScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Explosions/Explosion001.tscn")
-@export var _ExplosionRadiusMul: float = 1.0
-@export var _ExplosionRadiusMul_PerLevelGain: float = 0.0
-@export var _ExplosionDamageMul: float = 1.0
-@export var _ExplosionDamageMul_PerLevelGain: float = 0.0
-@export var _ExplosionImpulseMul: float = 1.0
-@export var _ExplosionImpulseMul_PerLevelSqrtGain: float = 0.0
-@export var _ExternalExplosionImpulseMul: float = 1.0
-
-func GetExplosionRadiusMul() -> float:
-	return _ExplosionRadiusMul + _ExplosionRadiusMul_PerLevelGain * _level
-
-func GetExplosionDamageMul() -> float:
-	return _ExplosionDamageMul + _ExplosionDamageMul_PerLevelGain * _level
-
-func GetExplosionImpulseMul() -> float:
-	return _ExplosionImpulseMul + _ExplosionImpulseMul_PerLevelSqrtGain * sqrt(_level)
-
-func GetExplosionRadius() -> float:
-	return Explosion2D.BaseRadius * GetExplosionRadiusMul()
-
-func GetExplosionDamage() -> float:
-	return Explosion2D.BaseDamage * GetExplosionDamageMul()
-
-func GetExplosionImpulse() -> float:
-	return Explosion2D.BaseImpulse * GetExplosionImpulseMul()
-
-@export_category("Stock")
-@export var StockColor: Color = Color.GRAY
-@export var _StockReplenishTimeMul: float = 1.0
-@export var _StockReplenishTimeMul_PerLevelSqrtGain: float = 0.0
-@export var _StockMaxMul: float = 1.0
-@export var _StockMaxMul_PerLevelGain: float = 0.0
-
-func GetStockReplenishTimeMul(InLevel: int) -> float:
-	return _StockReplenishTimeMul + _StockReplenishTimeMul_PerLevelSqrtGain * sqrt(float(InLevel))
-
-func GetStockMaxMul(InLevel: int) -> float:
-	return _StockMaxMul + _StockMaxMul_PerLevelGain * InLevel
-
-func GetStockReplenishTime(InLevel: int) -> float:
-	return StockReplenishBaseTimeMul * GetStockReplenishTimeMul(InLevel)
-
-func GetStockMax(InLevel: int) -> int:
-	return maxi(roundi(float(StockReplenishBaseMax) * GetStockMaxMul(InLevel)), 1)
-
-@export_category("Avoidance")
-@export var _AvoidanceRadius: float = 6.0
-
-var AwaitForThrowImpulse: bool = false
-signal ThrowImpulseApplied()
-
-var DetonateDelay: float = 0.0
-signal Detonate(FromTimer: bool)
-
-var _DetonateTimer: Timer
-var _BeepTimer: Timer
+var _detonate_timer: Timer
+var _beep_timer: Timer
 
 func _ready() -> void:
 	
-	if AwaitForThrowImpulse:
-		await ThrowImpulseApplied
+	if await_for_throw_impulse:
+		await throw_impulse_applied
 	
-	if DetonateDelay > 0.0:
+	if detonate_delay > 0.0:
 		
-		_DetonateTimer = GameGlobals.SpawnOneShotTimerFor(self, OnDetonateTimerTimeout, DetonateDelay)
-		BeepLight.visible = false
+		_detonate_timer = GameGlobals.spawn_one_shot_timer_for(self, _on_detonate_timer_timeout, detonate_delay)
+		beep_light.visible = false
 		
-		if DetonateDelay > _DetonateBeepTime:
-			_BeepTimer = GameGlobals.SpawnRegularTimerFor(self, OnBeepTimerTimeout, DetonateDelay - _DetonateBeepTime)
+		if detonate_delay > data.detonate_beep_time:
+			_beep_timer = GameGlobals.spawn_regular_timer_for(self, _on_beep_timer_timeout, detonate_delay - data.detonate_beep_time)
 		else:
-			OnBeepTimerTimeout()
-			#var BeepPassedTime := _DetonateBeepTime - DetonateDelay
-			#BeepAnimationPlayer.advance(BeepPassedTime / _DetonateBeepTime)
+			_on_beep_timer_timeout()
+			#var BeepPassedTime := _DetonateBeepTime - detonate_delay
+			#beep_animation_player.advance(BeepPassedTime / _DetonateBeepTime)
 
 ##
 ## Detonate
 ##
-func OnDetonateTimerTimeout():
-	HandleDetonate(true)
+func _on_detonate_timer_timeout():
+	_handle_detonate(true)
 
-func HandleDetonate(FromTimer: bool):
+func _handle_detonate(in_is_timer_detonate: bool):
 	
 	if not is_node_ready():
 		OS.alert("Trying to detonate bomb before node is ready!")
 	
-	Detonate.emit(FromTimer)
+	detonate.emit(in_is_timer_detonate)
 	
 	if is_instance_valid(self):
 		
-		if DetonateSoundEvent and ShouldPlayDetonateSound(FromTimer):
-			ResourceGlobals.GetOrCreateSoundBankAndAppendEvent("Bomb", DetonateSoundEvent)
-			SoundManager.play_at_position_varied("Bomb", DetonateSoundEvent.name, global_position, GetDetonateSoundPitchMul(FromTimer), GetDetonateSoundVolumeDb(FromTimer))
+		if data.detonate_sound_event and data.should_play_detonate_sound(in_is_timer_detonate):
+			AudioGlobals.try_play_sound_varied_at_global_position(data.sound_bank_label, data.detonate_sound_event, global_position, data.get_detonate_sound_pitch_mul(in_is_timer_detonate), data.get_detonate_sound_volume_db(in_is_timer_detonate))
 		
-		SpawnExplosionAt(global_position)
-		HandleRemoveFromScene(RemoveReason.Detonate)
+		spawn_explosion_at(global_position)
+		handle_remove_from_scene(RemoveReason.Detonate)
 
-var ExplosionDamageReceiverCallableArray: Array[Callable] = []
+var explosion_damage_receiver_callable_array: Array[Callable] = []
 
-func SpawnExplosionAt(InGlobalPosition: Vector2) -> Explosion2D:
-	var OutExplosion := Explosion2D.Spawn(InGlobalPosition, _ExplosionScene, _level, GetExplosionRadius(), GetExplosionDamage(), GetExplosionImpulse(), _Instigator) as Explosion2D
-	#OutExplosion.OverlayDataArray = ExplosionOverlayDataArray
-	OutExplosion.DamageReceiverCallableArray.append_array(ExplosionDamageReceiverCallableArray)
-	return OutExplosion
+func spawn_explosion_at(in_global_position: Vector2) -> Explosion2D:
+	var out_explosion := Explosion2D.spawn(in_global_position, data.explosion_data, _level, data.get_explosion_radius(_level), data.get_explosion_damage(_level), data.get_explosion_impulse(_level), _instigator) as Explosion2D
+	#out_explosion.OverlayDataArray = ExplosionOverlayDataArray
+	out_explosion.damage_receiver_callable_array.append_array(explosion_damage_receiver_callable_array)
+	return out_explosion
 
 ##
 ## Beep
 ##
-func OnBeepTimerTimeout():
+func _on_beep_timer_timeout():
 	
-	BeepLight.visible = true
-	BeepAnimationPlayer.play(&"Beep", -1.0, 2.0 / _DetonateBeepTime)
+	beep_light.visible = true
+	beep_animation_player.play(&"Beep", -1.0, 2.0 / data.detonate_beep_time)
 
 func PlayBeepSound():
 	
 	if get_meta(&"DisableBeepSound", false):
 		return
-	AudioGlobals.TryPlaySound_AtGlobalPosition(SoundBankLabel, BeepSoundEvent, global_position)
+	AudioGlobals.try_play_sound_at_global_position(data.sound_bank_label, data.beep_sound_event, global_position)
 
 ##
 ## Throw
 ##
-var AppliedThrowVectorDirection: Vector2
-var AppliedThrowVectorScale: float
+var applied_throw_direction: Vector2
+var applied_throw_scale: float
 
-func GetThrowImpulseFromThrowVector(InThrowVector: Vector2) -> Vector2:
+func GetThrowImpulseFromThrowVector(in_throw_vector: Vector2) -> Vector2:
 	
-	var OutImpulse = InThrowVector
+	var out_impulse = in_throw_vector
 	
-	if _ThrowBombImpulseScale > 0.0:
-		OutImpulse *= _ThrowBombImpulseScale * mass
-	return OutImpulse
+	if data.throw_bomb_impulse_scale > 0.0:
+		out_impulse *= data.throw_bomb_impulse_scale * mass
+	return out_impulse
 
-func ApplyThrowImpulse(InThrowVector: Vector2):
+func apply_throw_impulse(in_throw_vector: Vector2):
 	
-	assert(AwaitForThrowImpulse)
+	assert(await_for_throw_impulse)
 	
-	var Impulse := GetThrowImpulseFromThrowVector(InThrowVector)
-	apply_central_impulse(Impulse)
+	var impulse := GetThrowImpulseFromThrowVector(in_throw_vector)
+	apply_central_impulse(impulse)
 	
-	rotation += deg_to_rad(randf_range(_ThrowAngleMinMax.x, _ThrowAngleMinMax.y))
-	set_angular_velocity(randf_range(_ThrowAngularVelocityMinMax.x, _ThrowAngularVelocityMinMax.y))
+	rotation += deg_to_rad(randf_range(data.throw_angle_min_max.x, data.throw_angle_min_max.y))
+	set_angular_velocity(randf_range(data.throw_angular_velocity_min_max.x, data.throw_angular_velocity_min_max.y))
 	
-	var ThrowVectorLength := InThrowVector.length()
-	AppliedThrowVectorDirection = InThrowVector / ThrowVectorLength
-	AppliedThrowVectorScale = ThrowVectorLength * 0.002
-	#print(AppliedThrowVectorScale)
+	var throw_vector_length := in_throw_vector.length()
+	applied_throw_direction = in_throw_vector / throw_vector_length
+	applied_throw_scale = throw_vector_length * 0.002
+	#print(applied_throw_scale)
 	
-	if _DetonateDelayCurve:
-		DetonateDelay = _DetonateDelayCurve.sample_baked(AppliedThrowVectorScale)
-		#print(DetonateDelay)
+	if data.detonate_delay_curve:
+		detonate_delay = data.detonate_delay_curve.sample_baked(applied_throw_scale)
+		#print(detonate_delay)
 	
-	if ThrowSoundEvent:
-		AudioGlobals.TryPlaySoundVaried_AtGlobalPosition(SoundBankLabel, ThrowSoundEvent, global_position, GetThrowSoundPitchMul(), GetThrowSoundVolumeDb())
+	if data.throw_sound_event:
+		AudioGlobals.try_play_sound_varied_at_global_position(data.sound_bank_label, data.throw_sound_event, global_position, data.get_throw_sound_pitch_mul(applied_throw_scale), data.get_throw_sound_volume_db(applied_throw_scale))
 	
-	ThrowImpulseApplied.emit()
+	throw_impulse_applied.emit()

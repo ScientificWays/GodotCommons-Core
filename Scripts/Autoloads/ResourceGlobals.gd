@@ -66,8 +66,8 @@ func UtilInitScaledShape(InCurrentKeyArray: Array) -> Shape2D:
 	return OutShape
 
 ## Particles
-func GetOrCreatePPMWithRadius(InBasePPM: ParticleProcessMaterial, InRadius: float) -> ParticleProcessMaterial:
-	return UtilGetOrCreate([ InBasePPM, InRadius ], UtilInitPPMWithRadius)
+func GetOrCreatePPMWithRadius(InBasePPM: ParticleProcessMaterial, in_radius: float) -> ParticleProcessMaterial:
+	return UtilGetOrCreate([ InBasePPM, in_radius ], UtilInitPPMWithRadius)
 
 func UtilInitPPMWithRadius(InCurrentKeyArray: Array) -> ParticleProcessMaterial:
 	var OutPPM = InCurrentKeyArray[0].duplicate() as ParticleProcessMaterial

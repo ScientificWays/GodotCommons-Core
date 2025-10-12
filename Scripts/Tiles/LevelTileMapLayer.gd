@@ -36,11 +36,11 @@ func _ready():
 	pass
 
 func _enter_tree() -> void:
-	GameGlobals.PreExplosionImpact.connect(HandleExplosionImpact)
+	GameGlobals.pre_explosion_impact.connect(HandleExplosionImpact)
 	GameGlobals.PostBarrelRamImpact.connect(HandleBarrelRamImpact)
 
 func _exit_tree() -> void:
-	GameGlobals.PreExplosionImpact.disconnect(HandleExplosionImpact)
+	GameGlobals.pre_explosion_impact.disconnect(HandleExplosionImpact)
 	GameGlobals.PostBarrelRamImpact.disconnect(HandleBarrelRamImpact)
 
 func _notification(in_what: int) -> void:
@@ -88,12 +88,12 @@ func RequestNavigationUpdate(IsOnThread: bool = true):
 
 func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 	
-	var Explosion := InImpact.OwnerExplosion
+	var owner_explosion := InImpact.owner_explosion
 	
-	var CenterCell := local_to_map(Explosion.global_position)
+	var CenterCell := local_to_map(owner_explosion.global_position)
 	var ImpactedCells: Array[Vector2i] = []
 	
-	var RadiusTiles := ceili((Explosion._Radius * InImpact._TilesImpactRadiusMul) / float(tile_set.tile_size.x))
+	var RadiusTiles := ceili((owner_explosion._radius * owner_explosion.data.tiles_impact_radius_mul) / float(tile_set.tile_size.x))
 	
 	ForEachTileInRadius(CenterCell, RadiusTiles, func(InCell: Vector2i):
 	
@@ -110,8 +110,8 @@ func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 		
 		if DistanceMul > 0.0:
 			var ImpulseDirection := OffsetCellFloat / DistanceCells
-			var TargetImpulse := ImpulseDirection * Explosion._MaxImpulse * DistanceMul
-			WasImpacted = TryImpactCell(InCell, Explosion._MaxDamage * InImpact._TilesImpactDamageMul * DistanceMul, TargetImpulse, InImpact._CanIgniteDebris, false)
+			var TargetImpulse := ImpulseDirection * owner_explosion._max_impulse * DistanceMul
+			WasImpacted = TryImpactCell(InCell, owner_explosion._max_damage * owner_explosion.data.tiles_impact_damage_mul * DistanceMul, TargetImpulse, owner_explosion.data.can_ignite_debris, false)
 		if WasImpacted:
 			ImpactedCells.append(InCell)
 	)
@@ -137,7 +137,7 @@ func GetCellTerrainData(InCell: Vector2i) -> LeveTileSet_TerrainData:
 	assert(HasCell(InCell))
 	return _LevelTileSet.GetTerrainData(BetterTerrain.get_cell(self, InCell))
 
-func TryImpactCell(InCell: Vector2i, InDamage: float, InImpulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, InShouldUpdateTerrainAndNavigation: bool = true) -> bool:
+func TryImpactCell(InCell: Vector2i, in_damage: float, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, InShouldUpdateTerrainAndNavigation: bool = true) -> bool:
 	
 	var OutImpacted := false
 	
@@ -150,20 +150,20 @@ func TryImpactCell(InCell: Vector2i, InDamage: float, InImpulse: Vector2 = Vecto
 		
 		var CellHealthData := DamageLayer.GetCellData(InCell)
 		
-		if CellHealthData.Health > InDamage:
-			UtilHandleCellDamage(InCell, InDamage, InImpulse)
+		if CellHealthData.Health > in_damage:
+			UtilHandleCellDamage(InCell, in_damage, in_impulse)
 		else:
-			UtilHandleCellBreak(InCell, InImpulse, InCanIgnite, InShouldUpdateTerrainAndNavigation)
+			UtilHandleCellBreak(InCell, in_impulse, InCanIgnite, InShouldUpdateTerrainAndNavigation)
 		OutImpacted = true
 	
 	if HasCell(InCell):
 		
 		if InCanIgnite \
 		and CellTerrainData.CanIgnite \
-		and (InDamage >= CellTerrainData.IgniteDamageThreshold) \
+		and (in_damage >= CellTerrainData.IgniteDamageThreshold) \
 		and (CellTerrainData.IgniteDamageProbabilityMul >= randf()):
 			
-			var BreakProbability := InDamage * CellTerrainData.IgniteDamageToBreakProbabilityMul
+			var BreakProbability := in_damage * CellTerrainData.IgniteDamageToBreakProbabilityMul
 			
 			if BreakProbability >= randf():
 				UtilHandleCellPostIgnite(InCell)
@@ -175,15 +175,15 @@ func TryImpactCell(InCell: Vector2i, InDamage: float, InImpulse: Vector2 = Vecto
 		ImpactApplied.emit(InCell)
 	return OutImpacted
 
-func TryBreakCell(InCell: Vector2i, InImpulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, InShouldUpdateTerrainAndNavigation: bool = true) -> bool:
-	return TryImpactCell(InCell, INF, InImpulse, InCanIgnite, InShouldUpdateTerrainAndNavigation)
+func TryBreakCell(InCell: Vector2i, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, InShouldUpdateTerrainAndNavigation: bool = true) -> bool:
+	return TryImpactCell(InCell, INF, in_impulse, InCanIgnite, InShouldUpdateTerrainAndNavigation)
 
-func UtilHandleCellDamage(InCell: Vector2i, InDamage: float, InImpulse: Vector2):
-	DamageLayer.SubtractCellHealth(InCell, InDamage)
+func UtilHandleCellDamage(InCell: Vector2i, in_damage: float, in_impulse: Vector2):
+	DamageLayer.SubtractCellHealth(InCell, in_damage)
 
 var MarkedToFallWallCellWeights: Dictionary = {}
 
-func UtilHandleCellBreak(InCell: Vector2i, InImpulse: Vector2, InCanIgniteDebris: bool, InShouldUpdateTerrainAndNavigation: bool):
+func UtilHandleCellBreak(InCell: Vector2i, in_impulse: Vector2, InCanIgniteDebris: bool, InShouldUpdateTerrainAndNavigation: bool):
 	
 	var CellTerrainData := GetCellTerrainData(InCell)
 	
@@ -199,7 +199,7 @@ func UtilHandleCellBreak(InCell: Vector2i, InImpulse: Vector2, InCanIgniteDebris
 			var FallProbability := MarkedToFallWallCellWeights.get(InCell, 0.8) as float
 			if randf() < FallProbability:
 				MarkedToFallWallCellWeights[SampleNeighbor] = FallProbability * 0.2
-				GameGlobals.SpawnOneShotTimerFor(self, UtilHandleCellBreak.bind(SampleNeighbor, InImpulse, false, true), 0.1)
+				GameGlobals.spawn_one_shot_timer_for(self, UtilHandleCellBreak.bind(SampleNeighbor, in_impulse, false, true), 0.1)
 		
 		#var SampleNeighborFloorTerrain := BetterTerrain.get_cell(self, SampleNeighbor)
 		
@@ -217,7 +217,7 @@ func UtilHandleCellBreak(InCell: Vector2i, InImpulse: Vector2, InCanIgniteDebris
 		MarkedToFallWallCellWeights.erase(InCell)
 	
 	if CellTerrainData.GibsScene:
-		GibsTemplate2D.Spawn(map_to_local(InCell), CellTerrainData.GibsScene, InImpulse, InCanIgniteDebris, 0.5)
+		GibsTemplate2D.Spawn(map_to_local(InCell), CellTerrainData.GibsScene, in_impulse, InCanIgniteDebris, 0.5)
 
 func UtilHandleCellIgnite(InCell: Vector2i):
 	
@@ -281,9 +281,9 @@ func ProcessPendingTileArray(InDelta: float):
 	PendingTilePlaceArray.clear()
 	PendingTilePlaceArrayMutex.unlock()
 
-func ForEachTileInRadius(InCenterCell: Vector2i, InRadius: int, InCallable: Callable):
+func ForEachTileInRadius(InCenterCell: Vector2i, in_radius: int, InCallable: Callable):
 	
-	for y: int in range(-InRadius, InRadius + 1):
-		var CurrentHalfWidth: int = (InRadius - abs(y)) + 1
+	for y: int in range(-in_radius, in_radius + 1):
+		var CurrentHalfWidth: int = (in_radius - abs(y)) + 1
 		for x: int in range(-CurrentHalfWidth, CurrentHalfWidth):
 			InCallable.call(InCenterCell + Vector2i(x, y))

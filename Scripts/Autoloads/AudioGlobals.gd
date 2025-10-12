@@ -130,7 +130,7 @@ func handle_ui_volume_changed():
 	AudioServer.set_bus_volume_db(UIBusIndex, linear_to_db(ui_volume_linear))
 	ui_volume_linear_changed.emit()
 
-func TryPlaySoundVaried_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2, InPitch: float, InVolume: float) -> bool:
+func try_play_sound_varied_at_global_position(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2, InPitch: float, InVolume: float) -> bool:
 	
 	if not SoundManager.has_loaded:
 		#await SoundManager.loaded
@@ -143,7 +143,7 @@ func TryPlaySoundVaried_AtGlobalPosition(InBankLabel: String, InSoundEvent: Soun
 	else:
 		return false
 
-func TryPlaySound_AtGlobalPosition(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2) -> bool:
+func try_play_sound_at_global_position(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2) -> bool:
 	
 	if not SoundManager.has_loaded:
 		#await SoundManager.loaded
@@ -173,7 +173,7 @@ func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bo
 func GetCurrentMusicName() -> String:
 	return CurrentMusicName
 
-func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffset: float = 0.0, InCrossfadeTime: float = 2.0, InAutoLoop: bool = false) -> bool:
+func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, in_offset: float = 0.0, InCrossfadeTime: float = 2.0, InAutoLoop: bool = false) -> bool:
 	
 	if not is_instance_valid(InMusicTrack):
 		push_error("AudioGlobals.TryPlayMusic() InMusicTrack is invalid!")
@@ -190,7 +190,7 @@ func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, InOffse
 			#return false
 		
 		ResourceGlobals.GetOrCreateMusicBankAndAppendEvent(InBankLabel, InMusicTrack)
-		MusicManager.play(InBankLabel, InMusicTrack.name, InOffset, InCrossfadeTime, InAutoLoop)
+		MusicManager.play(InBankLabel, InMusicTrack.name, in_offset, InCrossfadeTime, InAutoLoop)
 	CurrentMusicName = InMusicTrack.name
 	return true
 

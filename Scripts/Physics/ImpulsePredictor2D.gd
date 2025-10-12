@@ -20,10 +20,10 @@ func _ready():
 func GetLastPoint() -> Vector2:
 	return OutputLine.get_point_position(OutputLine.get_point_count() - 1)
 
-func QueueSimulation(InTargetBody: RigidBody2D, InImpulseVector: Vector2):
+func QueueSimulation(InTargetBody: RigidBody2D, in_impulseVector: Vector2):
 	
 	TargetBody = InTargetBody
-	ImpulseVector = InImpulseVector
+	ImpulseVector = in_impulseVector
 	
 	if not InTargetBody.is_node_ready():
 		await InTargetBody.ready

@@ -70,7 +70,7 @@ func handle_animated_sequence() -> void:
 	if conversion_num_left > 0:
 		
 		assert(not coversion_timer)
-		coversion_timer = GameGlobals.SpawnRegularTimerFor(self, OnConvertTimerTimeout, 1.0 / conversion_speed)
+		coversion_timer = GameGlobals.spawn_regular_timer_for(self, OnConvertTimerTimeout, 1.0 / conversion_speed)
 		
 		await ConversionFinished
 	

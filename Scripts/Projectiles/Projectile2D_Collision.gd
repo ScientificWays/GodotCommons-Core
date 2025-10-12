@@ -2,15 +2,15 @@ extends CollisionShape2D
 class_name Projectile2D_Collision
 
 @export_category("Owner")
-@export var OwnerProjectile: Projectile2D
+@export var owner_projectile: Projectile2D
 
 func _ready() -> void:
 	
-	assert(OwnerProjectile)
+	assert(owner_projectile)
 	
-	var SizeMul := OwnerProjectile.GetSizeMul()
-	var ScaledSizeMul := SizeMul * OwnerProjectile._Power
+	var size_mul := owner_projectile.data.get_size_mul(owner_projectile._level)
+	var scaled_size_mul := size_mul * owner_projectile._power
 	
-	shape = ResourceGlobals.GetOrCreateScaledShape(shape, ScaledSizeMul, 0.0)
-	position *= ScaledSizeMul
+	shape = ResourceGlobals.GetOrCreateScaledShape(shape, scaled_size_mul, 0.0)
+	position *= scaled_size_mul
 	

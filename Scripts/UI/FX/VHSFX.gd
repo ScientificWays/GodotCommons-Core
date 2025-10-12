@@ -21,8 +21,8 @@ class_name VHSFX
 		Update()
 
 @export var position_offset: Vector2 = Vector2(0.0, 0.0):
-	set(InOffset):
-		position_offset = InOffset
+	set(in_offset):
+		position_offset = in_offset
 		Update()
 
 @export var lerp_visible: bool = true:

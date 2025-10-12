@@ -2,7 +2,7 @@ extends PointLight2D
 class_name Explosion2D_Light
 
 @export_category("Owner")
-@export var OwnerExplosion: Explosion2D
+@export var owner_explosion: Explosion2D
 @export var OwnerSprite: Explosion2D_Sprite
 
 @export_category("Radius")
@@ -11,11 +11,11 @@ class_name Explosion2D_Light
 
 func _ready() -> void:
 	
-	assert(OwnerExplosion)
+	assert(owner_explosion)
 	
 	assert(_RadiusEnergyMul > 0.0 and _RadiusScaleMul > 0.0)
-	texture_scale = OwnerExplosion._Radius * _RadiusScaleMul
-	energy = OwnerExplosion._Radius * _RadiusEnergyMul
+	texture_scale = owner_explosion._radius * _RadiusScaleMul
+	energy = owner_explosion._radius * _RadiusEnergyMul
 	
 	if OwnerSprite:
 		OwnerSprite.frame_changed.connect(OnExplosionSpriteFrameChanged)
@@ -25,4 +25,4 @@ func OnExplosionSpriteFrameChanged():
 	
 	var FrameNum := OwnerSprite.sprite_frames.get_frame_count(OwnerSprite.animation)
 	var AnimationProgress := float(OwnerSprite.frame + 1) / float(FrameNum)
-	energy = OwnerExplosion._Radius * _RadiusEnergyMul * sqrt(1.0 - AnimationProgress)
+	energy = owner_explosion._radius * _RadiusEnergyMul * sqrt(1.0 - AnimationProgress)

@@ -3,8 +3,8 @@ class_name GameGlobals_Class
 
 @export var ShakeSource2DScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Shake/ShakeSource2D.tscn")
 
-signal PreExplosionImpact(InExplosionImpact: Explosion2D_Impact)
-signal post_explosion_apply_impulse(InExplosionImpact: Explosion2D_Impact, in_target: Node2D, InImpulse: Vector2, InOffset: Vector2)
+signal pre_explosion_impact(in_explosionImpact: Explosion2D_Impact)
+signal post_explosion_apply_impulse(in_explosionImpact: Explosion2D_Impact, in_target: Node2D, in_impulse: Vector2, in_offset: Vector2)
 
 signal PostBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll)
 
@@ -50,7 +50,7 @@ func _ready():
 ##
 ## Timers
 ##
-func SpawnOneShotTimerFor(in_owner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
+func spawn_one_shot_timer_for(in_owner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
 	
 	if InDelay > 0.0:
 		
@@ -68,7 +68,7 @@ func SpawnOneShotTimerFor(in_owner: Node, InCallable: Callable, InDelay: float, 
 	InCallable.call()
 	return null
 
-func SpawnRegularTimerFor(in_owner: Node, InCallable: Callable, InDelay: float, InAutostart: bool = true) -> Timer:
+func spawn_regular_timer_for(in_owner: Node, InCallable: Callable, InDelay: float, InAutostart: bool = true) -> Timer:
 	
 	assert(InDelay > 0.0)
 	var NewTimer = Timer.new()
@@ -79,7 +79,7 @@ func SpawnRegularTimerFor(in_owner: Node, InCallable: Callable, InDelay: float, 
 	in_owner.add_child(NewTimer)
 	return NewTimer
 
-func SpawnAwaitTimer(in_owner: Node, InDelay: float) -> Timer:
+func spawn_await_timer(in_owner: Node, InDelay: float) -> Timer:
 	
 	assert(InDelay > 0.0)
 	var NewTimer = Timer.new()
@@ -92,7 +92,7 @@ func SpawnAwaitTimer(in_owner: Node, InDelay: float) -> Timer:
 func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, InDelay: float, InTimerParent: Node):
 	
 	if InDelay > 0.0:
-		GameGlobals.SpawnOneShotTimerFor(InTimerParent, func():
+		GameGlobals.spawn_one_shot_timer_for(InTimerParent, func():
 			InRigidBody.body_entered.connect(InBodyEnteredCallable)
 			for SampleBody: Node2D in InRigidBody.get_colliding_bodies():
 				#print(SampleBody)
@@ -101,7 +101,7 @@ func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable:
 	else:
 		InRigidBody.body_entered.connect(InBodyEnteredCallable)
 
-func calc_radial_impulse_with_offset_for_target(in_target: Node2D, InOrigin: Vector2, InMaxImpulse: float, InRadius: float, InImpactEase: float) -> Vector4:
+func calc_radial_impulse_with_offset_for_target(in_target: Node2D, InOrigin: Vector2, in_max_impulse: float, in_radius: float, InImpactEase: float) -> Vector4:
 	
 	var ImpulseOffset := Vector2(0.0, 0.0)
 	var ImpulsePosition := Vector2.INF
@@ -120,8 +120,8 @@ func calc_radial_impulse_with_offset_for_target(in_target: Node2D, InOrigin: Vec
 	var ImpulseDirection := ImpulseVector / ImpulseDistance
 	
 	var TargetDistance := ImpulseDistance - in_target.get_meta(DamageReceiver.BoundsRadiusMeta, 4.0) as float
-	var DistanceMul := (1.0 - ease(clampf(TargetDistance / InRadius, 0.0, 1.0), InImpactEase))
-	var FinalImpulseAmplitude := InMaxImpulse * DistanceMul
+	var DistanceMul := (1.0 - ease(clampf(TargetDistance / in_radius, 0.0, 1.0), InImpactEase))
+	var FinalImpulseAmplitude := in_max_impulse * DistanceMul
 	
 	var OutImpulse := ImpulseDirection * FinalImpulseAmplitude
 	return Vector4(OutImpulse.x, OutImpulse.y, ImpulseOffset.x, ImpulseOffset.y)

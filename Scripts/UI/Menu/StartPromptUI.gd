@@ -15,10 +15,10 @@ func _ready() -> void:
 	StartEnableTicksMs = Time.get_ticks_msec() + 1000
 	
 	MusicLabel.SetInstantLerpVisible(false)
-	GameGlobals.SpawnOneShotTimerFor(self, ShowMusicLabel, 0.5)
+	GameGlobals.spawn_one_shot_timer_for(self, ShowMusicLabel, 0.5)
 	
 	StartLabel.SetInstantLerpVisible(false)
-	GameGlobals.SpawnOneShotTimerFor(self, ShowStartLabel, 1.0)
+	GameGlobals.spawn_one_shot_timer_for(self, ShowStartLabel, 1.0)
 
 func _input(InEvent: InputEvent) -> void:
 	
