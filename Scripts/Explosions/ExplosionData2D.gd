@@ -12,9 +12,6 @@ class_name ExplosionData2D
 func custom_init(in_explosion: Explosion2D) -> void:
 	pass
 
-@export_category("Combine")
-@export var combine_priority: int = 0
-
 @export_category("Impact")
 @export var impact_delay: float = 0.1
 @export var should_impact_tiles: bool = true

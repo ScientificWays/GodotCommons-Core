@@ -3,7 +3,6 @@ extends ProjectileData2D
 class_name BombProjectileData2D
 
 @export_category("Combine")
-@export var combine_priority: int = 0
 #@export var combine_custom_sprite_frames: Dictionary[BombProjectileData2D, SpriteFrames]
 
 var combined_modifiers: Array[ItemContainer_BombModifiers]
@@ -12,18 +11,8 @@ func get_original_modifier() -> ItemContainer_BombModifiers:
 	return combined_modifiers[0]
 
 @export_category("Audio")
-@export var beep_sound_event: SoundEventResource:
-	get:
-		if beep_sound_event:
-			return beep_sound_event
-		return load("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Bombs/Beep001.tres")
-
-@export var throw_sound_event: SoundEventResource:
-	get:
-		if throw_sound_event:
-			return throw_sound_event
-		return load("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Throw001.tres")
-
+@export var beep_sound_event: SoundEventResource = preload("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Bombs/Beep001.tres")
+@export var throw_sound_event: SoundEventResource = preload("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Throw001.tres")
 @export var detonate_sound_event: SoundEventResource
 
 func get_throw_sound_pitch_mul(in_throw_scale: float) -> float:
@@ -109,6 +98,3 @@ func get_stock_replenish_time(in_level: int) -> float:
 
 func get_stock_max(in_level: int) -> int:
 	return maxi(roundi(float(BarrelPawn2D_Stock.replenish_base_max) * get_stock_max_mul(in_level)), 1)
-
-@export_category("Avoidance")
-@export var avoidance_radius: float = 6.0

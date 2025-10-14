@@ -1,4 +1,4 @@
-extends Node
+extends Marker2D
 class_name Projectile2D_ApplyForce
 
 @export_category("Owner")
@@ -8,8 +8,6 @@ class_name Projectile2D_ApplyForce
 @export var InitialImpulseMul: float = 0.25
 
 @export_category("Constant")
-@export var ConstantLocalOffset: Vector2 = Vector2.ZERO
-@export_range(-360.0, 360.0) var ConstantLocalAngleDegrees: float = 0.0
 @export var ConstantMagnitudeMul: float = 1.0
 @export var ConstantMagnitudeMul_PerLevelGain: float = 0.0
 @export var ApplyConstantAsVelocity: bool = false
@@ -28,24 +26,19 @@ func GetConstantMagnitudeMul() -> float:
 func GetPatternMagnitudeMul() -> float:
 	return PatternMagnitudeMul + PatternMagnitudeMul_PerLevelGain * owner_projectile._level
 
-var ForceOffsetNode: Marker2D = null
 var ForcePatternDelta: float = 0.0
 
 static func GetForceFromMul(InMul: float) -> float:
-	return 100.0 * InMul
+	return 500.0 * InMul
 
 func _ready() -> void:
 	
 	assert(owner_projectile)
 	
-	ForceOffsetNode = Marker2D.new()
-	ForceOffsetNode.transform = Transform2D(deg_to_rad(ConstantLocalAngleDegrees), ConstantLocalOffset)
-	owner_projectile.add_child(ForceOffsetNode)
-	
 	if InitialImpulseMul > 0.0:
-		var Direction := Vector2.from_angle(ForceOffsetNode.global_rotation)
+		var Direction := Vector2.from_angle(global_rotation)
 		var InitialImpulse := Direction * GetForceFromMul(GetConstantMagnitudeMul()) * InitialImpulseMul
-		owner_projectile.apply_impulse(InitialImpulse, ForceOffsetNode.global_position)
+		owner_projectile.apply_impulse(InitialImpulse, global_position)
 
 func _physics_process(InDelta: float) -> void:
 	
@@ -55,7 +48,7 @@ func _physics_process(InDelta: float) -> void:
 	var ShouldUpdateVelocity := false
 	var ShouldUpdateForce := false
 	
-	var ProjectileRotation := ForceOffsetNode.global_rotation
+	var ProjectileRotation := global_rotation
 	var ConstantDirection := Vector2.from_angle(ProjectileRotation)
 	var ConstantValue = ConstantDirection * GetForceFromMul(GetConstantMagnitudeMul())
 	
@@ -86,4 +79,4 @@ func _physics_process(InDelta: float) -> void:
 	if ShouldUpdateVelocity:
 		owner_projectile.linear_velocity = NewVelocity
 	if ShouldUpdateForce:
-		owner_projectile.apply_force(ApplyForce, ForceOffsetNode.global_position - owner_projectile.global_position)
+		owner_projectile.apply_force(ApplyForce, global_position - owner_projectile.global_position)

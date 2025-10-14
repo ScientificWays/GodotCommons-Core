@@ -7,11 +7,11 @@ class_name ProjectileData2D
 func custom_init(in_projectile: Projectile2D) -> void:
 	pass
 
-@export_category("Sprite")
-@export var sprite_frames: SpriteFrames
-@export var sprite_scale: Vector2 = Vector2(0.5, 0.5)
-@export var sprite_offset: Vector2 = Vector2(0.0, 0.0)
-@export var sprite_material: Material = null
+#@export_category("Sprite")
+#@export var sprite_frames: SpriteFrames
+#@export var sprite_scale: Vector2 = Vector2(0.5, 0.5)
+#@export var sprite_offset: Vector2 = Vector2(0.0, 0.0)
+#@export var sprite_material: Material = null
 
 @export_category("Physics")
 @export var mass_mul: float = 1.0

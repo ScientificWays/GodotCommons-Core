@@ -83,22 +83,19 @@ var applied_throw_direction: Vector2
 var applied_throw_scale: float
 
 func GetThrowImpulseFromThrowVector(in_throw_vector: Vector2) -> Vector2:
-	
-	var out_impulse = in_throw_vector
-	
-	if data.throw_bomb_impulse_scale > 0.0:
-		out_impulse *= data.throw_bomb_impulse_scale * mass
-	return out_impulse
+	return in_throw_vector * data.throw_bomb_impulse_scale * mass
 
 func apply_throw_impulse(in_throw_vector: Vector2):
 	
 	assert(await_for_throw_impulse)
 	
-	var impulse := GetThrowImpulseFromThrowVector(in_throw_vector)
-	apply_central_impulse(impulse)
+	if data.throw_bomb_impulse_scale > 0.0:
+		var impulse := GetThrowImpulseFromThrowVector(in_throw_vector)
+		apply_central_impulse(impulse)
 	
-	rotation += deg_to_rad(randf_range(data.throw_angle_min_max.x, data.throw_angle_min_max.y))
-	set_angular_velocity(randf_range(data.throw_angular_velocity_min_max.x, data.throw_angular_velocity_min_max.y))
+	if not data.throw_angle_min_max.is_zero_approx():
+		rotation += deg_to_rad(randf_range(data.throw_angle_min_max.x, data.throw_angle_min_max.y))
+		set_angular_velocity(randf_range(data.throw_angular_velocity_min_max.x, data.throw_angular_velocity_min_max.y))
 	
 	var throw_vector_length := in_throw_vector.length()
 	applied_throw_direction = in_throw_vector / throw_vector_length
