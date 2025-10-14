@@ -23,8 +23,8 @@ func _ready() -> void:
 	assert(default_pawn_scene)
 	
 
-func _process(InDelta: float) -> void:
-	ProcessMovementInputs(InDelta)
+func _process(in_delta: float) -> void:
+	ProcessMovementInputs(in_delta)
 
 func _enter_tree() -> void:
 	PlayerGlobals.PlayerArray.append(self)
@@ -81,7 +81,7 @@ var DisableTapInputs: bool = false
 
 var MovementInput: Vector2
 
-func ProcessMovementInputs(InDelta: float) -> void:
+func ProcessMovementInputs(in_delta: float) -> void:
 	
 	if DisableMovementInputs or _camera.ShouldBlockMovementInputs():
 		MovementInput = Vector2.ZERO

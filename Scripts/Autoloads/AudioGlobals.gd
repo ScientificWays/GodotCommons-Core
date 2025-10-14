@@ -130,31 +130,45 @@ func handle_ui_volume_changed():
 	AudioServer.set_bus_volume_db(UIBusIndex, linear_to_db(ui_volume_linear))
 	ui_volume_linear_changed.emit()
 
-func try_play_sound_varied_at_global_position(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2, InPitch: float, InVolume: float) -> bool:
+func try_play_sound_varied_at_global_position(in_bank_label: String, in_sound_event: SoundEventResource, in_position: Vector2, in_pitch: float, in_volume: float) -> bool:
 	
 	if not SoundManager.has_loaded:
 		#await SoundManager.loaded
 		return false
 	
-	if InSoundEvent:
-		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(InBankLabel, InSoundEvent)
-		SoundManager.play_at_position_varied(InBankLabel, InSoundEvent.name, InPosition, InPitch, InVolume)
+	if in_sound_event:
+		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(in_bank_label, in_sound_event)
+		SoundManager.play_at_position_varied(in_bank_label, in_sound_event.name, in_position, in_pitch, in_volume)
 		return true
 	else:
 		return false
 
-func try_play_sound_at_global_position(InBankLabel: String, InSoundEvent: SoundEventResource, InPosition: Vector2) -> bool:
+func try_play_sound_at_global_position(in_bank_label: String, in_sound_event: SoundEventResource, in_position: Vector2) -> bool:
 	
 	if not SoundManager.has_loaded:
 		#await SoundManager.loaded
 		return false
 	
-	if InSoundEvent:
-		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(InBankLabel, InSoundEvent)
-		SoundManager.play_at_position(InBankLabel, InSoundEvent.name, InPosition)
+	if in_sound_event:
+		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(in_bank_label, in_sound_event)
+		SoundManager.play_at_position(in_bank_label, in_sound_event.name, in_position)
 		return true
 	else:
 		return false
+
+func try_play_sound_on_node_at_global_position(in_bank_label: String, in_sound_event: SoundEventResource, in_node: Node) -> Variant:
+	
+	if not SoundManager.has_loaded:
+		#await SoundManager.loaded
+		return null
+	
+	if in_sound_event:
+		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(in_bank_label, in_sound_event)
+		var out_instance := SoundManager.instance_on_node(in_bank_label, in_sound_event.name, in_node)
+		out_instance.trigger()
+		return out_instance
+	else:
+		return null
 
 func IsAnyMusicPlaying() -> bool:
 	
@@ -163,17 +177,17 @@ func IsAnyMusicPlaying() -> bool:
 	else:
 		return MusicManager._is_playing_music()
 
-func IsMusicPlaying(InBankLabel: String, InMusicTrack: MusicTrackResource) -> bool:
+func IsMusicPlaying(in_bank_label: String, InMusicTrack: MusicTrackResource) -> bool:
 	
 	if PlatformGlobals.IsWeb():
 		return (WebMusicPlayer.playing or web_mute) and WebMusicPlayer.stream == InMusicTrack.stems[0].stream
 	else:
-		return MusicManager.is_playing(InBankLabel, InMusicTrack.name)
+		return MusicManager.is_playing(in_bank_label, InMusicTrack.name)
 
 func GetCurrentMusicName() -> String:
 	return CurrentMusicName
 
-func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, in_offset: float = 0.0, InCrossfadeTime: float = 2.0, InAutoLoop: bool = false) -> bool:
+func TryPlayMusic(in_bank_label: String, InMusicTrack: MusicTrackResource, in_offset: float = 0.0, InCrossfadeTime: float = 2.0, InAutoLoop: bool = false) -> bool:
 	
 	if not is_instance_valid(InMusicTrack):
 		push_error("AudioGlobals.TryPlayMusic() InMusicTrack is invalid!")
@@ -189,8 +203,8 @@ func TryPlayMusic(InBankLabel: String, InMusicTrack: MusicTrackResource, in_offs
 			await MusicManager.loaded
 			#return false
 		
-		ResourceGlobals.GetOrCreateMusicBankAndAppendEvent(InBankLabel, InMusicTrack)
-		MusicManager.play(InBankLabel, InMusicTrack.name, in_offset, InCrossfadeTime, InAutoLoop)
+		ResourceGlobals.GetOrCreateMusicBankAndAppendEvent(in_bank_label, InMusicTrack)
+		MusicManager.play(in_bank_label, InMusicTrack.name, in_offset, InCrossfadeTime, InAutoLoop)
 	CurrentMusicName = InMusicTrack.name
 	return true
 

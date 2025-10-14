@@ -3,12 +3,24 @@ extends ProjectileData2D
 class_name BombProjectileData2D
 
 @export_category("Combine")
+@export var combine_priority: int = 0
 #@export var combine_custom_sprite_frames: Dictionary[BombProjectileData2D, SpriteFrames]
 
-var combined_modifiers: Array[ItemContainer_BombModifiers]
+var combined_modifier_levels: Dictionary[ItemData_BombModifier, int]
 
-func get_original_modifier() -> ItemContainer_BombModifiers:
-	return combined_modifiers[0]
+func handle_post_init(in_projectile: Projectile2D) -> void:
+	
+	if combined_modifier_levels.is_empty():
+		custom_init(in_projectile)
+		custom_init_combined(in_projectile, in_projectile._level)
+	else:
+		for sample_modifier: ItemData_BombModifier in combined_modifier_levels.keys():
+			var sample_modifier_level := combined_modifier_levels[sample_modifier]
+			sample_modifier.bomb_data.custom_init(in_projectile)
+			sample_modifier.bomb_data.custom_init_combined(in_projectile, sample_modifier_level)
+
+func custom_init_combined(in_projectile: Projectile2D, in_this_modifier_level: int) -> void:
+	pass
 
 @export_category("Audio")
 @export var beep_sound_event: SoundEventResource = preload("res://addons/GodotCommons-Core/Assets/Audio/Events/Projectiles/Bombs/Beep001.tres")
@@ -60,7 +72,6 @@ func get_detonate_sound_volume_db(in_is_timer_detonate: bool) -> float:
 @export var explosion_damage_mul_per_level_gain: float = 0.0
 @export var explosion_impulse_mul: float = 1.0
 @export var explosion_impulse_mul_per_level_sqrt_gain: float = 0.0
-@export var external_explosion_impulseMul: float = 1.0
 
 func get_explosion_radius_mul(in_level: int) -> float:
 	return explosion_radius_mul + explosion_radius_mul_per_level_gain * in_level

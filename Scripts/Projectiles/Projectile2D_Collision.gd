@@ -1,16 +1,52 @@
 extends CollisionShape2D
 class_name Projectile2D_Collision
 
+const monitor_hits_start_delay_meta: StringName = &"monitor_hits_start_delay"
+const receive_explosions_delay_meta: StringName = &"receive_explosions_delay"
+
 @export_category("Owner")
-@export var owner_projectile: Projectile2D
+@export var _owner: Projectile2D
 
 func _ready() -> void:
 	
-	assert(owner_projectile)
+	assert(_owner)
 	
-	var size_mul := owner_projectile.data.get_size_mul(owner_projectile._level)
-	var scaled_size_mul := size_mul * owner_projectile._power
+	var size_mul := _owner.data.get_size_mul(_owner._level)
+	var scaled_size_mul := size_mul * _owner._power
 	
 	shape = ResourceGlobals.GetOrCreateScaledShape(shape, scaled_size_mul, 0.0)
 	position *= scaled_size_mul
 	
+	var monitor_hits_start_delay := get_meta(monitor_hits_start_delay_meta, 0.0) as float
+	if monitor_hits_start_delay > 0.0:
+		GameGlobals.delayed_collision_activate(_owner, _on_target_entered, monitor_hits_start_delay, self)
+	
+	var receive_explosions_delay := get_meta(receive_explosions_delay_meta, 0.0) as float
+	if receive_explosions_delay > 0.0 and _owner.collision_layer & GameGlobals_Class.collision_layer_explosion_receiver:
+		_owner.collision_layer = GameGlobals_Class.remove_mask(_owner.collision_layer, GameGlobals_Class.collision_layer_explosion_receiver)
+		GameGlobals.SpawnOneShotTimerFor(_owner, func(): _owner.collision_layer = GameGlobals_Class.remove_mask(_owner.collision_layer, GameGlobals_Class.collision_layer_explosion_receiver), 0.2)
+
+func _on_target_entered(in_target: Node):
+	
+	var hit_speed_squared := _owner.linear_velocity.length_squared() + _owner.angular_velocity * _owner.angular_velocity * 150.0
+	if _owner.data.hit_speed_threshold > 0.0 and (hit_speed_squared < _owner.data.hit_speed_threshold * _owner.data.hit_speed_threshold):
+		return false
+	
+	var hit_speed := sqrt(hit_speed_squared)
+	if _owner.data.hit_sound_event:
+		AudioGlobals.try_play_sound_varied_at_global_position(_owner.data.sound_bank_label, _owner.data.hit_sound_event, _owner.global_position, _owner.data.get_hit_sound_pitch_mul(hit_speed), _owner.data.get_hit_sound_volume_db(hit_speed))
+	
+	if _owner.data.should_damage_on_hit:
+		
+		var target_receiver := DamageReceiver.try_get_from(in_target)
+		if target_receiver:
+			
+			var instigator_receiver := DamageReceiver.try_get_from(_owner._instigator)
+			if target_receiver != instigator_receiver:
+				
+				var target_damage := 10.0 * _owner.data.get_hit_damage_mul(_owner._level)
+				target_receiver.try_receive_damage(self, _owner._instigator, target_damage, DamageReceiver.DamageType_RangedHit, false)
+	
+	if _owner.data.should_remove_on_hit:
+		_owner.handle_remove_from_scene(Projectile2D.RemoveReason.Hit)
+	return true

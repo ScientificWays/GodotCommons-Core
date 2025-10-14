@@ -1,12 +1,12 @@
 extends Sprite2D
 class_name ExplosionBurn2D
 
-static func Spawn(InPosition: Vector2, InScene: PackedScene, in_radius: float, InParent: Node = WorldGlobals._level) -> ExplosionBurn2D:
+static func Spawn(in_position: Vector2, InScene: PackedScene, in_radius: float, InParent: Node = WorldGlobals._level) -> ExplosionBurn2D:
 	
 	assert(InScene)
 	
 	var NewExplosionBurn := InScene.instantiate() as ExplosionBurn2D
-	NewExplosionBurn.position = InPosition.snapped(Vector2(1.0, 1.0))
+	NewExplosionBurn.position = in_position.snapped(Vector2(1.0, 1.0))
 	NewExplosionBurn.Radius = in_radius
 	InParent.add_child.call_deferred(NewExplosionBurn)
 	return NewExplosionBurn

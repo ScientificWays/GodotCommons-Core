@@ -80,7 +80,7 @@ func AdjustReceivedDamage(in_source: Node, in_instigator: Node, in_damage: float
 	return in_damage
 
 ## Can be called in physics frame in BarrelPawn.HandleImpactWith()
-func TryReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
+func try_receive_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
 	
 	in_damage = AdjustReceivedDamage(in_source, in_instigator, in_damage, InDamageType, InShouldIgnoreImmunityTime)
 	assert(in_damage > 0.0)

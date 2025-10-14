@@ -3,6 +3,7 @@ class_name Projectile2D_ApplyForce
 
 @export_category("Owner")
 @export var owner_projectile: Projectile2D
+@export var ignore_owner_mass: bool = true
 
 @export_category("Initial")
 @export var InitialImpulseMul: float = 0.25
@@ -12,7 +13,7 @@ class_name Projectile2D_ApplyForce
 @export var ConstantMagnitudeMul_PerLevelGain: float = 0.0
 @export var ApplyConstantAsVelocity: bool = false
 
-func GetConstantMagnitudeMul() -> float:
+func get_constant_magnitude_mul() -> float:
 	return ConstantMagnitudeMul + ConstantMagnitudeMul_PerLevelGain * owner_projectile._level
 
 @export_category("Pattern")
@@ -28,8 +29,12 @@ func GetPatternMagnitudeMul() -> float:
 
 var ForcePatternDelta: float = 0.0
 
-static func GetForceFromMul(InMul: float) -> float:
-	return 500.0 * InMul
+func calc_magnitude() -> float:
+	
+	var out_magnitude := 500.0 * get_constant_magnitude_mul()
+	if ignore_owner_mass:
+		out_magnitude *= owner_projectile.mass
+	return out_magnitude
 
 func _ready() -> void:
 	
@@ -37,10 +42,10 @@ func _ready() -> void:
 	
 	if InitialImpulseMul > 0.0:
 		var Direction := Vector2.from_angle(global_rotation)
-		var InitialImpulse := Direction * GetForceFromMul(GetConstantMagnitudeMul()) * InitialImpulseMul
+		var InitialImpulse := Direction * calc_magnitude() * InitialImpulseMul
 		owner_projectile.apply_impulse(InitialImpulse, global_position)
 
-func _physics_process(InDelta: float) -> void:
+func _physics_process(in_delta: float) -> void:
 	
 	var NewVelocity := Vector2.ZERO
 	var ApplyForce := Vector2.ZERO
@@ -50,7 +55,7 @@ func _physics_process(InDelta: float) -> void:
 	
 	var ProjectileRotation := global_rotation
 	var ConstantDirection := Vector2.from_angle(ProjectileRotation)
-	var ConstantValue = ConstantDirection * GetForceFromMul(GetConstantMagnitudeMul())
+	var ConstantValue = ConstantDirection * calc_magnitude()
 	
 	if ApplyConstantAsVelocity:
 		NewVelocity += ConstantValue
@@ -65,7 +70,7 @@ func _physics_process(InDelta: float) -> void:
 		if PatternDirectionInLocalSpace:
 			PatternDirection = PatternDirection.rotated(ProjectileRotation)
 		
-		var PatternValue := PatternDirection * GetForceFromMul(GetPatternMagnitudeMul())
+		var PatternValue := PatternDirection * calc_magnitude()
 		
 		if ApplyPatternAsVelocity:
 			NewVelocity += PatternValue
@@ -74,7 +79,7 @@ func _physics_process(InDelta: float) -> void:
 			ApplyForce += PatternValue
 			ShouldUpdateForce = true
 		
-		ForcePatternDelta = fmod(ForcePatternDelta + get_physics_process_delta_time() * PatternLoopSpeed, float(PatternDirectionCurve.point_count - 1))
+		ForcePatternDelta = fmod(ForcePatternDelta + in_delta * PatternLoopSpeed, float(PatternDirectionCurve.point_count - 1))
 	
 	if ShouldUpdateVelocity:
 		owner_projectile.linear_velocity = NewVelocity

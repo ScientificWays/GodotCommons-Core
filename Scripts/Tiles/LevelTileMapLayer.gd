@@ -49,11 +49,11 @@ func _notification(in_what: int) -> void:
 	if in_what == NOTIFICATION_PREDELETE:
 		tile_set = null
 
-func _physics_process(InDelta: float):
+func _physics_process(in_delta: float):
 	if PendingTilePlaceArray.is_empty():
 		set_physics_process(false)
 	else:
-		ProcessPendingTileArray(InDelta)
+		ProcessPendingTileArray(in_delta)
 
 func InitNavigation():
 	
@@ -252,7 +252,7 @@ func AddPendingTilePlace(InCell: Vector2i, InTerrainName: String, InShouldCheckO
 	if not is_physics_processing():
 		set_physics_process(true)
 
-func ProcessPendingTileArray(InDelta: float):
+func ProcessPendingTileArray(in_delta: float):
 	
 	PendingTilePlaceArrayMutex.lock()
 	for SampleData: TilePlaceData in PendingTilePlaceArray:

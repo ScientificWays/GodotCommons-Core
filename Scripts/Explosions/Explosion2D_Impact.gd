@@ -51,13 +51,14 @@ func HandleImpact():
 		var ShakeMaxRotation := owner_explosion._max_impulse * 0.00015 * owner_explosion.data.shake_strength_scale
 		ShakeSource2D.Spawn(GlobalPosition, owner_explosion._radius * owner_explosion.data.shake_radius_scale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
 	
-	if owner_explosion.data.should_create_smoke_particles:
+	var smoke_particles_scene = owner_explosion.data.get_smoke_particles_scene()
+	if owner_explosion.data.smoke_particles_scene:
 		
-		var smoke_particles = owner_explosion.data.get_smoke_particles_scene().instantiate()
+		var smoke_particles := smoke_particles_scene.instantiate()
 		smoke_particles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)
 		smoke_particles.modulate = owner_explosion.data.smoke_particles_modulate
 	
-	if owner_explosion.data.should_create_burn:
+	if owner_explosion.data.burn_scene:
 		
 		if WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 2):
 			ExplosionBurn2D.Spawn(GlobalPosition, owner_explosion.data.burn_scene, owner_explosion._radius)
@@ -116,7 +117,7 @@ func TryApplyDamageTo(in_target: Node) -> void:
 		var DistanceMul: float = 1.0 - ease(minf(TargetDistance / owner_explosion._radius, 1.0), default_impact_ease)
 		
 		if DistanceMul > 0.0:
-			TargetReceiver.TryReceiveDamage(self, owner_explosion._instigator, owner_explosion._max_damage * DistanceMul, owner_explosion.data.damage_type, false)
+			TargetReceiver.try_receive_damage(self, owner_explosion._instigator, owner_explosion._max_damage * DistanceMul, owner_explosion.data.damage_type, false)
 		GameGlobals.CallAllCancellable(owner_explosion.damage_receiver_callable_array, [ self, TargetReceiver, DistanceMul ])
 
 func HandlePostImpact():

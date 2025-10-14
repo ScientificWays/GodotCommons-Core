@@ -1,7 +1,8 @@
 extends Projectile2D
 class_name BombProjectile2D
 
-const bomblet_meta: StringName = &"Bomblet"
+const explosion_data_override_meta: StringName = &"explosion_data_override"
+const disable_beep_sound_meta: StringName = &"disable_beep_sound"
 
 @export_category("Owner")
 @export var beep_light: PointLight2D
@@ -20,6 +21,9 @@ func _ready() -> void:
 	
 	if await_for_throw_impulse:
 		await throw_impulse_applied
+		await_for_throw_impulse = false
+	
+	super()
 	
 	if detonate_delay > 0.0:
 		
@@ -32,14 +36,16 @@ func _ready() -> void:
 			_on_beep_timer_timeout()
 			#var BeepPassedTime := _DetonateBeepTime - detonate_delay
 			#beep_animation_player.advance(BeepPassedTime / _DetonateBeepTime)
+	
+	data.handle_post_init(self)
 
 ##
 ## Detonate
 ##
-func _on_detonate_timer_timeout():
+func _on_detonate_timer_timeout() -> void:
 	_handle_detonate(true)
 
-func _handle_detonate(in_is_timer_detonate: bool):
+func _handle_detonate(in_is_timer_detonate: bool) -> void:
 	
 	if not is_node_ready():
 		OS.alert("Trying to detonate bomb before node is ready!")
@@ -57,7 +63,9 @@ func _handle_detonate(in_is_timer_detonate: bool):
 var explosion_damage_receiver_callable_array: Array[Callable] = []
 
 func spawn_explosion_at(in_global_position: Vector2) -> Explosion2D:
-	var out_explosion := Explosion2D.spawn(in_global_position, data.explosion_data, _level, data.get_explosion_radius(_level), data.get_explosion_damage(_level), data.get_explosion_impulse(_level), _instigator) as Explosion2D
+	
+	var explosion_data := get_meta(explosion_data_override_meta, data.explosion_data)
+	var out_explosion := Explosion2D.spawn(in_global_position, explosion_data, _level, data.get_explosion_radius(_level) * _power, data.get_explosion_damage(_level) * _power, data.get_explosion_impulse(_level) * _power, _instigator) as Explosion2D
 	#out_explosion.OverlayDataArray = ExplosionOverlayDataArray
 	out_explosion.damage_receiver_callable_array.append_array(explosion_damage_receiver_callable_array)
 	return out_explosion
@@ -65,15 +73,17 @@ func spawn_explosion_at(in_global_position: Vector2) -> Explosion2D:
 ##
 ## Beep
 ##
-func _on_beep_timer_timeout():
+func _on_beep_timer_timeout() -> void:
 	
 	beep_light.visible = true
 	beep_animation_player.play(&"Beep", -1.0, 2.0 / data.detonate_beep_time)
 
-func PlayBeepSound():
+## Called from animation_player
+func _play_beep_sound() -> void:
 	
-	if get_meta(&"DisableBeepSound", false):
+	if get_meta(disable_beep_sound_meta, false):
 		return
+	
 	AudioGlobals.try_play_sound_at_global_position(data.sound_bank_label, data.beep_sound_event, global_position)
 
 ##
@@ -85,12 +95,15 @@ var applied_throw_scale: float
 func GetThrowImpulseFromThrowVector(in_throw_vector: Vector2) -> Vector2:
 	return in_throw_vector * data.throw_bomb_impulse_scale * mass
 
-func apply_throw_impulse(in_throw_vector: Vector2):
+func apply_throw_impulse(in_throw_vector: Vector2, in_compensate_for_mass: bool = true, in_calc_detonate_delay: bool = true, in_play_throw_sound: bool = true) -> void:
 	
-	assert(await_for_throw_impulse)
+	assert(await_for_throw_impulse or not is_node_ready())
 	
-	if data.throw_bomb_impulse_scale > 0.0:
+	if data.throw_bomb_impulse_scale != 0.0:
+		
 		var impulse := GetThrowImpulseFromThrowVector(in_throw_vector)
+		if in_compensate_for_mass:
+			impulse *= mass
 		apply_central_impulse(impulse)
 	
 	if not data.throw_angle_min_max.is_zero_approx():
@@ -102,11 +115,11 @@ func apply_throw_impulse(in_throw_vector: Vector2):
 	applied_throw_scale = throw_vector_length * 0.002
 	#print(applied_throw_scale)
 	
-	if data.detonate_delay_curve:
+	if data.detonate_delay_curve and in_calc_detonate_delay:
 		detonate_delay = data.detonate_delay_curve.sample_baked(applied_throw_scale)
 		#print(detonate_delay)
 	
-	if data.throw_sound_event:
+	if data.throw_sound_event and in_play_throw_sound:
 		AudioGlobals.try_play_sound_varied_at_global_position(data.sound_bank_label, data.throw_sound_event, global_position, data.get_throw_sound_pitch_mul(applied_throw_scale), data.get_throw_sound_volume_db(applied_throw_scale))
 	
 	throw_impulse_applied.emit()

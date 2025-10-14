@@ -4,7 +4,7 @@ class_name ParticleSystem2D
 func _ready():
 	pass
 
-func InitAsOneShot(InPosition: Vector2, InParticlesNum: int, InLifetime: float, InParent: Node = WorldGlobals._level):
+func InitAsOneShot(in_position: Vector2, InParticlesNum: int, InLifetime: float, InParent: Node = WorldGlobals._level):
 	
 	if InParticlesNum > 0:
 		emitting = true
@@ -21,7 +21,7 @@ func InitAsOneShot(InPosition: Vector2, InParticlesNum: int, InLifetime: float, 
 	LifetimeTimer.wait_time = InLifetime
 	add_child(LifetimeTimer)
 	
-	position = InPosition
+	position = in_position
 	InParent.add_child(self)
 
 func OverrideRadius(in_radius: float):

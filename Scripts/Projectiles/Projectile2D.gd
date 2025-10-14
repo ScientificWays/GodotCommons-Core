@@ -36,6 +36,8 @@ func _on_instigator_tree_exited():
 var _level: int = 0
 var _power: float = 1.0
 
+var loop_sound_instance: PooledAudioStreamPlayer2D
+
 func _ready() -> void:
 	
 	var size_mul := data.get_size_mul(_level)
@@ -48,6 +50,12 @@ func _ready() -> void:
 		GameGlobals.spawn_one_shot_timer_for(self, func():
 			if is_instance_valid(_instigator):
 				remove_collision_exception_with(_instigator), 1.0)
+	
+	if data.spawn_sound_event:
+		AudioGlobals.try_play_sound_varied_at_global_position(data.sound_bank_label, data.spawn_sound_event, global_position, data.get_spawn_sound_pitch_mul(), data.get_spawn_sound_volume_db())
+	
+	if data.loop_sound_event:
+		loop_sound_instance = AudioGlobals.try_play_sound_on_node_at_global_position(data.sound_bank_label, data.loop_sound_event, self)
 	
 	if data.max_lifetime > 0.0:
 		set_lifetime(data.max_lifetime)
@@ -87,5 +95,8 @@ signal pre_removed_from_scene(in_reason: RemoveReason)
 func handle_remove_from_scene(in_reason: RemoveReason):
 	
 	pre_removed_from_scene.emit(in_reason)
+	
+	if loop_sound_instance:
+		loop_sound_instance.release(false)
 	
 	queue_free()

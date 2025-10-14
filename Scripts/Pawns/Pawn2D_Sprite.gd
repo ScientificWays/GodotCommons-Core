@@ -79,7 +79,7 @@ func _ready():
 	_ParticlesPivot = ParticlesPivot.new()
 	add_child(_ParticlesPivot)
 
-func _process(InDelta: float):
+func _process(in_delta: float):
 	
 	if is_instance_valid(LookAtTarget):
 		_Direction = _AnimationData.GetNewDirectionForLookAtTarget(self)

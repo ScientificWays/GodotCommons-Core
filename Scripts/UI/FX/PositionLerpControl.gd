@@ -10,13 +10,13 @@ class_name PositionLerpControl
 #func _ready() -> void:
 #	pending_position = position
 
-func _process(InDelta: float) -> void:
+func _process(in_delta: float) -> void:
 	
 	if Engine.is_editor_hint() and ForceNormalPositionInEditor:
 		pending_position = position
 	else:
 		if not HasReachedPendingPosition():
-			position = position.lerp(pending_position, PendingPositionLerpSpeed * InDelta)
+			position = position.lerp(pending_position, PendingPositionLerpSpeed * in_delta)
 			if HasReachedPendingPosition():
 				position = pending_position
 

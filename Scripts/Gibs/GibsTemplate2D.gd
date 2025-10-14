@@ -1,7 +1,7 @@
 extends Node2D
 class_name GibsTemplate2D
 
-static func Spawn(InPosition: Vector2, InTemplateScene: PackedScene, in_impulse: Vector2, InCanIgnite: bool, InGibsNumMul: float = 1.0, InParent: Node = WorldGlobals._level) -> GibsTemplate2D:
+static func Spawn(in_position: Vector2, InTemplateScene: PackedScene, in_impulse: Vector2, InCanIgnite: bool, InGibsNumMul: float = 1.0, InParent: Node = WorldGlobals._level) -> GibsTemplate2D:
 	
 	assert(InTemplateScene)
 	
@@ -9,7 +9,7 @@ static func Spawn(InPosition: Vector2, InTemplateScene: PackedScene, in_impulse:
 	OutGibs._Impulse = in_impulse
 	OutGibs._CanIgnite = InCanIgnite
 	OutGibs._GibsNumMul = InGibsNumMul
-	OutGibs.position = InPosition
+	OutGibs.position = in_position
 	
 	assert(InParent)
 	InParent.add_child.call_deferred(OutGibs)

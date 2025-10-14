@@ -49,7 +49,7 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	get_viewport().size_changed.disconnect(OnViewportSizeChanged)
 
-func _physics_process(InDelta: float) -> void:
+func _physics_process(in_delta: float) -> void:
 	
 	offset = ConstantOffset + PendingOffset
 	global_rotation = ConstantRotation + PendingRotation
@@ -65,7 +65,7 @@ func _physics_process(InDelta: float) -> void:
 	var FinalZoom := PendingZoom * GetMovementZoomMul()
 	
 	if not HasReachedZoom(FinalZoom):
-		zoom = zoom.lerp(FinalZoom, PendingZoomLerpSpeed * InDelta)
+		zoom = zoom.lerp(FinalZoom, PendingZoomLerpSpeed * in_delta)
 		if HasReachedZoom(FinalZoom):
 			zoom = FinalZoom
 

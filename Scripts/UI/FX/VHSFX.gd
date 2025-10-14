@@ -44,14 +44,14 @@ func _notification(InCode: int) -> void:
 	elif InCode == NOTIFICATION_TRANSLATION_CHANGED:
 		Update()
 
-func _process(InDelta: float) -> void:
+func _process(in_delta: float) -> void:
 	
 	if lerp_visible:
-		modulate.a = minf(modulate.a + lerp_visible_speed * InDelta, 1.0)
+		modulate.a = minf(modulate.a + lerp_visible_speed * in_delta, 1.0)
 	else:
-		modulate.a = maxf(modulate.a - lerp_visible_speed * InDelta, 0.0)
+		modulate.a = maxf(modulate.a - lerp_visible_speed * in_delta, 0.0)
 	
-	time += InDelta
+	time += in_delta
 	
 	var new_scale := 1.0 + sin(time * scale_speed) * scale_offset
 	target.scale = Vector2(new_scale, new_scale)

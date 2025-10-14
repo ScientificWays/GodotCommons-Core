@@ -34,7 +34,7 @@ func _on_target_exited(in_target: Node) -> void:
 	_owner.physics_material_override = pre_pull_material
 	pre_pull_material = null
 
-func _physics_process(InDelta: float) -> void:
+func _physics_process(in_delta: float) -> void:
 	
 	var targets := get_overlapping_areas() + get_overlapping_bodies()
 	for sample_target: Node2D in targets:

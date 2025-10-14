@@ -55,7 +55,7 @@ func finish_sequence(in_animation_name: StringName, in_source: Node) -> void:
 	
 	var target_damage_receiver := DamageReceiver.try_get_from(fall_target)
 	if target_damage_receiver:
-		target_damage_receiver.TryReceiveDamage(in_source, in_source, fall_damage, DamageReceiver.DamageType_Fall, true)
+		target_damage_receiver.try_receive_damage(in_source, in_source, fall_damage, DamageReceiver.DamageType_Fall, true)
 	elif fallback_to_remove_owner_on_finish:
 		fall_target.queue_free()
 	

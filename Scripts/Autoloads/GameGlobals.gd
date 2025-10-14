@@ -48,6 +48,18 @@ func _ready():
 	#SaveGlobals.SettingsProfile_PhysicsTickRateChanged_ConnectAndTryEmit(OnPhysicsTickRateSettingChanged)
 
 ##
+## Physics
+##
+const collision_layer_player: int = 1
+const collision_layer_creature: int = 2
+const collision_layer_bomb: int = 4
+const collision_layer_world: int = 8
+const collision_layer_item: int = 16
+const collision_layer_item_pull: int = 32
+const collision_layer_navigation: int = 64
+const collision_layer_explosion_receiver: int = 4096
+
+##
 ## Timers
 ##
 func spawn_one_shot_timer_for(in_owner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
@@ -185,8 +197,14 @@ func ArrayIntersects(InArrayA: Array, InArrayB: Array) -> bool:
 ##
 ## Bits
 ##
-func GetOneBitsNum(InInteger: int, InAcc: int = 0) -> int:
-	return GetOneBitsNum(InInteger / 2, InAcc + (InInteger % 2)) if InInteger > 0 else InAcc
+static func get_one_bits_num(in_integer: int, in_acc: int = 0) -> int:
+	return get_one_bits_num(in_integer / 2, in_acc + (in_integer % 2)) if in_integer > 0 else in_acc
+
+static func add_mask(in_a: int, in_b: int) -> int:
+	return in_a | in_b
+
+static func remove_mask(in_a: int, in_b: int) -> int:
+	return in_a & (~in_b)
 
 ##
 ## Random

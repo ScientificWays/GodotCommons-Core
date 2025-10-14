@@ -16,4 +16,4 @@ func TryApplyDamageToTarget(in_target: Node2D) -> bool:
 	if not TargetDamageReceiver:
 		return false
 	
-	return TargetDamageReceiver.TryReceiveDamage(self, self, target_damage, DamageReceiver.DamageType_MeleeHit, false)
+	return TargetDamageReceiver.try_receive_damage(self, self, target_damage, DamageReceiver.DamageType_MeleeHit, false)

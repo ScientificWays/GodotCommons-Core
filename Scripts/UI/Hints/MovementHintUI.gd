@@ -52,12 +52,12 @@ func _ready() -> void:
 	SetInstantLerpVisible(lerp_visible)
 	Update()
 
-func _process(InDelta: float) -> void:
+func _process(in_delta: float) -> void:
 	
 	if lerp_visible:
-		modulate.a = minf(modulate.a + lerp_visible_speed * InDelta, 1.0)
+		modulate.a = minf(modulate.a + lerp_visible_speed * in_delta, 1.0)
 	else:
-		modulate.a = maxf(modulate.a - lerp_visible_speed * InDelta, 0.0)
+		modulate.a = maxf(modulate.a - lerp_visible_speed * in_delta, 0.0)
 	
 	if display_time_left <= 0.0:
 		return
@@ -79,7 +79,7 @@ func _process(InDelta: float) -> void:
 		KeysTextureRect.texture = UpTexture
 	
 	KeysTextureRect.self_modulate.a = 1.0
-	display_time_left -= InDelta
+	display_time_left -= in_delta
 
 func Update():
 	

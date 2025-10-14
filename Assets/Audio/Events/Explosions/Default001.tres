@@ -8,6 +8,4 @@
 script = ExtResource("1_sg8rp")
 name = "Default001"
 bus = "World_Reverb"
-volume = 0.0
-pitch = 1.0
 streams = Array[AudioStream]([ExtResource("2_2r7k0"), ExtResource("3_62vk0")])
