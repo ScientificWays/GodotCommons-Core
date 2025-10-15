@@ -43,12 +43,13 @@ func TryGetLastDamagePosition(InPrioritiseInstigator: bool) -> Vector2:
 var DamageImmunityEndTime: float = 0.0
 var ReceivedLethalDamage: bool = false
 
-signal ReceiveDamage(in_source: Node, in_damage: float, InIgnoredImmunityTime: bool)
-signal ReceiveLethalDamage(in_source: Node, in_damage: float, InIgnoredImmunityTime: bool)
+signal ReceiveDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
+signal ReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
 
 func _ready():
 	
-	assert(OwnerAttributes)
+	assert(OwnerBody2D)
+	#assert(OwnerAttributes)
 	
 	if SpawnDamageImmunityDuration > 0.0:
 		DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
@@ -60,10 +61,10 @@ func _exit_tree():
 	ModularGlobals.deinit_modular_node(self)
 
 func GetHealth() -> float:
-	return OwnerAttributes.GetAttributeCurrentValue(AttributeSet.Health)
+	return OwnerAttributes.get_attribute_current_value(AttributeSet.Health) if OwnerAttributes else 0.0
 
 func GetMaxHealth() -> float:
-	return OwnerAttributes.GetAttributeCurrentValue(AttributeSet.MaxHealth)
+	return OwnerAttributes.get_attribute_current_value(AttributeSet.MaxHealth) if OwnerAttributes else 0.0
 
 func IsDamageLethal(in_damage: float) -> bool:
 	return GetHealth() <= in_damage
@@ -114,7 +115,7 @@ func CalcLastDamageImpulse2D() -> Vector2:
 	var FromSourceDirection := Source2D.global_position.direction_to(OwnerBody2D.global_position)
 	return FromSourceDirection * LastDamage * DamageToImpulseMagnitudeMul
 
-func HandleReceivedDamage(InIgnoredImmunityTime: bool):
+func HandleReceivedDamage(in_ignored_immunity_time: bool):
 	
 	ReceivedLethalDamage = IsDamageLethal(LastDamage)
 	

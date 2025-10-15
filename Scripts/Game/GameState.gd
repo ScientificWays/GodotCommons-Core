@@ -101,8 +101,8 @@ var GameStatsDictionary: Dictionary[StringName, Variant]
 func GetGameStatValue(InStat: StringName) -> Variant:
 	return GameStatsDictionary.get(InStat, 0)
 
-func SetGameStatValue(InStat: StringName, InValue: Variant) -> void:
-	GameStatsDictionary[InStat] = InValue
+func SetGameStatValue(InStat: StringName, in_value: Variant) -> void:
+	GameStatsDictionary[InStat] = in_value
 
 func ResetGameStatValue(InStat: StringName) -> void:
 	GameStatsDictionary.erase(InStat)

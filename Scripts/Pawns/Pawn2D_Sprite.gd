@@ -157,14 +157,14 @@ func TryPlayDeathAnimation() -> bool:
 		return true
 	return false
 
-func PlayOverrideAnimation(InName: StringName, InCustomSpeed: float = 1.0, InFromEnd: bool = false, InShouldResetOnFinish: bool = true, InKeepUpdateVelocityBasedAnimations: bool = false, InType: AnimationData2D.Type = AnimationData2D.Type.Override):
+func PlayOverrideAnimation(in_name: StringName, InCustomSpeed: float = 1.0, InFromEnd: bool = false, InShouldResetOnFinish: bool = true, InKeepUpdateVelocityBasedAnimations: bool = false, InType: AnimationData2D.Type = AnimationData2D.Type.Override):
 	
-	assert(sprite_frames.has_animation(InName))
+	assert(sprite_frames.has_animation(in_name))
 	
 	ShouldUpdateVelocityBasedAnimations = _AnimationData.CanUpdateVelocityBasedAnimations and InKeepUpdateVelocityBasedAnimations
 	
 	_AnimationType = InType
-	play(InName, InCustomSpeed, InFromEnd)
+	play(in_name, InCustomSpeed, InFromEnd)
 	
 	if InShouldResetOnFinish:
 		if not animation_finished.is_connected(_HandleOverrideAnimationReset):
@@ -173,11 +173,11 @@ func PlayOverrideAnimation(InName: StringName, InCustomSpeed: float = 1.0, InFro
 		if animation_finished.is_connected(_HandleOverrideAnimationReset):
 			animation_finished.disconnect(_HandleOverrideAnimationReset)
 
-func CancelOverrideAnimation(InName: StringName = &""):
+func CancelOverrideAnimation(in_name: StringName = &""):
 	
-	assert(sprite_frames.has_animation(InName))
+	assert(sprite_frames.has_animation(in_name))
 	
-	if animation == InName or IsOverrideAnimationType():
+	if animation == in_name or IsOverrideAnimationType():
 		stop()
 
 func _HandleOverrideAnimationReset():

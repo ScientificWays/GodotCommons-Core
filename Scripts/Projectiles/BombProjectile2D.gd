@@ -37,6 +37,19 @@ func _ready() -> void:
 			#var BeepPassedTime := _DetonateBeepTime - detonate_delay
 			#beep_animation_player.advance(BeepPassedTime / _DetonateBeepTime)
 	
+	if data.should_detonate_on_hit:
+		assert(contact_monitor and max_contacts_reported > 0)
+		body_entered.connect(_handle_detonate_on_hit)
+	
+	if data.should_detonate_on_receive_damage:
+		
+		var damage_receiver := DamageReceiver.try_get_from(self)
+		if not damage_receiver:
+			damage_receiver = DamageReceiver.new()
+			damage_receiver.OwnerBody2D = self
+			add_child(damage_receiver)
+		damage_receiver.ReceiveDamage.connect(_handle_detonate_on_receive_damage)
+	
 	data.handle_post_init(self)
 
 ##
@@ -60,12 +73,21 @@ func _handle_detonate(in_is_timer_detonate: bool) -> void:
 		spawn_explosion_at(global_position)
 		handle_remove_from_scene(RemoveReason.Detonate)
 
+func _handle_detonate_on_hit(from_target_hit: Node2D) -> void:
+	_handle_detonate(false)
+
+func _handle_detonate_on_receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool) -> void:
+	_handle_detonate(false)
+
+##
+## Explosion
+##
 var explosion_damage_receiver_callable_array: Array[Callable] = []
 
-func spawn_explosion_at(in_global_position: Vector2) -> Explosion2D:
+func spawn_explosion_at(in_global_position: Vector2, in_override_power: float = _power, in_delay: float = 0.0) -> Explosion2D:
 	
 	var explosion_data := get_meta(explosion_data_override_meta, data.explosion_data)
-	var out_explosion := Explosion2D.spawn(in_global_position, explosion_data, _level, data.get_explosion_radius(_level) * _power, data.get_explosion_damage(_level) * _power, data.get_explosion_impulse(_level) * _power, _instigator) as Explosion2D
+	var out_explosion := Explosion2D.spawn(in_global_position, explosion_data, _level, data.get_explosion_radius(_level) * in_override_power, data.get_explosion_damage(_level) * in_override_power, data.get_explosion_impulse(_level) * in_override_power, _instigator, in_delay) as Explosion2D
 	#out_explosion.OverlayDataArray = ExplosionOverlayDataArray
 	out_explosion.damage_receiver_callable_array.append_array(explosion_damage_receiver_callable_array)
 	return out_explosion

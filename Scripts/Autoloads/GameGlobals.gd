@@ -266,13 +266,22 @@ func OnPauseSourcesChanged():
 		get_tree().paused = true
 	pause_sources_changed.emit()
 
-func OnPhysicsTickRateSettingChanged(InValue: int):
-	if InValue < 30 or InValue > 120:
-		push_error("Invalid PhysicsTickRate setting %s!" % [ InValue ])
+func OnPhysicsTickRateSettingChanged(in_value: int):
+	if in_value < 30 or in_value > 120:
+		push_error("Invalid PhysicsTickRate setting %s!" % [ in_value ])
 	else:
-		Engine.physics_ticks_per_second = InValue
+		Engine.physics_ticks_per_second = in_value
 
-func AppendToObjectMetaArray(InObject: Object, InName: StringName, InElement: Variant, InDefaultArray: Array = []):
-	var MetaArray: Array = InObject.get_meta(InName, InDefaultArray)
+func AppendToObjectMetaArray(InObject: Object, in_name: StringName, InElement: Variant, InDefaultArray: Array = []):
+	var MetaArray: Array = InObject.get_meta(in_name, InDefaultArray)
 	MetaArray.append(InElement)
-	InObject.set_meta(InName, MetaArray)
+	InObject.set_meta(in_name, MetaArray)
+
+##
+## Status Effects
+##
+var status_effect_handle_counter: int = StatusEffectInstance.INVALID_HANDLE
+
+func generate_new_status_effect_handle() -> int:
+	status_effect_handle_counter += 1
+	return status_effect_handle_counter

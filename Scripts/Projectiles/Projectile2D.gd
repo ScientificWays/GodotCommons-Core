@@ -6,6 +6,8 @@ static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level
 	assert(in_data)
 	assert(in_data.scene)
 	
+	assert(in_level >= 0)
+	
 	var out_projectile := in_data.scene.instantiate() as Projectile2D
 	out_projectile.data = in_data
 	out_projectile._level = in_level

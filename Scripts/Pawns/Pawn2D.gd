@@ -56,7 +56,7 @@ func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2,
 	assert(false)
 	return false
 
-func OnReceiveLethalDamage(in_source: Node, in_damage: float, InIgnoredImmunityTime: bool):
+func OnReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
 	HandleLethalDamage()
 
 func HandleLethalDamage():

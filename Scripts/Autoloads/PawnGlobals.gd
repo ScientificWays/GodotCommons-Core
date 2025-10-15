@@ -22,8 +22,8 @@ var DefaultAttributeValues: Dictionary = {
 	RamDamageMul = 1.0,
 }
 
-func GetDefaultAttributeValue(InName: StringName) -> float:
-	return DefaultAttributeValues.get(InName, 0.0)
+func GetDefaultAttributeValue(in_name: StringName) -> float:
+	return DefaultAttributeValues.get(in_name, 0.0)
 
 func _ready():
 	pass

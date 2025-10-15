@@ -95,17 +95,17 @@ func is_left_mouse_button_press_event(InEvent: InputEvent) -> bool:
 signal BombStockPreferenceChanged()
 
 var BombStockPreference: int = 1:
-	set(InValue):
-		if InValue != BombStockPreference:
-			BombStockPreference = InValue
+	set(in_value):
+		if in_value != BombStockPreference:
+			BombStockPreference = in_value
 			BombStockPreferenceChanged.emit()
 
 signal ShowHardcoreStatsChanged()
 
 var ShowHardcoreStats: bool = false:
-	set(InValue):
-		if InValue != ShowHardcoreStats:
-			ShowHardcoreStats = InValue
+	set(in_value):
+		if in_value != ShowHardcoreStats:
+			ShowHardcoreStats = in_value
 			ShowHardcoreStatsChanged.emit()
 
 func SetOutlineButtonColor(InColor: Color):

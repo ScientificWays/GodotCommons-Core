@@ -21,7 +21,7 @@ func _ready() -> void:
 	if UseControllerAttributeSet:
 		
 		var OwnerAS := AttributeSet.try_get_from(OwnerHUD.OwnerPlayerController)
-		OwnerAttributeData = OwnerAS.GetOrInitAttribute(AttributeName) if OwnerAS else null
+		OwnerAttributeData = OwnerAS.get_or_init_attribute(AttributeName) if OwnerAS else null
 		assert(OwnerAttributeData)
 	else:
 		OwnerHUD.OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerPawnChanged)
@@ -31,12 +31,12 @@ var OwnerAttributeData: AttributeSet.AttributeData:
 	set(InData):
 		
 		if is_instance_valid(OwnerAttributeData):
-			OwnerAttributeData.CurrentValueChanged.disconnect(OnOwnerCurrentValueChanged)
+			OwnerAttributeData.current_value_changed.disconnect(OnOwnerCurrentValueChanged)
 		
 		OwnerAttributeData = InData
 		
 		if is_instance_valid(OwnerAttributeData):
-			OwnerAttributeData.CurrentValueChanged.connect(OnOwnerCurrentValueChanged)
+			OwnerAttributeData.current_value_changed.connect(OnOwnerCurrentValueChanged)
 		
 		Update()
 
@@ -47,9 +47,9 @@ func OnOwnerPawnChanged() -> void:
 		await NewPawn.ready
 	
 	var OwnerAS := AttributeSet.try_get_from(NewPawn)
-	OwnerAttributeData = OwnerAS.GetOrInitAttribute(AttributeName) if OwnerAS else null
+	OwnerAttributeData = OwnerAS.get_or_init_attribute(AttributeName) if OwnerAS else null
 
-func OnOwnerCurrentValueChanged(InOldValue: float, InNewValue: float) -> void:
+func OnOwnerCurrentValueChanged(in_old_value: float, in_new_value: float) -> void:
 	Update()
 
 func Update() -> void:
@@ -57,9 +57,9 @@ func Update() -> void:
 	if OwnerAttributeData:
 		
 		if TargetLabel is VHSLabel:
-			TargetLabel.label_text = String.num_int64(OwnerAttributeData.CurrentValue)
+			TargetLabel.label_text = String.num_int64(OwnerAttributeData.current_value)
 		elif TargetLabel is Label:
-			TargetLabel.text = String.num_int64(OwnerAttributeData.CurrentValue)
+			TargetLabel.text = String.num_int64(OwnerAttributeData.current_value)
 		
 		visible = true
 		

@@ -86,6 +86,8 @@ script = ExtResource("2_wljdn")
 
 [node name="LightSprite" type="Sprite2D" parent="."]
 modulate = Color(1, 0.7845677, 0, 0.1)
+z_index = 2
+z_as_relative = false
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_3d6w6")
 
