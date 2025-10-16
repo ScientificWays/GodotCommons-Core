@@ -18,6 +18,9 @@ class_name LevelBase2D
 @export_category("Hints")
 @export var TriggerTutorialHints: bool = false
 
+@export_category("Navigation")
+@export var level_navigation_region: LevelNavigationRegion2D
+
 @export_category("Tiles")
 @export var floor_tile_map_layer: LevelTileMapLayer
 
@@ -125,3 +128,28 @@ func has_available_tile_floor_extent_at(in_global_position: Vector2, in_extent: 
 			if not floor_tile_map_layer.HasCell(sample_coords):
 				return false
 	return true
+
+##
+## Navigation
+##
+func request_nav_update(in_is_on_thread: bool = true):
+	
+	if level_navigation_region:
+		if in_is_on_thread:
+			level_navigation_region.request_update()
+		else:
+			level_navigation_region.bake_navigation_polygon(false)
+
+func get_random_nav_pos_in_radius(in_center: Vector2, in_radius: float) -> Vector2:
+	
+	var map := level_navigation_region.get_navigation_map()
+	if NavigationServer2D.map_get_iteration_id(map) <= 0:
+		return in_center
+	
+	for i: int in range(10):
+		var dir = Vector2.RIGHT.rotated(randf() * TAU)
+		var test_pos = in_center + dir * randf() * in_radius
+		var nav_pos = NavigationServer2D.map_get_closest_point(map, test_pos)
+		if in_center.distance_to(nav_pos) <= in_radius:
+			return nav_pos
+	return Vector2.INF # fallback

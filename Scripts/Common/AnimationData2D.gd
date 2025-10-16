@@ -34,7 +34,7 @@ func Init(InSprite: Pawn2D_Sprite):
 @export var DirectionUpdateAxisDifferenceThreshold: float = 8.0
 
 func GetNewDirectionForVelocity(InSprite: Pawn2D_Sprite) -> Direction:
-	return UtilGetNewDirectionForVector(InSprite.LinearVelocity, InSprite._Direction)
+	return UtilGetNewDirectionForVector(InSprite.linear_velocity, InSprite._Direction)
 
 func GetNewDirectionForLookAtTarget(InSprite: Pawn2D_Sprite) -> Direction:
 	var TargetVector := InSprite.LookAtTarget.global_position - InSprite.global_position

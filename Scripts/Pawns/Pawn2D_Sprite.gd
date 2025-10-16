@@ -41,13 +41,13 @@ func IsOverrideAnimationType() -> bool:
 	return _AnimationType == AnimationData2D.Type.Override
 
 var LinearSpeed: float = 0.0
-var LinearVelocity: Vector2 = Vector2.ZERO:
-	set(InVelocity):
+var linear_velocity: Vector2 = Vector2.ZERO:
+	set(in_velocity):
 		
-		if not LinearVelocity.is_equal_approx(InVelocity):
+		if not linear_velocity.is_equal_approx(in_velocity):
 			
-			LinearVelocity = InVelocity
-			LinearSpeed = LinearVelocity.length()
+			linear_velocity = in_velocity
+			LinearSpeed = linear_velocity.length()
 			assert(not is_nan(LinearSpeed))
 			
 			if not is_instance_valid(LookAtTarget):
@@ -57,7 +57,7 @@ var LinearVelocity: Vector2 = Vector2.ZERO:
 				UpdateVelocityBasedAnimations()
 
 var ShouldUpdateVelocityBasedAnimations: bool = true
-var MoveAnimationBaseSpeed: float = 25.0
+@export var MoveAnimationBaseSpeed: float = 25.0
 
 signal LookAtTargetChanged()
 

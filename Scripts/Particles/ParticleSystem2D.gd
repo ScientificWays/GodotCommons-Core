@@ -41,7 +41,7 @@ func OverrideRadius(in_radius: float):
 				#SampleParticles.process_material = SampleBasePPM.duplicate()
 				#SampleParticles.process_material.emission_sphere_radius = in_radius
 
-func EmitParticlesWithVelocity(InParticlesNum: int, InVelocity: Vector2):
+func EmitParticlesWithVelocity(InParticlesNum: int, in_velocity: Vector2):
 	
 	if ProjectSettings.get_setting_with_override(&"rendering/renderer/rendering_method") == &"gl_compatibility":
 		print(self, " EmitParticlesWithVelocity() cancelled due to gl_compatibility renderer")
@@ -50,7 +50,7 @@ func EmitParticlesWithVelocity(InParticlesNum: int, InVelocity: Vector2):
 	var Flags := EMIT_FLAG_VELOCITY
 	
 	for SampleIndex: int in range(InParticlesNum):
-		emit_particle(global_transform, InVelocity, Color.BLACK, Color.BLACK, Flags)
+		emit_particle(global_transform, in_velocity, Color.BLACK, Color.BLACK, Flags)
 
 func OnLifetimeTimerTimeout():
 	queue_free()

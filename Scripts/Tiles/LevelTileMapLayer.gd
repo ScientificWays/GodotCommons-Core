@@ -14,7 +14,6 @@ const InvalidCell: Vector2i = Vector2i.MAX
 #]
 
 @export var DamageLayer: LevelTileMapLayer_Damage
-@export var LayerNavRegion: LevelNavigationRegion2D
 @export var TilePlaceCheckShape: Shape2D
 
 @onready var _LevelTileSet: LevelTileSet = tile_set
@@ -55,37 +54,6 @@ func _physics_process(in_delta: float):
 	else:
 		ProcessPendingTileArray(in_delta)
 
-func InitNavigation():
-	
-	var LevelRect := get_used_rect()
-	var TileSizeVectorFloat := tile_set.tile_size as Vector2
-	
-	if LayerNavRegion:
-		
-		LayerNavRegion.navigation_polygon.clear()
-		LayerNavRegion.navigation_polygon.add_outline([
-			Vector2(LevelRect.position) * TileSizeVectorFloat,
-			Vector2(LevelRect.position.x, LevelRect.end.y) * TileSizeVectorFloat,
-			Vector2(LevelRect.end) * TileSizeVectorFloat,
-			Vector2(LevelRect.end.x, LevelRect.position.y) * TileSizeVectorFloat
-		])
-	
-	#RequestNavigationUpdate(false)
-	RequestNavigationUpdate()
-	
-	await get_tree().create_timer(1.0).timeout
-	
-	## Update this only once
-	#_UnbreakableNavRegion.bake_navigation_polygon()
-
-func RequestNavigationUpdate(IsOnThread: bool = true):
-	
-	if LayerNavRegion:
-		if IsOnThread:
-			LayerNavRegion.RequestUpdate()
-		else:
-			LayerNavRegion.bake_navigation_polygon(false)
-
 func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 	
 	var owner_explosion := InImpact.owner_explosion
@@ -117,7 +85,7 @@ func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 	)
 	if not ImpactedCells.is_empty():
 		BetterTerrain.update_terrain_cells(self, ImpactedCells)
-		RequestNavigationUpdate()
+		WorldGlobals._level.request_nav_update()
 
 func HandleBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll):
 	
@@ -128,7 +96,7 @@ func HandleBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll):
 	
 	if ImpactData.ImpulseMul > 0.0 and ImpactData.RamDamage > 5.0:
 		var TargetCell := local_to_map(to_local(ImpactData.LocalPosition - ImpactData.LocalNormal))
-		TryImpactCell(TargetCell, ImpactData.RamDamage * ImpactData.ImpulseMul, ImpactData.LinearVelocity * InBarrelRoll.OwnerBody.mass)
+		TryImpactCell(TargetCell, ImpactData.RamDamage * ImpactData.ImpulseMul, ImpactData.linear_velocity * InBarrelRoll.OwnerBody.mass)
 
 func HasCell(InCell: Vector2i) -> bool:
 	return BetterTerrain.get_cell(self, InCell) >= 0
@@ -211,7 +179,7 @@ func UtilHandleCellBreak(InCell: Vector2i, in_impulse: Vector2, InCanIgniteDebri
 	
 	if InShouldUpdateTerrainAndNavigation:
 		BetterTerrain.update_terrain_cell(self, InCell)
-		RequestNavigationUpdate()
+		WorldGlobals._level.request_nav_update()
 	
 	if MarkedToFallWallCellWeights.has(InCell):
 		MarkedToFallWallCellWeights.erase(InCell)

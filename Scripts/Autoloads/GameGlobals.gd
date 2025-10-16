@@ -113,7 +113,7 @@ func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable:
 	else:
 		InRigidBody.body_entered.connect(InBodyEnteredCallable)
 
-func calc_radial_impulse_with_offset_for_target(in_target: Node2D, InOrigin: Vector2, in_max_impulse: float, in_radius: float, InImpactEase: float) -> Vector4:
+func calc_radial_impulse_with_offset_for_target(in_target: Node2D, in_origin: Vector2, in_max_impulse: float, in_radius: float, in_impact_ease: float = 1.0) -> Vector4:
 	
 	var ImpulseOffset := Vector2(0.0, 0.0)
 	var ImpulsePosition := Vector2.INF
@@ -121,19 +121,21 @@ func calc_radial_impulse_with_offset_for_target(in_target: Node2D, InOrigin: Vec
 	var TargetImpulsePoints := ImpulsePoints2D.try_get_from(in_target)
 	if TargetImpulsePoints:
 		
-		var ImpulseLocalPosition := TargetImpulsePoints.GetLocalImpulsePosition(InOrigin)
+		var ImpulseLocalPosition := TargetImpulsePoints.GetLocalImpulsePosition(in_origin)
 		ImpulsePosition = in_target.to_global(ImpulseLocalPosition)
 		ImpulseOffset = ImpulseLocalPosition.rotated(in_target.global_rotation)
 	else:
 		ImpulsePosition = in_target.global_position
 	
-	var ImpulseVector := ImpulsePosition - InOrigin
+	var ImpulseVector := ImpulsePosition - in_origin
 	var ImpulseDistance := ImpulseVector.length()
 	var ImpulseDirection := ImpulseVector / ImpulseDistance
 	
 	var TargetDistance := ImpulseDistance - in_target.get_meta(DamageReceiver.BoundsRadiusMeta, 4.0) as float
-	var DistanceMul := (1.0 - ease(clampf(TargetDistance / in_radius, 0.0, 1.0), InImpactEase))
-	var FinalImpulseAmplitude := in_max_impulse * DistanceMul
+	
+	var FinalImpulseAmplitude := in_max_impulse
+	if in_radius > 0.0:
+		FinalImpulseAmplitude *= (1.0 - ease(clampf(TargetDistance / in_radius, 0.0, 1.0), in_impact_ease))
 	
 	var OutImpulse := ImpulseDirection * FinalImpulseAmplitude
 	return Vector4(OutImpulse.x, OutImpulse.y, ImpulseOffset.x, ImpulseOffset.y)

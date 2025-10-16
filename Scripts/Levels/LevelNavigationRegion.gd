@@ -1,33 +1,33 @@
 extends NavigationRegion2D
 class_name LevelNavigationRegion2D
 
-var bWaitingUpdateFinish: bool = false
-var bRequestUpdateAgain: bool = false
+var _is_waiting_update_finish: bool = false
+var _should_request_update_again: bool = false
 
-@onready var _DelayedUpdateTimer: Timer
+@onready var _delayed_update_timer: Timer
 
 func _ready():
-	_DelayedUpdateTimer = Timer.new()
-	_DelayedUpdateTimer.one_shot = true
-	_DelayedUpdateTimer.wait_time = 0.5
-	_DelayedUpdateTimer.timeout.connect(DelayedUpdate)
-	add_child(_DelayedUpdateTimer)
-	bake_finished.connect(OnBakeFinished)
+	_delayed_update_timer = Timer.new()
+	_delayed_update_timer.one_shot = true
+	_delayed_update_timer.wait_time = 0.5
+	_delayed_update_timer.timeout.connect(delayed_update)
+	add_child(_delayed_update_timer)
+	bake_finished.connect(_on_bake_finished)
 
-func RequestUpdate():
-	if bWaitingUpdateFinish:
-		bRequestUpdateAgain = true
-	elif _DelayedUpdateTimer.is_stopped():
-		_DelayedUpdateTimer.start()
+func request_update():
+	if _is_waiting_update_finish:
+		_should_request_update_again = true
+	elif _delayed_update_timer.is_stopped():
+		_delayed_update_timer.start()
 
-func DelayedUpdate():
+func delayed_update():
 	#print("Update")
-	assert(not bWaitingUpdateFinish)
-	bWaitingUpdateFinish = true
+	assert(not _is_waiting_update_finish)
+	_is_waiting_update_finish = true
 	bake_navigation_polygon(true)
 
-func OnBakeFinished():
-	bWaitingUpdateFinish = false
-	if bRequestUpdateAgain:
-		bRequestUpdateAgain = false
-		RequestUpdate()
+func _on_bake_finished():
+	_is_waiting_update_finish = false
+	if _should_request_update_again:
+		_should_request_update_again = false
+		request_update()
