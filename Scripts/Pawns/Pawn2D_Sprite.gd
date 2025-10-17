@@ -1,6 +1,9 @@
 extends AnimatedSprite2D
 class_name Pawn2D_Sprite
 
+static func try_get_from(in_node: Node) -> Pawn2D_Sprite:
+	return ModularGlobals.try_get_from(in_node, Pawn2D_Sprite)
+
 var _ParticlesPivot: ParticlesPivot
 
 @export var _AnimationData: AnimationData2D = null:
@@ -78,6 +81,12 @@ var StatusEffectModulateArray: Array[Color] = []
 func _ready():
 	_ParticlesPivot = ParticlesPivot.new()
 	add_child(_ParticlesPivot)
+
+func _enter_tree():
+	ModularGlobals.init_modular_node(self)
+
+func _exit_tree():
+	ModularGlobals.deinit_modular_node(self)
 
 func _process(in_delta: float):
 	

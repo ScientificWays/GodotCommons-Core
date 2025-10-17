@@ -20,11 +20,16 @@ func _ready() -> void:
 	var monitor_hits_start_delay := get_meta(monitor_hits_start_delay_meta, 0.0) as float
 	if monitor_hits_start_delay > 0.0:
 		GameGlobals.delayed_collision_activate(_owner, _on_target_entered, monitor_hits_start_delay, self)
+	else:
+		_owner.body_entered.connect(_on_target_entered)
 	
 	var receive_explosions_delay := get_meta(receive_explosions_delay_meta, 0.0) as float
 	if receive_explosions_delay > 0.0 and _owner.collision_layer & GameGlobals_Class.collision_layer_explosion_receiver:
 		_owner.collision_layer = GameGlobals_Class.remove_mask(_owner.collision_layer, GameGlobals_Class.collision_layer_explosion_receiver)
 		GameGlobals.SpawnOneShotTimerFor(_owner, func(): _owner.collision_layer = GameGlobals_Class.remove_mask(_owner.collision_layer, GameGlobals_Class.collision_layer_explosion_receiver), 0.2)
+	
+	if _owner.data.should_damage_on_hit or _owner.data.should_remove_on_hit:
+		assert(_owner.contact_monitor and _owner.max_contacts_reported > 0)
 
 func _on_target_entered(in_target: Node):
 	

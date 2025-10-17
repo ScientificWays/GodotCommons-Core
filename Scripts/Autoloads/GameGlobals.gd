@@ -52,7 +52,7 @@ func _ready():
 ##
 const collision_layer_player: int = 1
 const collision_layer_creature: int = 2
-const collision_layer_bomb: int = 4
+const collision_layer_projectile: int = 4
 const collision_layer_world: int = 8
 const collision_layer_item: int = 16
 const collision_layer_item_pull: int = 32
