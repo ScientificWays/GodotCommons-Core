@@ -31,7 +31,7 @@ func _physics_process(in_delta: float) -> void:
 	if target_node:
 		target_position = target_node.global_position
 	
-	if max_speed == 0.0 or disable_movement_counter > 0:
+	if owner_movement.move_speed == 0.0 or disable_movement_counter > 0:
 		velocity = Vector2.ZERO
 		return
 	
@@ -41,7 +41,7 @@ func _physics_process(in_delta: float) -> void:
 		var next_path_position := get_next_path_position()
 		var move_direction := owner_movement.owner_body.global_position.direction_to(next_path_position)
 		
-		velocity = move_direction * max_speed
+		velocity = move_direction * owner_movement.move_speed
 	
 	if not avoidance_enabled:
 		owner_movement.set_movement_velocity(velocity, true)

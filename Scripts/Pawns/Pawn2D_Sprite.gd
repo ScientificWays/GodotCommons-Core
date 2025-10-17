@@ -142,22 +142,22 @@ func PlayIdleAnimation():
 	play(_AnimationData.GetIdleAnimationName(self))
 
 func PlayIdleToMoveAnimation():
-	PlayOverrideAnimation(_AnimationData.GetIdleToMoveAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.IdleToMove)
+	play_override_animation(_AnimationData.GetIdleToMoveAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.IdleToMove)
 
 func PlayMoveAnimation(InSpeed: float):
 	_AnimationType = AnimationData2D.Type.Move
 	play(_AnimationData.GetMoveAnimationName(self), InSpeed)
 
 func PlayMoveToIdleAnimation():
-	PlayOverrideAnimation(_AnimationData.GetMoveToIdleAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.MoveToIdle)
+	play_override_animation(_AnimationData.GetMoveToIdleAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.MoveToIdle)
 
 func TryPlayDeathAnimation() -> bool:
 	if _AnimationData.UseDeathAnimation:
-		PlayOverrideAnimation(_AnimationData.GetDeathAnimationName(self), 1.0, false, true, false, AnimationData2D.Type.Death)
+		play_override_animation(_AnimationData.GetDeathAnimationName(self), 1.0, false, true, false, AnimationData2D.Type.Death)
 		return true
 	return false
 
-func PlayOverrideAnimation(in_name: StringName, InCustomSpeed: float = 1.0, InFromEnd: bool = false, InShouldResetOnFinish: bool = true, InKeepUpdateVelocityBasedAnimations: bool = false, InType: AnimationData2D.Type = AnimationData2D.Type.Override):
+func play_override_animation(in_name: StringName, InCustomSpeed: float = 1.0, InFromEnd: bool = false, InShouldResetOnFinish: bool = true, InKeepUpdateVelocityBasedAnimations: bool = false, InType: AnimationData2D.Type = AnimationData2D.Type.Override):
 	
 	assert(sprite_frames.has_animation(in_name))
 	

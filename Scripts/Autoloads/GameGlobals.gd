@@ -62,54 +62,54 @@ const collision_layer_explosion_receiver: int = 4096
 ##
 ## Timers
 ##
-func spawn_one_shot_timer_for(in_owner: Node, InCallable: Callable, InDelay: float, InAutoRemove: bool = true, InAutostart: bool = true) -> Timer:
+func spawn_one_shot_timer_for(in_owner: Node, in_callable: Callable, in_delay: float, in_auto_remove: bool = true, in_autostart: bool = true) -> Timer:
 	
-	if InDelay > 0.0:
+	if in_delay > 0.0:
 		
-		var NewTimer = Timer.new()
-		NewTimer.autostart = InAutostart
-		NewTimer.one_shot = true
-		NewTimer.timeout.connect(InCallable)
+		var out_timer = Timer.new()
+		out_timer.autostart = in_autostart
+		out_timer.one_shot = true
+		out_timer.timeout.connect(in_callable)
 		
-		if InAutoRemove:
-			NewTimer.timeout.connect(NewTimer.queue_free)
+		if in_auto_remove:
+			out_timer.timeout.connect(out_timer.queue_free)
 		
-		NewTimer.wait_time = InDelay
-		in_owner.add_child(NewTimer)
-		return NewTimer
-	InCallable.call()
+		out_timer.wait_time = in_delay
+		in_owner.add_child(out_timer)
+		return out_timer
+	in_callable.call()
 	return null
 
-func spawn_regular_timer_for(in_owner: Node, InCallable: Callable, InDelay: float, InAutostart: bool = true) -> Timer:
+func spawn_regular_timer_for(in_owner: Node, in_callable: Callable, in_delay: float, in_autostart: bool = true) -> Timer:
 	
-	assert(InDelay > 0.0)
-	var NewTimer = Timer.new()
-	NewTimer.autostart = InAutostart
-	NewTimer.one_shot = false
-	NewTimer.timeout.connect(InCallable)
-	NewTimer.wait_time = InDelay
-	in_owner.add_child(NewTimer)
-	return NewTimer
+	assert(in_delay > 0.0)
+	var out_timer = Timer.new()
+	out_timer.autostart = in_autostart
+	out_timer.one_shot = false
+	out_timer.timeout.connect(in_callable)
+	out_timer.wait_time = in_delay
+	in_owner.add_child(out_timer)
+	return out_timer
 
-func spawn_await_timer(in_owner: Node, InDelay: float) -> Timer:
+func spawn_await_timer(in_owner: Node, in_delay: float) -> Timer:
 	
-	assert(InDelay > 0.0)
-	var NewTimer = Timer.new()
-	NewTimer.autostart = true
-	NewTimer.one_shot = false
-	NewTimer.wait_time = InDelay
-	in_owner.add_child(NewTimer)
-	return NewTimer
+	assert(in_delay > 0.0)
+	var out_timer = Timer.new()
+	out_timer.autostart = true
+	out_timer.one_shot = false
+	out_timer.wait_time = in_delay
+	in_owner.add_child(out_timer)
+	return out_timer
 
-func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, InDelay: float, InTimerParent: Node):
+func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, in_delay: float, InTimerParent: Node):
 	
-	if InDelay > 0.0:
+	if in_delay > 0.0:
 		GameGlobals.spawn_one_shot_timer_for(InTimerParent, func():
 			InRigidBody.body_entered.connect(InBodyEnteredCallable)
 			for SampleBody: Node2D in InRigidBody.get_colliding_bodies():
 				#print(SampleBody)
 				InBodyEnteredCallable.call(SampleBody),
-			InDelay)
+			in_delay)
 	else:
 		InRigidBody.body_entered.connect(InBodyEnteredCallable)
 

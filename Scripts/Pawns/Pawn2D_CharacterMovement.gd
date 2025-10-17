@@ -1,6 +1,9 @@
 extends Node
 class_name Pawn2D_CharacterMovement
 
+static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
+	return ModularGlobals.try_get_from(in_node, Pawn2D_CharacterMovement)
+
 @export_category("Owner")
 @export var owner_body: CharacterBody2D
 @export var owner_sprite: Pawn2D_Sprite
@@ -11,8 +14,17 @@ class_name Pawn2D_CharacterMovement
 @export var should_bounce: bool = false
 @export var launch_velocity_reset_threshold: float = 10.0
 
+@export_category("Velocity")
+@export var move_speed: float = 32.0
+@export var launch_velocity_damp: float = 4.0
+
+func _enter_tree():
+	ModularGlobals.init_modular_node(self)
+
+func _exit_tree():
+	ModularGlobals.deinit_modular_node(self)
+
 var pending_launch_velocity: Vector2 = Vector2.ZERO
-var pending_launch_velocity_damp: float = 4.0
 
 var movement_velocity: Vector2 = Vector2.ZERO:
 	set(in_velocity):
@@ -39,7 +51,7 @@ func launch(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool = false) 
 
 var prev_velocity: Vector2 = Vector2.ZERO
 
-func _physics_process(InDelta: float):
+func _physics_process(in_delta: float):
 	
 	prev_velocity = owner_body.get_real_velocity()
 	var external_velocity := Vector2.ZERO
@@ -49,7 +61,7 @@ func _physics_process(InDelta: float):
 		pass
 	else:
 		external_velocity += pending_launch_velocity / mass
-		pending_launch_velocity = pending_launch_velocity.lerp(Vector2.ZERO, InDelta * pending_launch_velocity_damp)
+		pending_launch_velocity = pending_launch_velocity.lerp(Vector2.ZERO, in_delta * launch_velocity_damp)
 		
 		if pending_launch_velocity.length_squared() < (launch_velocity_reset_threshold * launch_velocity_reset_threshold):
 			pending_launch_velocity = Vector2.ZERO
@@ -57,7 +69,7 @@ func _physics_process(InDelta: float):
 	owner_body.velocity = movement_velocity + external_velocity
 	
 	if should_bounce:
-		var collision_info := owner_body.move_and_collide(owner_body.velocity * InDelta)
+		var collision_info := owner_body.move_and_collide(owner_body.velocity * in_delta)
 		if collision_info:
 			pending_launch_velocity = pending_launch_velocity.bounce(collision_info.get_normal())
 			bounce.emit(collision_info)

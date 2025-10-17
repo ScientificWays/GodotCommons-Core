@@ -7,7 +7,7 @@ var owner_navigation: Pawn2D_Navigation
 
 func _enter() -> void:
 	
-	owner_navigation = Pawn2D_Navigation.try_get_from(scene_root)
+	owner_navigation = Pawn2D_Navigation.try_get_from(agent)
 	
 	var move_target = blackboard.get_var(move_target_var)
 	if move_target is Node2D:

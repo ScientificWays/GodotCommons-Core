@@ -14,7 +14,7 @@ func _exit() -> void:
 
 func _tick(in_delta: float) -> Status:
 	
-	var center = blackboard.get_var(in_center_var) if blackboard.has_var(in_center_var) else scene_root
+	var center = blackboard.get_var(in_center_var) if blackboard.has_var(in_center_var) else agent
 	if center is Node2D:
 		center = center.global_position
 	

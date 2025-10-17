@@ -6,7 +6,7 @@ extends BTAction
 var owner_perception: Pawn2D_Perception
 
 func _enter() -> void:
-	owner_perception = Pawn2D_Perception.try_get_from(scene_root)
+	owner_perception = Pawn2D_Perception.try_get_from(agent)
 
 func _exit() -> void:
 	owner_perception = null

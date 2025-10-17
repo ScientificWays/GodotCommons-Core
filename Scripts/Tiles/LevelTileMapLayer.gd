@@ -249,9 +249,9 @@ func ProcessPendingTileArray(in_delta: float):
 	PendingTilePlaceArray.clear()
 	PendingTilePlaceArrayMutex.unlock()
 
-func ForEachTileInRadius(InCenterCell: Vector2i, in_radius: int, InCallable: Callable):
+func ForEachTileInRadius(InCenterCell: Vector2i, in_radius: int, in_callable: Callable):
 	
 	for y: int in range(-in_radius, in_radius + 1):
 		var CurrentHalfWidth: int = (in_radius - abs(y)) + 1
 		for x: int in range(-CurrentHalfWidth, CurrentHalfWidth):
-			InCallable.call(InCenterCell + Vector2i(x, y))
+			in_callable.call(InCenterCell + Vector2i(x, y))
