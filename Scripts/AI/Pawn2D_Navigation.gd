@@ -33,9 +33,7 @@ func _physics_process(in_delta: float) -> void:
 	
 	if owner_movement.move_speed == 0.0 or disable_movement_counter > 0:
 		velocity = Vector2.ZERO
-		return
-	
-	if is_navigation_finished():
+	elif is_navigation_finished():
 		velocity = Vector2.ZERO
 	else:
 		var next_path_position := get_next_path_position()

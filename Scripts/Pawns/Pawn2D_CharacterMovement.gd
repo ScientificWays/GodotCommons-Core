@@ -16,7 +16,14 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 
 @export_category("Velocity")
 @export var move_speed: float = 32.0
+@export var sync_with_sprite_move_animation_base_speed: bool = true
 @export var launch_velocity_damp: float = 4.0
+
+func _ready() -> void:
+	
+	if sync_with_sprite_move_animation_base_speed:
+		assert(owner_sprite)
+		owner_sprite.move_animation_base_speed = move_speed
 
 func _enter_tree():
 	ModularGlobals.init_modular_node(self)

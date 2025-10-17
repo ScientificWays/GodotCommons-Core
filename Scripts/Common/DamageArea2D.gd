@@ -9,6 +9,7 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 @export var owner_perception: Pawn2D_Perception
 
 @export_category("Damage")
+@export var start_disabled: bool = false
 @export var damage: float = 10.0
 @export_flags("MeleeHit", "RangedHit", "Explosion", "Fire", "Poison", "Impact", "Fall") var damage_type: int = DamageReceiver.DamageType_MeleeHit
 @export var damage_cooldown_time: float = 1.0
@@ -23,7 +24,6 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 				body_entered.disconnect(_handle_damage_initial_delay)
 
 @export var damage_to_impulse_mul: float = 5.0
-
 @export var use_individual_cooldowns: bool = false:
 	set(in_use):
 		use_individual_cooldowns = in_use
@@ -38,6 +38,11 @@ func _ready() -> void:
 	
 	if owner_movement:
 		owner_movement.bounce.connect(_on_owner_movement_bounce)
+	
+	if start_disabled:
+		disable()
+	else:
+		enable()
 
 var process_cooldowns_callable: Callable = process_cooldowns_common
 

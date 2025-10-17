@@ -57,7 +57,7 @@ var linear_velocity: Vector2 = Vector2.ZERO:
 				UpdateVelocityBasedAnimations()
 
 var ShouldUpdateVelocityBasedAnimations: bool = true
-@export var MoveAnimationBaseSpeed: float = 25.0
+@export var move_animation_base_speed: float = 25.0
 
 signal LookAtTargetChanged()
 
@@ -116,7 +116,7 @@ func HandleSwitchToMoveAnimation():
 		UpdateMoveAnimationSpeed()
 
 func UpdateMoveAnimationSpeed():
-	PlayMoveAnimation(LinearSpeed / MoveAnimationBaseSpeed)
+	PlayMoveAnimation(LinearSpeed / move_animation_base_speed)
 
 func HandleSwitchToIdleAnimation():
 	
