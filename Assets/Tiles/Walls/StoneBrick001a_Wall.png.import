@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cuaq5o40s3tql"
-path="res://.godot/imported/Dirt001_Floor.png-be2a5326d0ff435e2c889339a6587d7d.ctex"
+uid="uid://b38spkmrjsh42"
+path="res://.godot/imported/StoneBrick001a_Wall.png-002a74ce295e742abec5d5ca7ddc8cba.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/GodotCommons-Core/Assets/Tiles/Dirt001_Floor.png"
-dest_files=["res://.godot/imported/Dirt001_Floor.png-be2a5326d0ff435e2c889339a6587d7d.ctex"]
+source_file="res://addons/GodotCommons-Core/Assets/Tiles/Walls/StoneBrick001a_Wall.png"
+dest_files=["res://.godot/imported/StoneBrick001a_Wall.png-002a74ce295e742abec5d5ca7ddc8cba.ctex"]
 
 [params]
 

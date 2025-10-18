@@ -2,7 +2,8 @@
 
 [ext_resource type="Shader" uid="uid://o0ywm4vs6rjy" path="res://addons/GodotCommons-Core/Assets/Tiles/Grass/LevelTileShader_StoneGrass.gdshader" id="1_v4l25"]
 [ext_resource type="Texture2D" uid="uid://c6fhetfjpqvgc" path="res://addons/GodotCommons-Core/Assets/Tiles/Grass/TileSet_Grass001a.png" id="2_suk52"]
-[ext_resource type="Texture2D" uid="uid://w01iyeej6yxi" path="res://addons/GodotCommons-Core/Assets/Tiles/Stone001_Wall.png" id="3_84p66"]
+[ext_resource type="Texture2D" uid="uid://w01iyeej6yxi" path="res://addons/GodotCommons-Core/Assets/Tiles/Walls/Stone001_Wall.png" id="3_84p66"]
+
 
 [resource]
 shader = ExtResource("1_v4l25")

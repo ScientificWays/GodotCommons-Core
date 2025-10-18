@@ -41,7 +41,7 @@ func _ready() -> void:
 	OnOwnerControlledPawnChanged()
 	
 	OwnerPlayerController.ControlledPawnTeleport.connect(OnOwnerControlledPawnTeleport)
-	OnOwnerControlledPawnTeleport()
+	OnOwnerControlledPawnTeleport(true)
 
 func _enter_tree() -> void:
 	get_viewport().size_changed.connect(OnViewportSizeChanged)
@@ -78,9 +78,13 @@ func OnOwnerControlledPawnChanged() -> void:
 	if TriggerLagOnPawnChanged:
 		TriggerLag()
 
-func OnOwnerControlledPawnTeleport() -> void:
-	if TriggerLagOnPawnTeleport:
-		TriggerLag()
+func OnOwnerControlledPawnTeleport(in_reset_camera: bool) -> void:
+	
+	if in_reset_camera:
+		reset_smoothing()
+	else:
+		if TriggerLagOnPawnTeleport:
+			TriggerLag()
 
 ##
 ## Lag

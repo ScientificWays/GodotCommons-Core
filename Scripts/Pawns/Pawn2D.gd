@@ -81,12 +81,11 @@ func HandleLethalDamage():
 	
 	queue_free()
 
-func TeleportTo(in_position: Vector2) -> bool:
+func teleport_to(in_position: Vector2, in_rotation: float = global_rotation, in_reset_camera: bool = false) -> bool:
 	
-	var NewTransform := global_transform
-	NewTransform.origin = in_position
-	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, NewTransform)
+	var new_transform := Transform2D(in_rotation, in_position)
+	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, new_transform)
 	
 	if _Controller:
-		_Controller.ControlledPawnTeleport.emit()
+		_Controller.ControlledPawnTeleport.emit(in_reset_camera)
 	return true

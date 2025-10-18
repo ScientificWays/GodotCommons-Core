@@ -51,7 +51,7 @@ var ControlledPawn: Pawn2D:
 		ControlledPawnChanged.emit()
 
 signal ControlledPawnChanged()
-signal ControlledPawnTeleport()
+signal ControlledPawnTeleport(in_reset_camera: bool)
 
 func OnControlledPawnTreeExited() -> void:
 	ControlledPawn = null

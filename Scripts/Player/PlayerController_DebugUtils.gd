@@ -41,4 +41,4 @@ func DebugTeleport():
 		return
 	
 	var TeleportPosition := OwnerPlayerController.ControlledPawn.get_global_mouse_position()
-	OwnerPlayerController.ControlledPawn.TeleportTo(TeleportPosition)
+	OwnerPlayerController.ControlledPawn.teleport_to(TeleportPosition)

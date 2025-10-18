@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://c56vnbxh54k"]
+
+[ext_resource type="Shader" uid="uid://3kuoux3hiylm" path="res://addons/GodotCommons-Core/Assets/Tiles/Floor/LevelTileShader_Floor.gdshader" id="1_cwme0"]
+[ext_resource type="Texture2D" uid="uid://cuaq5o40s3tql" path="res://addons/GodotCommons-Core/Assets/Tiles/Floor/Dirt001_Floor.png" id="2_bty5g"]
+
+[resource]
+shader = ExtResource("1_cwme0")
+shader_parameter/Tile = ExtResource("2_bty5g")

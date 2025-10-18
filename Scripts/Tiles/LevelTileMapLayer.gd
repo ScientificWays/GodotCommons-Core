@@ -13,6 +13,7 @@ const InvalidCell: Vector2i = Vector2i.MAX
 #	Vector2(-6.0, -6.0)
 #]
 
+@export var floor_layer: LevelTileMapLayer
 @export var DamageLayer: LevelTileMapLayer_Damage
 @export var TilePlaceCheckShape: Shape2D
 
@@ -20,7 +21,7 @@ const InvalidCell: Vector2i = Vector2i.MAX
 
 class TilePlaceData:
 	var Cell: Vector2i
-	var TerrainID: int
+	var Terrain_id: int
 	var ShouldCheckOcclusionByTile: bool
 	var ShouldCheckOcclusionByPhysicsQuery: bool
 
@@ -29,7 +30,7 @@ var PendingTilePlaceArray: Array[TilePlaceData]
 
 @export var FloorIgniteFXScene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire002_TileIgnite.tscn")
 
-signal ImpactApplied(InCell: Vector2i)
+signal ImpactApplied(in_cell: Vector2i)
 
 func _ready():
 	pass
@@ -63,14 +64,14 @@ func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 	
 	var RadiusTiles := ceili((owner_explosion._radius * owner_explosion.data.tiles_impact_radius_mul) / float(tile_set.tile_size.x))
 	
-	ForEachTileInRadius(CenterCell, RadiusTiles, func(InCell: Vector2i):
+	ForEachTileInRadius(CenterCell, RadiusTiles, func(in_cell: Vector2i):
 	
-		#if randf() < ((InCell.x - 1) / float(RadiusTiles)) + ((InCell.x - 1) / float(RadiusTiles)):
+		#if randf() < ((in_cell.x - 1) / float(RadiusTiles)) + ((in_cell.x - 1) / float(RadiusTiles)):
 		#	continue
 		
 		var WasImpacted := false
 		
-		var OffsetCell := InCell - CenterCell
+		var OffsetCell := in_cell - CenterCell
 		var OffsetCellFloat := Vector2(OffsetCell.x, OffsetCell.y)
 		
 		var DistanceCells := OffsetCellFloat.length()
@@ -79,9 +80,9 @@ func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 		if DistanceMul > 0.0:
 			var ImpulseDirection := OffsetCellFloat / DistanceCells
 			var TargetImpulse := ImpulseDirection * owner_explosion._max_impulse * DistanceMul
-			WasImpacted = TryImpactCell(InCell, owner_explosion._max_damage * owner_explosion.data.tiles_impact_damage_mul * DistanceMul, TargetImpulse, owner_explosion.data.can_ignite_debris, false)
+			WasImpacted = TryImpactCell(in_cell, owner_explosion._max_damage * owner_explosion.data.tiles_impact_damage_mul * DistanceMul, TargetImpulse, owner_explosion.data.can_ignite_debris, false)
 		if WasImpacted:
-			ImpactedCells.append(InCell)
+			ImpactedCells.append(in_cell)
 	)
 	if not ImpactedCells.is_empty():
 		BetterTerrain.update_terrain_cells(self, ImpactedCells)
@@ -98,118 +99,129 @@ func HandleBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll):
 		var TargetCell := local_to_map(to_local(ImpactData.LocalPosition - ImpactData.LocalNormal))
 		TryImpactCell(TargetCell, ImpactData.RamDamage * ImpactData.ImpulseMul, ImpactData.linear_velocity * InBarrelRoll.OwnerBody.mass)
 
-func HasCell(InCell: Vector2i) -> bool:
-	return BetterTerrain.get_cell(self, InCell) >= 0
+func has_cell(in_cell: Vector2i) -> bool:
+	return BetterTerrain.get_cell(self, in_cell) >= 0
 
-func GetCellTerrainData(InCell: Vector2i) -> LeveTileSet_TerrainData:
-	assert(HasCell(InCell))
-	return _LevelTileSet.GetTerrainData(BetterTerrain.get_cell(self, InCell))
+func get_cell_terrain_data(in_cell: Vector2i) -> LeveTileSet_TerrainData:
+	assert(has_cell(in_cell))
+	return _LevelTileSet.get_terrain_data(BetterTerrain.get_cell(self, in_cell))
 
-func TryImpactCell(InCell: Vector2i, in_damage: float, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, InShouldUpdateTerrainAndNavigation: bool = true) -> bool:
+func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
 	
 	var OutImpacted := false
 	
-	if not HasCell(InCell):
+	if not has_cell(in_cell):
 		return OutImpacted
 	
-	var CellTerrainData := GetCellTerrainData(InCell)
+	var cell_terrain_data := get_cell_terrain_data(in_cell)
 	
-	if not CellTerrainData.IsUnbreakable:
+	if not cell_terrain_data.IsUnbreakable:
 		
-		var CellHealthData := DamageLayer.GetCellData(InCell)
+		var CellHealthData := DamageLayer.GetCellData(in_cell)
 		
 		if CellHealthData.Health > in_damage:
-			UtilHandleCellDamage(InCell, in_damage, in_impulse)
+			UtilHandleCellDamage(in_cell, in_damage, in_impulse)
 		else:
-			UtilHandleCellBreak(InCell, in_impulse, InCanIgnite, InShouldUpdateTerrainAndNavigation)
+			UtilHandleCellBreak(in_cell, in_impulse, InCanIgnite, in_should_update_terrain_and_navigation)
 		OutImpacted = true
 	
-	if HasCell(InCell):
+	if has_cell(in_cell):
 		
 		if InCanIgnite \
-		and CellTerrainData.CanIgnite \
-		and (in_damage >= CellTerrainData.IgniteDamageThreshold) \
-		and (CellTerrainData.IgniteDamageProbabilityMul >= randf()):
+		and cell_terrain_data.CanIgnite \
+		and (in_damage >= cell_terrain_data.IgniteDamageThreshold) \
+		and (cell_terrain_data.IgniteDamageProbabilityMul >= randf()):
 			
-			var BreakProbability := in_damage * CellTerrainData.IgniteDamageToBreakProbabilityMul
+			var BreakProbability := in_damage * cell_terrain_data.IgniteDamageToBreakProbabilityMul
 			
 			if BreakProbability >= randf():
-				UtilHandleCellPostIgnite(InCell)
+				UtilHandleCellPostIgnite(in_cell)
 				OutImpacted = true
 			else:
-				UtilHandleCellIgnite(InCell)
+				UtilHandleCellIgnite(in_cell)
 				OutImpacted = true
 	if OutImpacted:
-		ImpactApplied.emit(InCell)
+		ImpactApplied.emit(in_cell)
 	return OutImpacted
 
-func TryBreakCell(InCell: Vector2i, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, InShouldUpdateTerrainAndNavigation: bool = true) -> bool:
-	return TryImpactCell(InCell, INF, in_impulse, InCanIgnite, InShouldUpdateTerrainAndNavigation)
+func TryBreakCell(in_cell: Vector2i, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
+	return TryImpactCell(in_cell, INF, in_impulse, InCanIgnite, in_should_update_terrain_and_navigation)
 
-func UtilHandleCellDamage(InCell: Vector2i, in_damage: float, in_impulse: Vector2):
-	DamageLayer.SubtractCellHealth(InCell, in_damage)
+func UtilHandleCellDamage(in_cell: Vector2i, in_damage: float, in_impulse: Vector2):
+	DamageLayer.SubtractCellHealth(in_cell, in_damage)
 
 var MarkedToFallWallCellWeights: Dictionary = {}
 
-func UtilHandleCellBreak(InCell: Vector2i, in_impulse: Vector2, InCanIgniteDebris: bool, InShouldUpdateTerrainAndNavigation: bool):
+func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_debris: bool, in_should_update_terrain_and_navigation: bool) -> void:
 	
-	var CellTerrainData := GetCellTerrainData(InCell)
+	var cell_terrain_data := get_cell_terrain_data(in_cell)
 	
-	for SampleNeighbor: Vector2i in TileGlobals.GenerateNeighborCellArray(InCell):
+	for sample_neighbor: Vector2i in TileGlobals.GenerateNeighborCellArray(in_cell):
 		
-		if not HasCell(SampleNeighbor):
+		if not has_cell(sample_neighbor):
 			continue
 		
-		var NeighborTerrainData := GetCellTerrainData(SampleNeighbor)
+		var NeighborTerrainData := get_cell_terrain_data(sample_neighbor)
 		
-		if CellTerrainData.CanFall and NeighborTerrainData.CanFall and not MarkedToFallWallCellWeights.has(SampleNeighbor):
+		if cell_terrain_data.CanFall and NeighborTerrainData.CanFall and not MarkedToFallWallCellWeights.has(sample_neighbor):
 			
-			var FallProbability := MarkedToFallWallCellWeights.get(InCell, 0.8) as float
+			var FallProbability := MarkedToFallWallCellWeights.get(in_cell, 0.8) as float
 			if randf() < FallProbability:
-				MarkedToFallWallCellWeights[SampleNeighbor] = FallProbability * 0.2
-				GameGlobals.spawn_one_shot_timer_for(self, UtilHandleCellBreak.bind(SampleNeighbor, in_impulse, false, true), 0.1)
+				MarkedToFallWallCellWeights[sample_neighbor] = FallProbability * 0.2
+				GameGlobals.spawn_one_shot_timer_for(self, util_handle_cell_fall.bind(sample_neighbor, in_impulse), 0.1)
 		
-		#var SampleNeighborFloorTerrain := BetterTerrain.get_cell(self, SampleNeighbor)
+		#var SampleNeighborFloorTerrain := BetterTerrain.get_cell(self, sample_neighbor)
 		
 		#if SampleNeighborWallTerrain != BetterTerrain.TileCategory.EMPTY and SampleNeighborFloorTerrain == BetterTerrain.TileCategory.EMPTY:
-		#	BetterTerrain.set_cell(self, SampleNeighbor, NeighborTerrainData.FallTerrainName))
+		#	BetterTerrain.set_cell(self, sample_neighbor, NeighborTerrainData.FallTerrainName))
 	
-	DamageLayer.ClearCellData(InCell)
-	erase_cell(InCell)
+	if floor_layer:
+		BetterTerrain.set_cell(floor_layer, in_cell, floor_layer._LevelTileSet.get_terrain_id(cell_terrain_data.break_floor_terrain_name))
 	
-	if InShouldUpdateTerrainAndNavigation:
-		BetterTerrain.update_terrain_cell(self, InCell)
+	if MarkedToFallWallCellWeights.has(in_cell):
+		MarkedToFallWallCellWeights.erase(in_cell)
+	
+	DamageLayer.ClearCellData(in_cell)
+	erase_cell(in_cell)
+	
+	if in_should_update_terrain_and_navigation:
+		BetterTerrain.update_terrain_cell(self, in_cell)
 		WorldGlobals._level.request_nav_update()
 	
-	if MarkedToFallWallCellWeights.has(InCell):
-		MarkedToFallWallCellWeights.erase(InCell)
-	
-	if CellTerrainData.GibsScene:
-		GibsTemplate2D.Spawn(map_to_local(InCell), CellTerrainData.GibsScene, in_impulse, InCanIgniteDebris, 0.5)
+	if cell_terrain_data.GibsScene:
+		GibsTemplate2D.Spawn(map_to_local(in_cell), cell_terrain_data.GibsScene, in_impulse, in_can_ignite_debris, 0.5)
 
-func UtilHandleCellIgnite(InCell: Vector2i):
+func util_handle_cell_fall(in_cell: Vector2i, in_break_impulse: Vector2) -> void:
+	
+	if not has_cell(in_cell):
+		return
+	
+	UtilHandleCellBreak(in_cell, in_break_impulse, false, true)
+
+
+func UtilHandleCellIgnite(in_cell: Vector2i):
 	
 	var IgniteParticles := FloorIgniteFXScene.instantiate()
-	IgniteParticles.position = map_to_local(InCell)
+	IgniteParticles.position = map_to_local(in_cell)
 	add_child(IgniteParticles)
 	
 	var IgniteParticlesPivot := IgniteParticles.get_node("ParticlesPivot")
 	IgniteParticlesPivot.SetExpireTime(randf_range(5.0, 10.0))
-	IgniteParticlesPivot.Expired.connect(OnCellIgniteExpired.bind(IgniteParticles, InCell))
+	IgniteParticlesPivot.Expired.connect(OnCellIgniteExpired.bind(IgniteParticles, in_cell))
 
-func OnCellIgniteExpired(InIgniteParticles: Node, InCell: Vector2i):
+func OnCellIgniteExpired(InIgniteParticles: Node, in_cell: Vector2i):
 	InIgniteParticles.queue_free()
-	UtilHandleCellPostIgnite(InCell)
+	UtilHandleCellPostIgnite(in_cell)
 
-func UtilHandleCellPostIgnite(InCell: Vector2i):
-	var CellTerrainData := GetCellTerrainData(InCell)
-	BetterTerrain.set_cell(self, InCell, _LevelTileSet.GetTerrainID(CellTerrainData.PostIgniteTerrainName))
+func UtilHandleCellPostIgnite(in_cell: Vector2i):
+	var cell_terrain_data := get_cell_terrain_data(in_cell)
+	BetterTerrain.set_cell(self, in_cell, _LevelTileSet.get_terrain_id(cell_terrain_data.post_ignite_terrain_name))
 
-func AddPendingTilePlace(InCell: Vector2i, InTerrainName: String, InShouldCheckOcclusionByTile: bool, InShouldCheckOcclusionByPhysicsQuery: bool):
+func AddPendingTilePlace(in_cell: Vector2i, InTerrainName: String, InShouldCheckOcclusionByTile: bool, InShouldCheckOcclusionByPhysicsQuery: bool):
 	
 	var NewPendingData := TilePlaceData.new()
-	NewPendingData.Cell = InCell
-	NewPendingData.TerrainID = _LevelTileSet.GetTerrainID(InTerrainName)
+	NewPendingData.Cell = in_cell
+	NewPendingData.Terrain_id = _LevelTileSet.get_terrain_id(InTerrainName)
 	NewPendingData.ShouldCheckOcclusionByTile = InShouldCheckOcclusionByTile
 	NewPendingData.ShouldCheckOcclusionByPhysicsQuery = InShouldCheckOcclusionByPhysicsQuery
 	
@@ -226,7 +238,7 @@ func ProcessPendingTileArray(in_delta: float):
 	for SampleData: TilePlaceData in PendingTilePlaceArray:
 		
 		if SampleData.ShouldCheckOcclusionByTile:
-			if HasCell(SampleData.Cell):
+			if has_cell(SampleData.Cell):
 				continue
 		
 		if SampleData.ShouldCheckOcclusionByPhysicsQuery:
@@ -244,7 +256,7 @@ func ProcessPendingTileArray(in_delta: float):
 			var Results = SpaceState.intersect_shape(PointQuery, 1)
 			if not Results.is_empty():
 				continue
-		BetterTerrain.set_cell(self, SampleData.Cell, SampleData.TerrainID)
+		BetterTerrain.set_cell(self, SampleData.Cell, SampleData.Terrain_id)
 		BetterTerrain.update_terrain_cell(self, SampleData.Cell)
 	PendingTilePlaceArray.clear()
 	PendingTilePlaceArrayMutex.unlock()

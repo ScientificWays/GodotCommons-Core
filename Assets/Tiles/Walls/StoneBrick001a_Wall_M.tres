@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://ch1m3aae6vvv8"]
+
+[ext_resource type="Shader" uid="uid://cim6vt6o6lmce" path="res://addons/GodotCommons-Core/Assets/Tiles/Walls/LevelTileShader_Wall.gdshader" id="1_hx8w3"]
+[ext_resource type="Texture2D" uid="uid://b38spkmrjsh42" path="res://addons/GodotCommons-Core/Assets/Tiles/Walls/StoneBrick001a_Wall.png" id="2_hx8w3"]
+
+[resource]
+shader = ExtResource("1_hx8w3")
+shader_parameter/Tile = ExtResource("2_hx8w3")

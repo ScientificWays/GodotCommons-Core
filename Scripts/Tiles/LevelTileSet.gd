@@ -1,12 +1,12 @@
 extends TileSet
 class_name LevelTileSet
 
-@export var TerrainData: Dictionary[String, LeveTileSet_TerrainData]
+@export var terrain_data: Dictionary[String, LeveTileSet_TerrainData]
 
-func GetTerrainData(InID: int) -> LeveTileSet_TerrainData:
-	return TerrainData[BetterTerrain.get_terrain(self, InID).name]
+func get_terrain_data(in_id: int) -> LeveTileSet_TerrainData:
+	return terrain_data[BetterTerrain.get_terrain(self, in_id).name]
 
-func GetTerrainID(in_name: String) -> int:
+func get_terrain_id(in_name: String) -> int:
 	
 	for SampleID: int in range(BetterTerrain.terrain_count(self)):
 		

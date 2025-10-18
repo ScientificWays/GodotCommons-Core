@@ -125,7 +125,7 @@ func has_available_tile_floor_extent_at(in_global_position: Vector2, in_extent: 
 	for sample_x: int in range(-in_extent + 1, in_extent):
 		for sample_y: int in range(-in_extent + 1, in_extent):
 			var sample_coords := center_coords + Vector2i(sample_x, sample_y)
-			if not floor_tile_map_layer.HasCell(sample_coords):
+			if not floor_tile_map_layer.has_cell(sample_coords):
 				return false
 	return true
 
