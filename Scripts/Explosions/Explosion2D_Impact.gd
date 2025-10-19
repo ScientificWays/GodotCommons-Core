@@ -4,7 +4,6 @@ class_name Explosion2D_Impact
 const default_impact_ease: float = 2.0
 
 const ReceiveImpulseMethodName: StringName = &"Explosion2D_receive_impulse"
-const ReceiveDamageMethod: StringName = &"Explosion2D_receive_damage"
 
 @export_category("Owner")
 @export var owner_explosion: Explosion2D

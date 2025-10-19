@@ -1,3 +1,4 @@
+@tool
 extends RigidBody2D
 class_name Gib2D
 
@@ -15,6 +16,8 @@ static func Spawn(in_position: Vector2, InScene: PackedScene, InParent: Node = W
 		return NewGib
 	return null
 
+@export var sprite: Sprite2D
+
 @export_category("Optimization")
 @export var IsHighPriority: bool = false
 @export var IsCosmetic: bool = true
@@ -22,8 +25,16 @@ static func Spawn(in_position: Vector2, InScene: PackedScene, InParent: Node = W
 
 func _ready():
 	
-	if ShouldFreezeOnSleep:
-		sleeping_state_changed.connect(OnSleepingStateChanged)
+	if Engine.is_editor_hint():
+		pass
+	else:
+		
+		assert(sprite)
+		
+		sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)
+		
+		if ShouldFreezeOnSleep:
+			sleeping_state_changed.connect(OnSleepingStateChanged)
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
