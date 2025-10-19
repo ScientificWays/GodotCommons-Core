@@ -6,7 +6,7 @@ class_name Debris2D
 @export var break_gibs: Array[PackedScene] = [
 	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
 ]
-@export var break_gibs_num_min_max: Vector2i = Vector2i(1, 3)
+@export var break_gibs_num_min_max: Vector2i = Vector2i(1, 2)
 
 func _ready() -> void:
 	
@@ -22,12 +22,14 @@ func _on_target_entered(in_target: Node2D) -> void:
 	pass
 
 func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2, in_offset: Vector2) -> bool:
-	handle_break(in_impulse)
+	handle_break(in_impulse, true)
 	return true
 
-func handle_break(in_impulse: Vector2) -> void:
+func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 	
 	assert(not break_gibs.is_empty())
+	
+	var impulse_magnitude := in_impulse.length()
 	
 	for sample_index: int in range(randi_range(break_gibs_num_min_max.x, break_gibs_num_min_max.y)):
 		
@@ -37,7 +39,10 @@ func handle_break(in_impulse: Vector2) -> void:
 		add_sibling.call_deferred(sample_gib)
 		
 		sample_gib.ready.connect(func():
-			sample_gib.apply_central_impulse(in_impulse.rotated(randf_range(-0.2, 0.2)))
+			sample_gib.apply_central_impulse(in_impulse.rotated(randf_range(-0.2, 0.2)) * randf_range(0.5, 1.0))
 			sample_gib.apply_torque_impulse(randf_range(-PI, PI))
 		, Object.CONNECT_DEFERRED)
+		
+		if in_try_ignite:
+			sample_gib.try_ignite(impulse_magnitude * randf_range(0.04, 0.08))
 	queue_free()

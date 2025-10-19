@@ -17,6 +17,7 @@ static func Spawn(in_position: Vector2, InScene: PackedScene, InParent: Node = W
 	return null
 
 @export var sprite: Sprite2D
+@export var ignite_probability: float = 0.0
 
 @export_category("Optimization")
 @export var IsHighPriority: bool = false
@@ -49,6 +50,14 @@ func _exit_tree():
 func OnSleepingStateChanged():
 	assert(ShouldFreezeOnSleep)
 	set_deferred("freeze", sleeping)
+
+func try_ignite(in_duration: float) -> bool:
+	
+	if randf() > ignite_probability:
+		return false
+	
+	GameGlobals.ignite_target(self, in_duration)
+	return true
 
 func Break():
 	queue_free()

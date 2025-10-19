@@ -288,3 +288,19 @@ var status_effect_handle_counter: int = StatusEffectInstance.INVALID_HANDLE
 func generate_new_status_effect_handle() -> int:
 	status_effect_handle_counter += 1
 	return status_effect_handle_counter
+
+##
+## Ignite
+##
+@export var ignite_small_scene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001.tscn")
+@export var ignite_small_scene_web: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_CPU.tscn")
+
+func ignite_target(in_target: Node2D, in_duration: float) -> void:
+	
+	var new_ignite = (ignite_small_scene_web if PlatformGlobals.IsWeb() else ignite_small_scene).instantiate()
+	
+	var pivot := ParticlesPivot.new()
+	pivot.add_child(new_ignite)
+	spawn_one_shot_timer_for(pivot, pivot.DetachAndRemoveAll, in_duration)
+	
+	in_target.add_child(pivot)
