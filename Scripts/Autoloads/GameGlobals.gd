@@ -56,7 +56,8 @@ const collision_layer_projectile: int = 4
 const collision_layer_world: int = 8
 const collision_layer_item: int = 16
 const collision_layer_item_pull: int = 32
-const collision_layer_navigation: int = 64
+const collision_layer_navigation_block: int = 64
+const collision_layer_player_block: int = 128
 const collision_layer_explosion_receiver: int = 4096
 
 ##
@@ -143,19 +144,19 @@ func calc_radial_impulse_with_offset_for_target(in_target: Node2D, in_origin: Ve
 ##
 ## Arrays
 ##
-func ArrayIsValidIndex(InArray: Array, InIndex: int) -> bool:
+static func ArrayIsValidIndex(InArray: Array, InIndex: int) -> bool:
 	return InIndex >= 0 and InIndex < InArray.size()
 
 static func ArrayClampIndex(InArray: Array, InIndex: int) -> int:
 	return clampi(InIndex, 0, InArray.size() - 1)
 
-func ArrayRemoveDuplicates(InArray: Array):
+static func ArrayRemoveDuplicates(InArray: Array):
 	var UniqueElementsDictionary = {}
 	for SampleElement in InArray:
 		UniqueElementsDictionary[SampleElement] = true
 	InArray.assign(UniqueElementsDictionary.keys())
 
-func ArrayGetRandomIndexWeighted(InWeightArray: Array[float], InRandomFraction: float = randf()) -> int:
+static func ArrayGetRandomIndexWeighted(InWeightArray: Array[float], InRandomFraction: float = randf()) -> int:
 	
 	var WeightSum: float = 0.0
 	
@@ -176,7 +177,7 @@ func ArrayGetRandomIndexWeighted(InWeightArray: Array[float], InRandomFraction: 
 	assert(false)
 	return -1
 
-func ArrayFilterParallel(InCheckArray: Array, InParallelArray: Array, OutCheckArray: Array, OutParallelArray: Array, InPredicate: Callable):
+static func ArrayFilterParallel(InCheckArray: Array, InParallelArray: Array, OutCheckArray: Array, OutParallelArray: Array, InPredicate: Callable):
 	
 	for SampleIndex: int in range(InCheckArray.size()):
 		
@@ -185,7 +186,7 @@ func ArrayFilterParallel(InCheckArray: Array, InParallelArray: Array, OutCheckAr
 			OutCheckArray.append(SampleData)
 			OutParallelArray.append(InParallelArray[SampleIndex])
 
-func ArrayIntersects(InArrayA: Array, InArrayB: Array) -> bool:
+static func ArrayIntersects(InArrayA: Array, InArrayB: Array) -> bool:
 	
 	var DictionaryA = {}
 	for SampleElementA in InArrayA:

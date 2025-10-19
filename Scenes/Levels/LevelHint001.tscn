@@ -1,13 +1,13 @@
 [gd_scene load_steps=3 format=3 uid="uid://8b0jckg41k61"]
 
-[ext_resource type="Script" uid="uid://bkyrummrept71" path="res://addons/GodotCommons-Core/Scripts/Levels/PlayerSpawn.gd" id="1_m4msj"]
+[ext_resource type="Script" uid="uid://bkyrummrept71" path="res://addons/GodotCommons-Core/Scripts/Levels/LevelHint.gd" id="1_m4msj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_m4msj"]
 font_size = 32
 
-[node name="PlayerSpawn" type="Marker2D" node_paths=PackedStringArray("HintLabel")]
+[node name="LevelHint" type="Marker2D" node_paths=PackedStringArray("hint_label")]
 script = ExtResource("1_m4msj")
-HintLabel = NodePath("Label")
+hint_label = NodePath("Label")
 
 [node name="Label" type="Label" parent="."]
 anchors_preset = 8
