@@ -207,5 +207,5 @@ func TryRemoveWithDeathAnimation() -> bool:
 	return false
 
 func HandleRemove():
-	_ParticlesPivot.DetachAndRemoveAll()
+	_ParticlesPivot.detach_and_remove_all()
 	queue_free()

@@ -1,3 +1,4 @@
+@tool
 extends TileMapLayer
 class_name LevelTileMapLayer
 
@@ -13,11 +14,25 @@ const InvalidCell: Vector2i = Vector2i.MAX
 #	Vector2(-6.0, -6.0)
 #]
 
-@export var floor_layer: LevelTileMapLayer
-@export var DamageLayer: LevelTileMapLayer_Damage
+@export var floor_layer: LevelTileMapLayer:
+	get():
+		if not floor_layer:
+			var pivot := find_parent("*?ivot*")
+			if pivot: return pivot.find_child("*?loor*")
+		return floor_layer
+
+@export var damage_layer: LevelTileMapLayer_Damage:
+	get():
+		if not damage_layer:
+			var pivot := find_parent("*?ivot*")
+			if pivot: return pivot.find_child("*?amage*")
+		return damage_layer
+
 @export var TilePlaceCheckShape: Shape2D
 
-@onready var _LevelTileSet: LevelTileSet = tile_set
+var level_tile_set: LevelTileSet:
+	get():
+		return tile_set
 
 class TilePlaceData:
 	var Cell: Vector2i
@@ -36,24 +51,26 @@ func _ready():
 	pass
 
 func _enter_tree() -> void:
-	GameGlobals.pre_explosion_impact.connect(HandleExplosionImpact)
-	GameGlobals.PostBarrelRamImpact.connect(HandleBarrelRamImpact)
+	if not Engine.is_editor_hint():
+		GameGlobals.pre_explosion_impact.connect(HandleExplosionImpact)
+		GameGlobals.PostBarrelRamImpact.connect(HandleBarrelRamImpact)
 
 func _exit_tree() -> void:
-	GameGlobals.pre_explosion_impact.disconnect(HandleExplosionImpact)
-	GameGlobals.PostBarrelRamImpact.disconnect(HandleBarrelRamImpact)
-
-func _notification(in_what: int) -> void:
-	
-	## Easiest fix for emit_signalp: Can't emit non-existing signal "changed"
-	if in_what == NOTIFICATION_PREDELETE:
-		tile_set = null
+	if not Engine.is_editor_hint():
+		GameGlobals.pre_explosion_impact.disconnect(HandleExplosionImpact)
+		GameGlobals.PostBarrelRamImpact.disconnect(HandleBarrelRamImpact)
 
 func _physics_process(in_delta: float):
 	if PendingTilePlaceArray.is_empty():
 		set_physics_process(false)
 	else:
 		ProcessPendingTileArray(in_delta)
+
+func _notification(in_what: int) -> void:
+	
+	## Easiest fix for emit_signalp: Can't emit non-existing signal "changed"
+	if in_what == NOTIFICATION_PREDELETE:
+		tile_set = null
 
 func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 	
@@ -104,7 +121,7 @@ func has_cell(in_cell: Vector2i) -> bool:
 
 func get_cell_terrain_data(in_cell: Vector2i) -> LeveTileSet_TerrainData:
 	assert(has_cell(in_cell))
-	return _LevelTileSet.get_terrain_data(BetterTerrain.get_cell(self, in_cell))
+	return level_tile_set.get_terrain_data(BetterTerrain.get_cell(self, in_cell))
 
 func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
 	
@@ -117,7 +134,7 @@ func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Ve
 	
 	if not cell_terrain_data.IsUnbreakable:
 		
-		var CellHealthData := DamageLayer.GetCellData(in_cell)
+		var CellHealthData := damage_layer.get_cell_data(in_cell)
 		
 		if CellHealthData.Health > in_damage:
 			UtilHandleCellDamage(in_cell, in_damage, in_impulse)
@@ -148,7 +165,7 @@ func TryBreakCell(in_cell: Vector2i, in_impulse: Vector2 = Vector2.ZERO, InCanIg
 	return TryImpactCell(in_cell, INF, in_impulse, InCanIgnite, in_should_update_terrain_and_navigation)
 
 func UtilHandleCellDamage(in_cell: Vector2i, in_damage: float, in_impulse: Vector2):
-	DamageLayer.SubtractCellHealth(in_cell, in_damage)
+	damage_layer.SubtractCellHealth(in_cell, in_damage)
 
 var MarkedToFallWallCellWeights: Dictionary = {}
 
@@ -176,12 +193,12 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_d
 		#	BetterTerrain.set_cell(self, sample_neighbor, NeighborTerrainData.FallTerrainName))
 	
 	if floor_layer:
-		BetterTerrain.set_cell(floor_layer, in_cell, floor_layer._LevelTileSet.get_terrain_id(cell_terrain_data.break_floor_terrain_name))
+		BetterTerrain.set_cell(floor_layer, in_cell, floor_layer.level_tile_set.get_terrain_id(cell_terrain_data.break_floor_terrain_name))
 	
 	if MarkedToFallWallCellWeights.has(in_cell):
 		MarkedToFallWallCellWeights.erase(in_cell)
 	
-	DamageLayer.ClearCellData(in_cell)
+	damage_layer.ClearCellData(in_cell)
 	erase_cell(in_cell)
 	
 	if in_should_update_terrain_and_navigation:
@@ -189,7 +206,7 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_d
 		WorldGlobals._level.request_nav_update()
 	
 	if cell_terrain_data.GibsScene:
-		GibsTemplate2D.Spawn(map_to_local(in_cell), cell_terrain_data.GibsScene, in_impulse, in_can_ignite_debris, 0.5)
+		GibsTemplate2D.spawn(map_to_local(in_cell), cell_terrain_data.GibsScene, in_impulse, in_can_ignite_debris, 0.5)
 
 func util_handle_cell_fall(in_cell: Vector2i, in_break_impulse: Vector2) -> void:
 	
@@ -215,13 +232,13 @@ func OnCellIgniteExpired(InIgniteParticles: Node, in_cell: Vector2i):
 
 func UtilHandleCellPostIgnite(in_cell: Vector2i):
 	var cell_terrain_data := get_cell_terrain_data(in_cell)
-	BetterTerrain.set_cell(self, in_cell, _LevelTileSet.get_terrain_id(cell_terrain_data.post_ignite_terrain_name))
+	BetterTerrain.set_cell(self, in_cell, level_tile_set.get_terrain_id(cell_terrain_data.post_ignite_terrain_name))
 
 func AddPendingTilePlace(in_cell: Vector2i, InTerrainName: String, InShouldCheckOcclusionByTile: bool, InShouldCheckOcclusionByPhysicsQuery: bool):
 	
 	var NewPendingData := TilePlaceData.new()
 	NewPendingData.Cell = in_cell
-	NewPendingData.Terrain_id = _LevelTileSet.get_terrain_id(InTerrainName)
+	NewPendingData.Terrain_id = level_tile_set.get_terrain_id(InTerrainName)
 	NewPendingData.ShouldCheckOcclusionByTile = InShouldCheckOcclusionByTile
 	NewPendingData.ShouldCheckOcclusionByPhysicsQuery = InShouldCheckOcclusionByPhysicsQuery
 	

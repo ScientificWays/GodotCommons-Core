@@ -30,7 +30,7 @@ func UtilUnRegisterParticles(InParticles: GPUParticles2D):
 func AttachNew(InParticles: GPUParticles2D):
 	RegisterParticles(InParticles)
 
-func DetachAndRemoveAll():
+func detach_and_remove_all():
 	
 	if not _ParticlesArray.is_empty():
 		
@@ -87,7 +87,7 @@ func SetExpireTime(InTime: float):
 		add_child(_ExpireTimer)
 
 func OnExpireTimerExpired():
-	DetachAndRemoveAll()
+	detach_and_remove_all()
 	Expired.emit()
 
 func _exit_tree():

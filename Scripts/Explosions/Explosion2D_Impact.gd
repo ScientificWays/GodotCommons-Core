@@ -48,7 +48,7 @@ func HandleImpact():
 		var ShakeMaxOffsetValue := owner_explosion._max_impulse * 0.008 * owner_explosion.data.shake_strength_scale
 		var ShakeMaxOffset := Vector2(ShakeMaxOffsetValue, ShakeMaxOffsetValue)
 		var ShakeMaxRotation := owner_explosion._max_impulse * 0.00015 * owner_explosion.data.shake_strength_scale
-		ShakeSource2D.Spawn(GlobalPosition, owner_explosion._radius * owner_explosion.data.shake_radius_scale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
+		ShakeSource2D.spawn(GlobalPosition, owner_explosion._radius * owner_explosion.data.shake_radius_scale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
 	
 	var smoke_particles_scene = owner_explosion.data.get_smoke_particles_scene()
 	if owner_explosion.data.smoke_particles_scene:
@@ -60,10 +60,10 @@ func HandleImpact():
 	if owner_explosion.data.burn_scene:
 		
 		if WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 2):
-			ExplosionBurn2D.Spawn(GlobalPosition, owner_explosion.data.burn_scene, owner_explosion._radius)
+			ExplosionBurn2D.spawn(GlobalPosition, owner_explosion.data.burn_scene, owner_explosion._radius)
 		elif WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 1):
 			var snapped_position = WorldGlobals._level.snap_position_to_tile_floor(GlobalPosition)
-			ExplosionBurn2D.Spawn(snapped_position, owner_explosion.data.burn_scene, owner_explosion._radius * 0.5)
+			ExplosionBurn2D.spawn(snapped_position, owner_explosion.data.burn_scene, owner_explosion._radius * 0.5)
 	
 	#if _Data.ImpactSoundEvent:
 	#	var VolumeDb := -12.0 + _radius * 0.1

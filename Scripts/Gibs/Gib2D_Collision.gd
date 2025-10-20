@@ -6,9 +6,9 @@ class_name Gib2D_Collision
 
 func _ready() -> void:
 	
-	if OwnerGib.ShouldFreezeOnSleep:
+	if OwnerGib.should_freeze_on_sleep:
 		OwnerGib.sleeping_state_changed.connect(OnOwnerSleepingStateChanged)
 
 func OnOwnerSleepingStateChanged():
-	assert(OwnerGib.ShouldFreezeOnSleep)
+	assert(OwnerGib.should_freeze_on_sleep)
 	set_deferred("disabled", OwnerGib.sleeping)

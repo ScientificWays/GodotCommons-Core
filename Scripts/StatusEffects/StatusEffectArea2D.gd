@@ -60,7 +60,7 @@ func _on_target_entered(in_target: Node2D):
 	try_apply_effect_to(in_target)
 
 func _on_auto_expire_timer_timeout():
-	particles_pivot.DetachAndRemoveAll()
+	particles_pivot.detach_and_remove_all()
 	queue_free()
 
 func _on_reapply_timer_timeout():

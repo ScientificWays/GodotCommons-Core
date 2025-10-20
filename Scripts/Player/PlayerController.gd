@@ -122,7 +122,7 @@ signal TapInputHandled(InScreenPosition: Vector2, InGlobalPosition: Vector2, InR
 func HandleTapInput(InScreenPosition: Vector2, InReleased: bool) -> void:
 	
 	var GlobalPosition := get_viewport().get_canvas_transform().affine_inverse() * InScreenPosition
-	#DamageNumberUI.Spawn(GlobalPosition + Vector2(randf_range(-10.0, 10.0), 0.0), 1)
+	#DamageNumberUI.spawn(GlobalPosition + Vector2(randf_range(-10.0, 10.0), 0.0), 1)
 	
 	var ConsumedByPawn := false
 	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, InReleased ]):

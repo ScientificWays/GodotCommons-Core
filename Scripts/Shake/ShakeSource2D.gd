@@ -1,12 +1,12 @@
 extends Area2D
 class_name ShakeSource2D
 
-static func Spawn(in_position: Vector2, in_radius: float, InMaxOffset: Vector2 = Vector2(2.0, 2.0), InMaxRotation: float = 0.004, InDecaySpeed: float = 0.4, InParent: Node = WorldGlobals._level) -> ShakeSource2D:
+static func spawn(in_position: Vector2, in_radius: float, InMaxOffset: Vector2 = Vector2(2.0, 2.0), InMaxRotation: float = 0.004, InDecaySpeed: float = 0.4, in_parent: Node = WorldGlobals._level) -> ShakeSource2D:
 	
 	var NewShakeSource := GameGlobals.ShakeSource2DScene.instantiate() as ShakeSource2D
 	NewShakeSource.position = in_position
 	NewShakeSource.ready.connect(NewShakeSource.Init.bind(in_radius, InMaxOffset, InMaxRotation, InDecaySpeed), Object.CONNECT_ONE_SHOT)
-	InParent.add_child.call_deferred(NewShakeSource)
+	in_parent.add_child.call_deferred(NewShakeSource)
 	return NewShakeSource
  
 @onready var _Collision: CollisionShape2D = $Collision

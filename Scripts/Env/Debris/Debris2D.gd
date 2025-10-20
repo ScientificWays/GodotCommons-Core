@@ -39,7 +39,7 @@ func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 		add_sibling.call_deferred(sample_gib)
 		
 		sample_gib.ready.connect(func():
-			sample_gib.apply_central_impulse(in_impulse.rotated(randf_range(-0.2, 0.2)) * randf_range(0.5, 1.0))
+			sample_gib.apply_central_impulse(in_impulse.rotated(randf_range(-0.2, 0.2)) * randf_range(0.5, 1.5))
 			sample_gib.apply_torque_impulse(randf_range(-PI, PI))
 		, Object.CONNECT_DEFERRED)
 		

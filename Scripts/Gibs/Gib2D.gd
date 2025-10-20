@@ -2,27 +2,27 @@
 extends RigidBody2D
 class_name Gib2D
 
-static func ShouldSpawn(InGib: Gib2D) -> bool:
-	return not InGib.IsCosmetic or GameGlobals.GibsSetting > GameGlobals.GraphicsOption.Minimal
+static func should_spawn(in_gib: Gib2D) -> bool:
+	return not in_gib.is_cosmetic or GameGlobals.GibsSetting > GameGlobals.GraphicsOption.Minimal
 
-static func Spawn(in_position: Vector2, InScene: PackedScene, InParent: Node = WorldGlobals._level) -> Gib2D:
+static func spawn(in_position: Vector2, in_scene: PackedScene, in_parent: Node = WorldGlobals._level) -> Gib2D:
 	
-	assert(InScene)
+	assert(in_scene)
 	
-	var NewGib := WorldGlobals.GibScene.instantiate() as Gib2D
-	if ShouldSpawn(NewGib):
-		NewGib.position = in_position
-		InParent.add_child.call_deferred(NewGib)
-		return NewGib
+	var out_gib := WorldGlobals.GibScene.instantiate() as Gib2D
+	if should_spawn(out_gib):
+		out_gib.position = in_position
+		in_parent.add_child.call_deferred(out_gib)
+		return out_gib
 	return null
 
 @export var sprite: Sprite2D
 @export var ignite_probability: float = 0.0
 
 @export_category("Optimization")
-@export var IsHighPriority: bool = false
-@export var IsCosmetic: bool = true
-@export var ShouldFreezeOnSleep: bool = true
+@export var is_high_priority: bool = false
+@export var is_cosmetic: bool = true
+@export var should_freeze_on_sleep: bool = true
 
 func _ready():
 	
@@ -34,7 +34,7 @@ func _ready():
 		
 		sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)
 		
-		if ShouldFreezeOnSleep:
+		if should_freeze_on_sleep:
 			sleeping_state_changed.connect(OnSleepingStateChanged)
 
 func _enter_tree():
@@ -48,7 +48,7 @@ func _exit_tree():
 		pass
 
 func OnSleepingStateChanged():
-	assert(ShouldFreezeOnSleep)
+	assert(should_freeze_on_sleep)
 	set_deferred("freeze", sleeping)
 
 func try_ignite(in_duration: float) -> bool:
@@ -59,5 +59,9 @@ func try_ignite(in_duration: float) -> bool:
 	GameGlobals.ignite_target(self, in_duration)
 	return true
 
-func Break():
+func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2, in_offset: Vector2) -> bool:
+	handle_break(in_impulse)
+	return true
+
+func handle_break(in_impulse: Vector2):
 	queue_free()

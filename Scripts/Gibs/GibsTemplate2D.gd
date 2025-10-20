@@ -1,7 +1,7 @@
 extends Node2D
 class_name GibsTemplate2D
 
-static func Spawn(in_position: Vector2, InTemplateScene: PackedScene, in_impulse: Vector2, InCanIgnite: bool, InGibsNumMul: float = 1.0, InParent: Node = WorldGlobals._level) -> GibsTemplate2D:
+static func spawn(in_position: Vector2, InTemplateScene: PackedScene, in_impulse: Vector2, InCanIgnite: bool, InGibsNumMul: float = 1.0, in_parent: Node = WorldGlobals._level) -> GibsTemplate2D:
 	
 	assert(InTemplateScene)
 	
@@ -11,8 +11,8 @@ static func Spawn(in_position: Vector2, InTemplateScene: PackedScene, in_impulse
 	OutGibs._GibsNumMul = InGibsNumMul
 	OutGibs.position = in_position
 	
-	assert(InParent)
-	InParent.add_child.call_deferred(OutGibs)
+	assert(in_parent)
+	in_parent.add_child.call_deferred(OutGibs)
 	return OutGibs
 
 @export_category("Gibs")
@@ -62,41 +62,41 @@ func _ready() -> void:
 		
 		var SampleGibScene := SpawnGibsSceneArray.pick_random() as PackedScene
 		var SamplePosition := position + GetRandomGibSpawnOffset()
-		var SampleGib := Gib2D.Spawn(SamplePosition, SampleGibScene, get_parent())
+		var SampleGib := Gib2D.spawn(SamplePosition, SampleGibScene, get_parent())
 		InitGib(SampleGib)
 
-func InitGib(InGib: Gib2D) -> bool:
+func InitGib(in_gib: Gib2D) -> bool:
 	
 	## In case of "minimal gibs" settings
-	if not is_instance_valid(InGib):
+	if not is_instance_valid(in_gib):
 		return false
 	
-	if not Gib2D.ShouldSpawn(InGib):
+	if not Gib2D.should_spawn(in_gib):
 		return false
 	
-	ApplyInitialImpulseTo(InGib)
+	ApplyInitialImpulseTo(in_gib)
 	
 	var SampleGibImpulse := _Impulse * Vector2(randf_range(0.75, 1.25), randf_range(0.75, 1.25))
-	InGib.apply_impulse(SampleGibImpulse)
-	InGib.apply_torque(randf_range(-0.1, 0.1))
+	in_gib.apply_impulse(SampleGibImpulse)
+	in_gib.apply_torque(randf_range(-0.1, 0.1))
 	
 	if _CanIgnite and GibsIgniteProbability > 0.0 and randf() < GibsIgniteProbability:
-		GameGlobals.Ignite.call_deferred(InGib, randf_range(5.0, 10.0), 2.0, 2)
+		GameGlobals.Ignite.call_deferred(in_gib, randf_range(5.0, 10.0), 2.0, 2)
 	
 	if ParticlesScene:
 		var SampleParticlesNum := randi_range(ParticlesMinMax.x, ParticlesMinMax.y)
 		if SampleParticlesNum > 0:
 			var SampleParticles := ParticlesScene.instantiate() as ParticleSystem2D
-			#SampleParticles.InitAsOneShot(Vector2.ZERO, SampleParticlesNum, 4.0, InGib)
-			SampleParticles.InitAsOneShot(Vector2.ZERO, 0, 4.0, InGib)
+			#SampleParticles.InitAsOneShot(Vector2.ZERO, SampleParticlesNum, 4.0, in_gib)
+			SampleParticles.InitAsOneShot(Vector2.ZERO, 0, 4.0, in_gib)
 			SampleParticles.EmitParticlesWithVelocity(SampleParticlesNum, SampleGibImpulse * 0.5)
 	
 	return true
 
-func ApplyInitialImpulseTo(InGib: Gib2D) -> void:
+func ApplyInitialImpulseTo(in_gib: Gib2D) -> void:
 	
 	if InitialImpulseType == ImpulseType.Radial:
-		var SampleImpulseAngle := InGib.global_position.angle() + randf_range(InitialImpulseAngleMinMax.x, InitialImpulseAngleMinMax.y)
+		var SampleImpulseAngle := in_gib.global_position.angle() + randf_range(InitialImpulseAngleMinMax.x, InitialImpulseAngleMinMax.y)
 		var SampleImpulse := Vector2.from_angle(SampleImpulseAngle) * randf_range(InitialImpulseMinMax.x, InitialImpulseMinMax.y)
-		InGib.apply_impulse(SampleImpulse)
-		InGib.apply_torque_impulse(randf_range(InitialTorqueImpulseMinMax.x, InitialTorqueImpulseMinMax.y))
+		in_gib.apply_impulse(SampleImpulse)
+		in_gib.apply_torque_impulse(randf_range(InitialTorqueImpulseMinMax.x, InitialTorqueImpulseMinMax.y))

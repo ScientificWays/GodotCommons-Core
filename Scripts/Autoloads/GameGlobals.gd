@@ -170,7 +170,7 @@ static func ArrayGetRandomIndexWeighted(InWeightArray: Array[float], InRandomFra
 		if WeightSum >= WeightThreshold:
 			return SampleIndex
 	
-	if InRandomFraction > 1.0 or InRandomFraction < 0.0 or true:
+	if InRandomFraction > 1.0 or InRandomFraction < 0.0:
 		OS.alert("ArrayGetRandomIndexWeighted() bad InRandomFraction \"%s!\"" % InRandomFraction)
 	if InWeightArray.is_empty():
 		OS.alert("ArrayGetRandomIndexWeighted() InWeightArray is empty!")
@@ -301,6 +301,10 @@ func ignite_target(in_target: Node2D, in_duration: float) -> void:
 	
 	var pivot := ParticlesPivot.new()
 	pivot.add_child(new_ignite)
-	spawn_one_shot_timer_for(pivot, pivot.DetachAndRemoveAll, in_duration)
+	spawn_one_shot_timer_for(pivot, pivot.detach_and_remove_all, in_duration)
 	
 	in_target.add_child(pivot)
+	in_target.tree_exiting.connect(func():
+		if in_target.is_queued_for_deletion():
+			pivot.detach_and_remove_all()
+	)

@@ -4,7 +4,7 @@ class_name ParticleSystem2D_CPU
 func _ready():
 	pass
 
-func InitAsOneShot(in_position: Vector2, InParticlesNum: int, InLifetime: float, InParent: Node = WorldGlobals._level):
+func InitAsOneShot(in_position: Vector2, InParticlesNum: int, InLifetime: float, in_parent: Node = WorldGlobals._level):
 	
 	if InParticlesNum > 0:
 		emitting = true
@@ -22,7 +22,7 @@ func InitAsOneShot(in_position: Vector2, InParticlesNum: int, InLifetime: float,
 	add_child(LifetimeTimer)
 	
 	position = in_position
-	InParent.add_child(self)
+	in_parent.add_child(self)
 
 func OnLifetimeTimerTimeout():
 	queue_free()
