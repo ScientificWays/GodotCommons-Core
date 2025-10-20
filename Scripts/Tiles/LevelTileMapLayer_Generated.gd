@@ -24,6 +24,17 @@ var generated_tile_set: LevelTileSet_Generated:
 func _ready():
 	request_generate = true
 
+func _exit_tree() -> void:
+	clear()
+
+func _notification(in_what: int) -> void:
+	
+	if in_what == NOTIFICATION_EDITOR_PRE_SAVE:
+		clear()
+		update_internals()
+	elif in_what == NOTIFICATION_EDITOR_POST_SAVE:
+		request_generate = true
+
 func _process(in_delta: float) -> void:
 	
 	if request_generate:
@@ -37,6 +48,7 @@ func handle_generate() -> void:
 	or not wall_layer:
 		return
 	
+	request_generate = false
 	clear()
 	
 	for sample_cell: Vector2i in floor_layer.get_used_cells():
@@ -44,8 +56,10 @@ func handle_generate() -> void:
 		if wall_layer.has_cell(sample_cell):
 			continue
 		
+		if not floor_layer.has_cell(sample_cell):
+			continue
+		
 		var terrain_data := floor_layer.get_cell_terrain_data(sample_cell)
 		var sample_id := terrain_data.get_random_debris_id_or_null()
 		if sample_id > 0:
 			set_cell(sample_cell, generated_tile_set.debris_source_id, Vector2i.ZERO, sample_id)
-	request_generate = false

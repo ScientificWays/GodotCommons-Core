@@ -304,7 +304,7 @@ func ignite_target(in_target: Node2D, in_duration: float) -> void:
 	spawn_one_shot_timer_for(pivot, pivot.detach_and_remove_all, in_duration)
 	
 	in_target.add_child(pivot)
-	in_target.tree_exiting.connect(func():
+	in_target.tree_exited.connect(func():
 		if in_target.is_queued_for_deletion():
 			pivot.detach_and_remove_all()
 	)

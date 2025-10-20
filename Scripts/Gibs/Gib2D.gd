@@ -16,7 +16,11 @@ static func spawn(in_position: Vector2, in_scene: PackedScene, in_parent: Node =
 		return out_gib
 	return null
 
-@export var sprite: Sprite2D
+@export var sprite: Sprite2D:
+	get():
+		if not sprite: return find_child("*?prite*")
+		return sprite
+
 @export var ignite_probability: float = 0.0
 
 @export_category("Optimization")

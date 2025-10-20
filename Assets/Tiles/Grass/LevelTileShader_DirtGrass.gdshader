@@ -11,5 +11,5 @@ void fragment()
 	vec4 TileColor = texture(Tile, TileUV);
 	vec4 GrassColor = texture(GrassOverlay_Dirt, UV) * (1.0 + GrassOverlay_EmissiveMul.x);
 	//COLOR = texture(TEXTURE, UV) * TileColor;
-	COLOR = texture(TEXTURE, UV) * mix(TileColor, GrassColor, GrassColor.a);
+	COLOR *= mix(TileColor, GrassColor, GrassColor.a);
 }
