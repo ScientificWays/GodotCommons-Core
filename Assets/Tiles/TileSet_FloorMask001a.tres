@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://bt535sguhmjnn"]
+
+[ext_resource type="Texture2D" uid="uid://s5gyd0myxp78" path="res://addons/GodotCommons-Core/Assets/Tiles/TileSet_Mask001a.tres" id="1_gghun"]
+
+[resource]
+atlas = ExtResource("1_gghun")
+region = Rect2(180, 18, 18, 18)

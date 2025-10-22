@@ -6,6 +6,7 @@ const InvalidCell: Vector2i = Vector2i.MAX
 
 @export var terrain_data_array: Array[LevelTileSet_TerrainData]
 @export_tool_button("Try Regenerate TileSet") var try_regenerate_tile_set_action: Callable = try_regenerate_tile_set
+@export var generated_tile_set_script: GDScript = preload("res://addons/GodotCommons-Core/Scripts/Tiles/LevelTileSet_AutoWalls.gd")
 
 @export_flags_2d_physics var TilePlaceBlockCollisionMask: int = 1 + 2 + 8 + 16 + 128
 
@@ -33,7 +34,7 @@ const InvalidCell: Vector2i = Vector2i.MAX
 
 @export var TilePlaceCheckShape: Shape2D
 
-var level_tile_set: LevelTileSet:
+var level_tile_set: LevelTileSet_Auto_Base:
 	get():
 		return tile_set
 
@@ -69,7 +70,7 @@ func _physics_process(in_delta: float):
 	else:
 		ProcessPendingTileArray(in_delta)
 
-var hidden_generated_tile_set: LevelTileSet_AutoWalls
+var hidden_generated_tile_set: TileSet
 
 func _notification(in_what: int) -> void:
 	
@@ -91,8 +92,11 @@ func is_using_generated_tile_set() -> bool:
 func try_regenerate_tile_set() -> bool:
 	
 	if is_using_generated_tile_set():
-		tile_set = LevelTileSet_AutoWalls.new(terrain_data_array)
-		return true
+		assert(generated_tile_set_script)
+		if generated_tile_set_script:
+			tile_set = generated_tile_set_script.new(terrain_data_array)
+			print("Generated tile_set for ", self)
+			return true
 	return false
 
 func HandleExplosionImpact(InImpact: Explosion2D_Impact):
@@ -155,11 +159,11 @@ func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Ve
 	
 	var cell_terrain_data := get_cell_terrain_data(in_cell)
 	
-	if not cell_terrain_data.IsUnbreakable:
+	if not cell_terrain_data.is_unbreakable:
 		
 		var CellHealthData := damage_layer.get_cell_data(in_cell)
 		
-		if CellHealthData.Health > in_damage:
+		if CellHealthData.health > in_damage:
 			UtilHandleCellDamage(in_cell, in_damage, in_impulse)
 		else:
 			UtilHandleCellBreak(in_cell, in_impulse, InCanIgnite, in_should_update_terrain_and_navigation)
@@ -168,11 +172,11 @@ func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Ve
 	if has_cell(in_cell):
 		
 		if InCanIgnite \
-		and cell_terrain_data.CanIgnite \
-		and (in_damage >= cell_terrain_data.IgniteDamageThreshold) \
-		and (cell_terrain_data.IgniteDamageProbabilityMul >= randf()):
+		and cell_terrain_data.can_ignite \
+		and (in_damage >= cell_terrain_data.ignite_damage_threshold) \
+		and (cell_terrain_data.ignite_damage_probability_mul >= randf()):
 			
-			var BreakProbability := in_damage * cell_terrain_data.IgniteDamageToBreakProbabilityMul
+			var BreakProbability := in_damage * cell_terrain_data.ignite_damage_to_break_probability_mul
 			
 			if BreakProbability >= randf():
 				UtilHandleCellPostIgnite(in_cell)
@@ -203,7 +207,7 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_d
 		
 		var NeighborTerrainData := get_cell_terrain_data(sample_neighbor)
 		
-		if cell_terrain_data.CanFall and NeighborTerrainData.CanFall and not MarkedToFallWallCellWeights.has(sample_neighbor):
+		if cell_terrain_data.can_fall and NeighborTerrainData.can_fall and not MarkedToFallWallCellWeights.has(sample_neighbor):
 			
 			var FallProbability := MarkedToFallWallCellWeights.get(in_cell, 0.8) as float
 			if randf() < FallProbability:
@@ -216,7 +220,7 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_d
 		#	BetterTerrain.set_cell(self, sample_neighbor, NeighborTerrainData.FallTerrainName))
 	
 	if floor_layer:
-		BetterTerrain.set_cell(floor_layer, in_cell, floor_layer.level_tile_set.get_terrain_id(cell_terrain_data.break_floor_terrain_name))
+		BetterTerrain.set_cell.call_deferred(floor_layer, in_cell, floor_layer.level_tile_set.get_terrain_id(cell_terrain_data.post_break_floor_terrain_name))
 	
 	if MarkedToFallWallCellWeights.has(in_cell):
 		MarkedToFallWallCellWeights.erase(in_cell)
@@ -228,8 +232,8 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_d
 		BetterTerrain.update_terrain_cell(self, in_cell)
 		WorldGlobals._level.request_nav_update()
 	
-	if cell_terrain_data.GibsScene:
-		GibsTemplate2D.spawn(map_to_local(in_cell), cell_terrain_data.GibsScene, in_impulse, in_can_ignite_debris, 0.5)
+	if cell_terrain_data.gibs_scene:
+		GibsTemplate2D.spawn(map_to_local(in_cell), cell_terrain_data.gibs_scene, in_impulse, in_can_ignite_debris, 0.5)
 
 func util_handle_cell_fall(in_cell: Vector2i, in_break_impulse: Vector2) -> void:
 	
