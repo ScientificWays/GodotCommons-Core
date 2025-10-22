@@ -4,6 +4,9 @@ class_name LevelTileMapLayer
 
 const InvalidCell: Vector2i = Vector2i.MAX
 
+@export var terrain_data_array: Array[LevelTileSet_TerrainData]
+@export_tool_button("Try Regenerate TileSet") var try_regenerate_tile_set_action: Callable = try_regenerate_tile_set
+
 @export_flags_2d_physics var TilePlaceBlockCollisionMask: int = 1 + 2 + 8 + 16 + 128
 
 #var TilePlaceCheckOffsets: Array[Vector2] = [
@@ -48,7 +51,7 @@ var PendingTilePlaceArray: Array[TilePlaceData]
 signal ImpactApplied(in_cell: Vector2i)
 
 func _ready():
-	pass
+	try_regenerate_tile_set()
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
@@ -66,11 +69,31 @@ func _physics_process(in_delta: float):
 	else:
 		ProcessPendingTileArray(in_delta)
 
+var hidden_generated_tile_set: LevelTileSet_AutoWalls
+
 func _notification(in_what: int) -> void:
 	
 	## Easiest fix for emit_signalp: Can't emit non-existing signal "changed"
 	if in_what == NOTIFICATION_PREDELETE:
 		tile_set = null
+	elif in_what == NOTIFICATION_EDITOR_PRE_SAVE:
+		if is_using_generated_tile_set():
+			hidden_generated_tile_set = tile_set
+			tile_set = null
+	elif in_what == NOTIFICATION_EDITOR_POST_SAVE:
+		if is_using_generated_tile_set():
+			tile_set = hidden_generated_tile_set
+			hidden_generated_tile_set = null
+
+func is_using_generated_tile_set() -> bool:
+	return not terrain_data_array.is_empty()
+
+func try_regenerate_tile_set() -> bool:
+	
+	if is_using_generated_tile_set():
+		tile_set = LevelTileSet_AutoWalls.new(terrain_data_array)
+		return true
+	return false
 
 func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 	
@@ -119,7 +142,7 @@ func HandleBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll):
 func has_cell(in_cell: Vector2i) -> bool:
 	return BetterTerrain.get_cell(self, in_cell) >= 0
 
-func get_cell_terrain_data(in_cell: Vector2i) -> LeveTileSet_TerrainData:
+func get_cell_terrain_data(in_cell: Vector2i) -> LevelTileSet_TerrainData:
 	assert(has_cell(in_cell))
 	return level_tile_set.get_terrain_data(BetterTerrain.get_cell(self, in_cell))
 

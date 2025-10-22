@@ -1,3 +1,4 @@
+@tool
 extends TileMapLayer
 class_name LevelTileMapLayer_Damage
 
