@@ -1,7 +1,7 @@
 extends Area2D
 class_name FallTriggerArea2D
 
-@export var default_sequence_scene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Tiles/FallTriggerTile001_DefaultSequence.tscn")
+@export var default_sequence_scene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Triggers/FallTriggerDefaultSequence.tscn")
 
 func _ready() -> void:
 	area_entered.connect(_on_target_entered)

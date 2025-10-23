@@ -1,3 +1,4 @@
+@tool
 extends TileSet
 class_name LevelTileSet_Auto_Base
 

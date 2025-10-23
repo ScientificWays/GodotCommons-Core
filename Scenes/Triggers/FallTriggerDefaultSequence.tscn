@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://dr7h6nsskj3wr"]
+
+[ext_resource type="Script" uid="uid://b65gh1hgit6pp" path="res://addons/GodotCommons-Core/Scripts/Triggers/FallTriggerTile_DefaultSequence.gd" id="1_q7tja"]
+
+[sub_resource type="Animation" id="Animation_poqnx"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FallAP:_alpha")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_q7tja"]
+resource_name = "fall"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FallAP:_alpha")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_poqnx"]
+_data = {
+&"RESET": SubResource("Animation_poqnx"),
+&"fall": SubResource("Animation_q7tja")
+}
+
+[node name="FallAP" type="AnimationPlayer"]
+libraries = {
+&"": SubResource("AnimationLibrary_poqnx")
+}
+script = ExtResource("1_q7tja")

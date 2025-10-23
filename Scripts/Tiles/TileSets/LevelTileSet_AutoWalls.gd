@@ -1,3 +1,4 @@
+@tool
 extends LevelTileSet_Auto_Base
 class_name LevelTileSet_AutoWalls
 
@@ -64,7 +65,16 @@ var coords_to_peering_types: Dictionary[Vector2i, Array] = {
 	Vector2i(11, 3): [ CELL_NEIGHBOR_LEFT_SIDE, CELL_NEIGHBOR_TOP_SIDE, CELL_NEIGHBOR_TOP_LEFT_CORNER ],
 }
 
+var collision_polygon_points: PackedVector2Array = [
+	Vector2(-8.0, -8.0),
+	Vector2(8.0, -8.0),
+	Vector2(8.0, 8.0),
+	Vector2(-8.0, 8.0),
+]
+
 func _init(in_data_array: Array[LevelTileSet_TerrainData]) -> void:
+	
+	#var performance_start := Time.get_ticks_usec()
 	
 	for sample_data: LevelTileSet_TerrainData in in_data_array:
 		
@@ -95,25 +105,37 @@ func _init(in_data_array: Array[LevelTileSet_TerrainData]) -> void:
 				var sample_coords := Vector2i(x, y)
 				if sample_coords == Vector2i(10, 1):
 					continue
-				new_source.create_tile(sample_coords)
 				
+				new_source.create_tile(sample_coords)
 				assert(new_source.has_tile(sample_coords))
 				
 				var sample_tile_data := new_source.get_tile_data(sample_coords, 0)
 				sample_tile_data.material = sample_data.tile_material
 				sample_tile_data.z_index = sample_data.tile_z_index
 				sample_tile_data.add_collision_polygon(0)
+				sample_tile_data.set_collision_polygon_points(0, 0, collision_polygon_points)
 				
-				BetterTerrain.set_tile_terrain_type(self, sample_tile_data, sample_terrain_id)
+				BetterTerrain.set_tile_terrain_type_queue(self, sample_tile_data, sample_terrain_id)
+		
+		BetterTerrain.set_tile_terrain_type_flush(self)
+		
+		for x: int in range(12):
+			for y: int in range(4):
 				
+				var sample_coords := Vector2i(x, y)
+				if sample_coords == Vector2i(10, 1):
+					continue
+				
+				var sample_tile_data := new_source.get_tile_data(sample_coords, 0)
 				if sample_coords == Vector2i(9, 2):
 					BetterTerrain.set_tile_symmetry_type(self, sample_tile_data, BetterTerrain.SymmetryType.ALL)
 				
 				if not coords_to_peering_types.has(sample_coords):
 					continue
 				
-				for sample_peering_type: int in coords_to_peering_types[sample_coords]:
-					
-					for sample_category_index: int in category_indices:
-						BetterTerrain.add_tile_peering_type(self, sample_tile_data, sample_peering_type, sample_category_index)
+				BetterTerrain.set_tile_peering_types_bulk(self, sample_tile_data, coords_to_peering_types[sample_coords], category_indices)
+		
 		terrain_data[sample_terrain_id] = sample_data
+	
+	#var performance_finish := Time.get_ticks_usec()
+	#print(self, "_init() performance: ", ceili(float(performance_finish - performance_start) * 0.001), " msec")

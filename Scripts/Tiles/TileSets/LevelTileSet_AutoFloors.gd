@@ -1,7 +1,10 @@
+@tool
 extends LevelTileSet_Auto_Base
 class_name LevelTileSet_AutoFloors
 
 func _init(in_data_array: Array[LevelTileSet_TerrainData]) -> void:
+	
+	#var performance_start := Time.get_ticks_usec()
 	
 	for sample_data: LevelTileSet_TerrainData in in_data_array:
 		
@@ -37,4 +40,8 @@ func _init(in_data_array: Array[LevelTileSet_TerrainData]) -> void:
 				sample_tile_data.z_index = sample_data.tile_z_index
 				
 				BetterTerrain.set_tile_terrain_type(self, sample_tile_data, sample_terrain_id)
+				BetterTerrain.set_tile_symmetry_type(self, sample_tile_data, BetterTerrain.SymmetryType.ALL)
 		terrain_data[sample_terrain_id] = sample_data
+	
+	#var performance_finish := Time.get_ticks_usec()
+	#print(self, "_init() performance: ", ceili(float(performance_finish - performance_start) * 0.001), " msec")
