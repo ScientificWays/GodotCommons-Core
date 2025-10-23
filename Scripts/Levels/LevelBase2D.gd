@@ -1,3 +1,4 @@
+@tool
 extends Node2D
 class_name LevelBase2D
 
@@ -6,7 +7,12 @@ class_name LevelBase2D
 @export var DefaultGameModeArgs: Dictionary
 
 @export_category("Players")
-@export var DefaultPlayerSpawn: Node2D
+@export var default_player_spawn: Node2D:
+	get():
+		if not default_player_spawn:
+			return find_child("*layer*pawn*")
+		return default_player_spawn
+
 @export var RespawnAllPlayersOnBeginPlay: bool = true
 
 @export_category("Music")
@@ -16,7 +22,7 @@ class_name LevelBase2D
 @export var StopLevelMusicOnEndPlay: bool = true
 
 @export_category("Hints")
-@export var TriggerTutorialHints: bool = false
+@export var trigger_tutorial_hints: bool = false
 
 @export_category("Navigation")
 @export var level_navigation_region: LevelNavigationRegion2D
@@ -46,6 +52,9 @@ var _YSorted: Node2D
 
 func _ready() -> void:
 	
+	if Engine.is_editor_hint():
+		return
+	
 	_YSorted = Node2D.new()
 	_YSorted.y_sort_enabled = true
 	add_child(_YSorted)
@@ -62,9 +71,17 @@ func _ready() -> void:
 	#print(self, " _ready() WorldGlobals._game_state._game_args = ", WorldGlobals._game_state._game_args)
 
 func _enter_tree() -> void:
+	
+	if Engine.is_editor_hint():
+		return
+	
 	WorldGlobals._level = self
 
 func _exit_tree() -> void:
+	
+	if Engine.is_editor_hint():
+		return
+	
 	WorldGlobals._level = null
 
 func _sync_with_game_state() -> void:
@@ -103,7 +120,7 @@ func _handle_end_play() -> void:
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STOPPED)
 
 func get_player_spawn_position(in_player: PlayerController) -> Vector2:
-	return DefaultPlayerSpawn.global_position if DefaultPlayerSpawn else Vector2.ZERO
+	return default_player_spawn.global_position if default_player_spawn else Vector2.ZERO
 
 ##
 ## Tile Floor

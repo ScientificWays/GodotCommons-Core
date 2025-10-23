@@ -38,7 +38,7 @@ var display_time_left: float = 0.0:
 
 func _ready() -> void:
 	
-	if not WorldGlobals._level.TriggerTutorialHints \
+	if not WorldGlobals._level.trigger_tutorial_hints \
 	or GameGlobals.get_meta(HintFinishedMeta, false) \
 	or not PlatformGlobals_Class.IsPC(true):
 		queue_free()

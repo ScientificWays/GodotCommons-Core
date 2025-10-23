@@ -39,8 +39,6 @@ func _notification(in_what: int) -> void:
 	elif in_what == NOTIFICATION_EDITOR_POST_SAVE:
 		handle_generate.call_deferred()
 
-var wall_updates: Array[Dictionary] = []
-
 func handle_generate() -> void:
 	
 	if not is_node_ready() \
@@ -64,6 +62,7 @@ func handle_generate() -> void:
 		if sample_id > 0:
 			set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_id)
 	
+	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
 		
 		sample_noise_data.noise.seed = randi()
@@ -78,12 +77,11 @@ func handle_generate() -> void:
 		
 		for sample_index: int in range(noise_data.size()):
 			
-			var sample_noise_data := noise_data[sample_index]
-			var targeted_cells: Array[Vector2i] = []
-			
-			if wall_updates[sample_index].prev_id == sample_terrain_id:
+			if sample_terrain_id == wall_updates[sample_index].prev_id:
 				
+				var sample_noise_data := noise_data[sample_index]
 				var sample_noise_value := sample_noise_data.noise.get_noise_2d(sample_cell.x, sample_cell.y)
+				
 				if sample_noise_value > sample_noise_data.noise_threshold:
 					wall_updates[sample_index].cells.append(sample_cell)
 	
@@ -93,9 +91,21 @@ func handle_generate() -> void:
 
 func reset_generate() -> void:
 	
-	clear()
+	var wall_updates: Array[Dictionary] = []
+	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
+		var prev_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.target_terrain_name)
+		var new_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.generated_terrain_name)
+		wall_updates.append({ "cells": [], "new_id": new_id, "prev_id": prev_id })
+	
+	for sample_cell: Vector2i in wall_layer.get_used_cells():
+		var sample_terrain_id := BetterTerrain.get_cell(wall_layer, sample_cell)
+		for sample_index: int in range(noise_data.size()):
+			if sample_terrain_id == wall_updates[sample_index].new_id:
+				wall_updates[sample_index].cells.append(sample_cell)
 	
 	for sample_wall_update: Dictionary in wall_updates:
 		BetterTerrain.set_cells(wall_layer, sample_wall_update.cells, sample_wall_update.prev_id)
 		BetterTerrain.update_terrain_cells(wall_layer, sample_wall_update.cells, false)
+	
 	wall_updates.clear()
+	clear()
