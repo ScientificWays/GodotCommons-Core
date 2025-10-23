@@ -1,8 +1,8 @@
 shader_type canvas_item;
 
-uniform sampler2D tile : filter_nearest, source_color;
-uniform sampler2D grass_overlay_stone : filter_nearest, source_color;
-uniform vec4 grass_overlay_modulate : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform sampler2D tile: filter_nearest, source_color;
+uniform sampler2D grass_overlay_stone: filter_nearest, source_color;
+uniform vec4 grass_overlay_modulate: source_color = vec4(1.0, 1.0, 1.0, 1.0);
 
 void fragment()
 {
