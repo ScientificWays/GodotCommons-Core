@@ -2,7 +2,11 @@
 extends TileMapLayer
 class_name LevelTileMapLayer_Damage
 
-@export var TargetLayer: LevelTileMapLayer
+@export var target_layer: LevelTileMapLayer:
+	get():
+		if not target_layer: return find_parent("*?ayer*")
+		return target_layer
+
 @export var health_fraction_remap_curve: Curve
 
 class PerCellData:
@@ -15,11 +19,11 @@ var PerCellDataDictionary: Dictionary[Vector2i, PerCellData]
 func get_cell_data(in_cell: Vector2i) -> PerCellData:
 	
 	if not PerCellDataDictionary.has(in_cell):
-		PerCellDataDictionary[in_cell] = PerCellData.new(TargetLayer, in_cell)
+		PerCellDataDictionary[in_cell] = PerCellData.new(target_layer, in_cell)
 	return PerCellDataDictionary[in_cell]
 
 func get_cell_damage_fraction(in_cell: Vector2i) -> float:
-	return 1.0 - get_cell_data(in_cell).health / TargetLayer.level_tile_set.get_terrain_data(BetterTerrain.get_cell(TargetLayer, in_cell)).health
+	return 1.0 - get_cell_data(in_cell).health / target_layer.level_tile_set.get_terrain_data(BetterTerrain.get_cell(target_layer, in_cell)).health
 
 func SubtractCellHealth(in_cell: Vector2i, InHealth: float) -> void:
 	

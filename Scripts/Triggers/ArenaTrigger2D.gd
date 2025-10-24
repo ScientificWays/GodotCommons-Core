@@ -32,6 +32,8 @@ class_name ArenaTrigger2D
 			return valid_points
 		return spawn_points
 
+@export var shuffle_spawn_points: bool = true
+
 var is_active: bool = false:
 	set(in_is_active):
 		is_active = in_is_active
@@ -96,6 +98,8 @@ func deactivate_for_target() -> void:
 		current_target._camera.PendingZoom /= camera_zoom_mul
 		current_target.ControlledPawnChanged.disconnect(_on_target_player_controlled_pawn_changed)
 	
+	spawn_points_queue.clear()
+	
 	is_active = false
 	current_target = null
 
@@ -133,9 +137,18 @@ func spawn_wave(in_index: int) -> void:
 	var wave_data := waves[in_index]
 	wave_data.try_spawn_wave(init_wave_pawn)
 
+var spawn_points_queue: Array[Node2D]
+
 func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	
-	var sample_spawn := spawn_points.pick_random() as Node2D
+	if spawn_points_queue.is_empty():
+		spawn_points_queue = spawn_points.duplicate()
+		if shuffle_spawn_points:
+			spawn_points_queue.shuffle()
+	
+	assert(not spawn_points_queue.is_empty())
+	
+	var sample_spawn := spawn_points_queue.pop_back()
 	in_pawn.position = sample_spawn.position
 	sample_spawn.add_sibling.call_deferred(in_pawn)
 	

@@ -1,3 +1,4 @@
+@tool
 extends AnimatedSprite2D
 class_name Pawn2D_Sprite
 
@@ -79,14 +80,26 @@ func OnLookAtTargetTreeExited():
 var StatusEffectModulateArray: Array[Color] = []
 
 func _ready():
-	_ParticlesPivot = ParticlesPivot.new()
-	add_child(_ParticlesPivot)
+	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		_ParticlesPivot = ParticlesPivot.new()
+		add_child(_ParticlesPivot)
 
 func _enter_tree():
-	ModularGlobals.init_modular_node(self)
+	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.deinit_modular_node(self)
+	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		ModularGlobals.deinit_modular_node(self)
 
 func _process(in_delta: float):
 	
