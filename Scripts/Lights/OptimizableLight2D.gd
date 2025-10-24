@@ -1,15 +1,25 @@
 extends PointLight2D
-class_name OptimizableLight
+class_name OptimizableLight2D
 
-@export var optimize_on_web_mobile: bool = true
+@export var optimize_on_mobile_web: bool = true
 @export var light_energy_to_alpha_curve: Curve = preload("res://addons/GodotCommons-Core/Assets/Lights/LightEnergyToAlpha.tres")
 @export var sprite_light_material: Material = preload("res://addons/GodotCommons-Core/Assets/Lights/SpriteLightMaterial.tres")
 
 var _SpriteLight: Sprite2D
 
 func _ready():
-	if optimize_on_web_mobile and PlatformGlobals.IsMobile() and PlatformGlobals.IsWeb():
+	if optimize_on_mobile_web and (PlatformGlobals.IsMobile() and PlatformGlobals.IsWeb()):
 		EnableSpriteLight()
+
+func _set(in_property: StringName, in_value: Variant) -> bool:
+	
+	if in_property == &"color":
+		if _SpriteLight:
+			_SpriteLight.self_modulate = in_value
+	elif in_property == &"enabled":
+		if _SpriteLight:
+			_SpriteLight.visible = in_value
+	return false
 
 func EnableSpriteLight():
 	

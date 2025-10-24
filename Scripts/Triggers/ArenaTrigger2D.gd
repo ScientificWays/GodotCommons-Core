@@ -21,8 +21,16 @@ class_name ArenaTrigger2D
 @export var camera_zoom_mul: float = 0.7
 @export_flags_2d_physics var limits_collision: int = GameGlobals_Class.collision_layer_player_block
 
-@export var waves_data: Array[ArenaTrigger2D_WaveData]
-@export var spawn_points: Array[Node2D]
+@export var waves: Array[PawnWaveData2D]
+
+@export var spawn_points: Array[Node2D]:
+	get():
+		if spawn_points.is_empty():
+			var valid_points: Array[Node2D] = []
+			for sample_child: Node in find_children("*pawn*"):
+				if sample_child is Node2D: valid_points.append(sample_child)
+			return valid_points
+		return spawn_points
 
 var is_active: bool = false:
 	set(in_is_active):
@@ -44,7 +52,7 @@ func _ready() -> void:
 			_collision_shape.resource_local_to_scene = true
 			_collision_shape.size = Vector2(16.0, 512.0)
 	else:
-		assert(not waves_data.is_empty())
+		assert(not waves.is_empty())
 		assert(not spawn_points.is_empty())
 	
 	$Collision.shape = _collision_shape
@@ -93,7 +101,7 @@ func deactivate_for_target() -> void:
 
 func try_spawn_next_wave() -> bool:
 	
-	if GameGlobals_Class.ArrayIsValidIndex(waves_data, current_wave_index + 1) and current_wave_pawns.is_empty():
+	if GameGlobals_Class.ArrayIsValidIndex(waves, current_wave_index + 1) and current_wave_pawns.is_empty():
 		current_wave_index += 1
 		spawn_wave(current_wave_index)
 		return true
@@ -122,25 +130,27 @@ func spawn_wave(in_index: int) -> void:
 	
 	assert(current_wave_pawns.is_empty())
 	
-	var wave_data := waves_data[in_index]
-	for sample_scene: PackedScene in wave_data.pawns_array:
-		
-		var sample_pawn := sample_scene.instantiate() as Pawn2D
-		var random_spawn := spawn_points.pick_random() as Node2D
-		
-		sample_pawn.position = random_spawn.global_position
-		add_sibling.call_deferred(sample_pawn)
-		
-		sample_pawn.HealthDamageReceiver.ReceiveLethalDamage.connect(_on_pawn_receive_lethal_damage.bind(sample_pawn))
-		sample_pawn.tree_exited.connect(_on_pawn_exited_tree.bind(sample_pawn))
-		current_wave_pawns.append(sample_pawn)
+	var wave_data := waves[in_index]
+	wave_data.try_spawn_wave(init_wave_pawn)
+
+func init_wave_pawn(in_pawn: Pawn2D) -> void:
+	
+	var sample_spawn := spawn_points.pick_random() as Node2D
+	in_pawn.position = sample_spawn.position
+	sample_spawn.add_sibling.call_deferred(in_pawn)
+	
+	in_pawn.HealthDamageReceiver.ReceiveLethalDamage.connect(_on_pawn_receive_lethal_damage.bind(in_pawn))
+	in_pawn.tree_exited.connect(_on_pawn_exited_tree.bind(in_pawn))
+	current_wave_pawns.append(in_pawn)
 
 func _on_pawn_receive_lethal_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool, in_pawn: Pawn2D) -> void:
-	pass
+	
+	if in_pawn.is_queued_for_deletion() and current_wave_pawns.has(in_pawn):
+		handle_wave_pawn_defeated(in_pawn)
 
 func _on_pawn_exited_tree(in_pawn: Pawn2D) -> void:
 	
-	if in_pawn.is_queued_for_deletion():
+	if in_pawn.is_queued_for_deletion() and current_wave_pawns.has(in_pawn):
 		handle_wave_pawn_defeated(in_pawn)
 
 func handle_wave_pawn_defeated(in_pawn: Pawn2D) -> void:

@@ -3,7 +3,14 @@ extends Area2D
 class_name SpawnerTrigger2D
 
 @export_category("Points")
-@export var spawn_points: Array[Node2D]
+@export var spawn_points: Array[Node2D]:
+	get():
+		if spawn_points.is_empty():
+			var valid_points: Array[Node2D] = []
+			for sample_child: Node in find_children("*pawn*"):
+				if sample_child is Node2D: valid_points.append(sample_child)
+			return valid_points
+		return spawn_points
 
 @export_category("Animations")
 @export var animation_player: AnimationPlayer:
@@ -16,10 +23,7 @@ class_name SpawnerTrigger2D
 
 @export_category("Pawns")
 @export var pool_size: float = 5.0
-@export var pawns: Array[PackedScene]
-@export var pawns_weights: Array[float]
-@export var wave_size_min: float = 1.0
-@export var wave_size_max: float = 2.0
+@export var wave_data: PawnWaveData2D
 @export var delay_min: float = 3.0
 @export var delay_max: float = 5.0
 @export var initial_delay_mul: float = 0.4
@@ -33,7 +37,8 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		pass
 	else:
-		assert(not spawn_points.is_empty())
+		if spawn_points.is_empty():
+			spawn_points.append(self)
 		
 		pool_left = pool_size
 		
@@ -84,32 +89,24 @@ func stop_delay_timer() -> void:
 
 func _on_delay_timer_timeout() -> void:
 	
-	spawn_wave()
+	try_spawn_wave()
 	
 	if pool_left > 0.0:
 		trigger_delay_timer(false)
 	else:
 		deactivate()
 
-func spawn_wave() -> void:
+func try_spawn_wave() -> float:
 	
-	if animation_player:
+	var out_spawned_size := wave_data.try_spawn_wave(init_wave_pawn, pool_left)
+	pool_left -= out_spawned_size
+	
+	if out_spawned_size > 0.0 and animation_player:
 		animation_player.play(animation_name)
-	
-	var wave_size := randf_range(wave_size_min, wave_size_max)
-	while wave_size > 0.0 and pool_left > 0.0:
-		
-		var sample_pawn_scene := pawns[GameGlobals_Class.ArrayGetRandomIndexWeighted(pawns_weights)]
-		var sample_pawn := sample_pawn_scene.instantiate() as Pawn2D
-		
-		init_wave_pawn(sample_pawn)
-		
-		var sample_spawn := spawn_points.pick_random() as Node2D
-		sample_pawn.position = sample_spawn.position
-		sample_spawn.add_sibling(sample_pawn)
-		
-		wave_size -= sample_pawn.SpawnValue
-		pool_left -= sample_pawn.SpawnValue
+	return out_spawned_size
 
 func init_wave_pawn(in_pawn: Pawn2D) -> void:
-	pass
+	
+	var sample_spawn := spawn_points.pick_random() as Node2D
+	in_pawn.position = sample_spawn.position
+	sample_spawn.add_sibling.call_deferred(in_pawn)

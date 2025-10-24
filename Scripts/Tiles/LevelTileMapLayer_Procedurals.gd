@@ -93,6 +93,9 @@ func reset_generate() -> void:
 	
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
+		
+		sample_noise_data.noise.seed = 0
+		
 		var prev_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.target_terrain_name)
 		var new_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.generated_terrain_name)
 		wall_updates.append({ "cells": [], "new_id": new_id, "prev_id": prev_id })
