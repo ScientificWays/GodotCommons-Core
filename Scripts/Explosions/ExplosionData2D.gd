@@ -37,7 +37,7 @@ func load_smoke_particles_scene() -> PackedScene:
 	return load(smoke_particles_scene_web if PlatformGlobals.IsWeb() else smoke_particles_scene)
 
 @export_category("Burn")
-@export var burn_scene: String = "res://addons/GodotCommons-Core/Scenes/Explosions/Burn001.tscn"
+@export var burn_scene: String = "res://Scenes/Explosions/Burn001.tscn"
 
 func load_burn_scene() -> PackedScene:
 	return load(burn_scene)

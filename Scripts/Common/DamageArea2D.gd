@@ -32,6 +32,8 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 		else:
 			process_cooldowns_callable = process_cooldowns_common
 
+@export var bounce_apply_impact: bool = true
+
 func _ready() -> void:
 	
 	damage_initial_delay = damage_initial_delay
@@ -128,24 +130,25 @@ func apply_impact_to(in_target: Node2D) -> void:
 
 func _on_owner_movement_bounce(in_bounce_collision: KinematicCollision2D) -> void:
 	
-	var collider_target := in_bounce_collision.get_collider() as Node2D
-	
-	var current_time := Time.get_unix_time_from_system()
-	if use_individual_cooldowns:
-		if individual_cooldown_time_dictionary.get(collider_target, 0.0) > 0.0:
-			return
-	else:
-		if common_cooldown_time_left > 0.0:
-			return
-	
-	if is_valid_target(collider_target):
+	if bounce_apply_impact:
 		
-		apply_impact_to(collider_target)
+		var collider_target := in_bounce_collision.get_collider() as Node2D
 		
 		if use_individual_cooldowns:
-			common_cooldown_time_left = damage_cooldown_time
+			if individual_cooldown_time_dictionary.get(collider_target, 0.0) > 0.0:
+				return
 		else:
-			individual_cooldown_time_dictionary[collider_target] = common_cooldown_time_left
+			if common_cooldown_time_left > 0.0:
+				return
+		
+		if is_valid_target(collider_target):
+			
+			apply_impact_to(collider_target)
+			
+			if use_individual_cooldowns:
+				common_cooldown_time_left = damage_cooldown_time
+			else:
+				individual_cooldown_time_dictionary[collider_target] = common_cooldown_time_left
 
 func apply_impulse_to(in_target: Node2D):
 	

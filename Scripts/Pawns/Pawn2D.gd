@@ -14,8 +14,9 @@ enum Type
 @export var _Type: Type = Type.Common
 @export var SpawnValue: float = 1.0
 @export var DangerValue: float = 1.0
-@export var SizeScale_PerLevelGain: float = 0.0
-@export var SizeScale_Image: float = 1.0
+@export var size_scale: float = 1.0
+@export var size_scale_per_level_gain: float = 0.0
+@export var size_scale_image: float = 1.0
 
 @export_category("Attributes")
 @export var max_health: float = 10.0
@@ -24,6 +25,7 @@ enum Type
 @export_category("Damage")
 @export var damage_receiver: DamageReceiver
 @export var LethalDamageSoundEvent: SoundEventResource
+@export var die_on_lethal_damage: bool = true
 @export var remove_on_death: bool = true
 
 @export_category("Movement")
@@ -65,15 +67,15 @@ func _ready() -> void:
 			
 			damage_receiver.ReceiveLethalDamage.connect(OnReceiveLethalDamage)
 			
-			if damage_receiver.OwnerAttributes:
-				damage_receiver.SetMaxHealth(max_health)
-				damage_receiver.SetHealth(max_health)
+			assert(damage_receiver.owner_attribute_set)
+			damage_receiver.set_max_health(max_health)
+			damage_receiver.set_health(max_health)
 
-func GetSizeScale() -> float:
-	return 1.0
+func get_size_scale() -> float:
+	return size_scale + size_scale_per_level_gain * _level
 
-func GetImageSizeScale() -> float:
-	return SizeScale_Image * (1.0 + SizeScale_PerLevelGain)
+func get_image_size_scale() -> float:
+	return size_scale_image + size_scale_per_level_gain * _level
 
 func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2, in_offset: Vector2) -> bool:
 	
@@ -94,8 +96,17 @@ func DamageArea2D_receive_impulse(in_damage_area: DamageArea2D, in_impulse: Vect
 func OnReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
 	handle_died()
 
+func kill() -> void:
+	handle_died()
+
+var has_died: bool = false
+
 func handle_died() -> void:
 	
+	if has_died:
+		return
+	
+	has_died = true
 	died.emit()
 	
 	if LethalDamageSoundEvent:

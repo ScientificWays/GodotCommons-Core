@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name DamageReceiver
 
@@ -7,8 +8,8 @@ static func try_get_from(in_node: Node) -> DamageReceiver:
 	return ModularGlobals.try_get_from(in_node, DamageReceiver)
 
 @export_category("Owner")
-@export var OwnerBody2D: Node2D
-@export var OwnerAttributes: AttributeSet
+@export var owner_body_2d: Node2D
+@export var owner_attribute_set: AttributeSet
 
 @export_category("Damage")
 const DamageType_Any: int = 0
@@ -48,32 +49,47 @@ signal ReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunit
 
 func _ready():
 	
-	assert(OwnerBody2D)
-	#assert(OwnerAttributes)
-	
-	if SpawnDamageImmunityDuration > 0.0:
-		DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
+	if Engine.is_editor_hint():
+		if not owner_body_2d:
+			owner_body_2d = get_parent()
+		if not owner_attribute_set:
+			owner_attribute_set = get_parent().find_child("*?ttribute*")
+	else:
+		assert(owner_body_2d)
+		#assert(owner_attribute_set)
+		
+		if SpawnDamageImmunityDuration > 0.0:
+			DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
 
 func _enter_tree():
-	ModularGlobals.init_modular_node(self)
+	if not Engine.is_editor_hint():
+		ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.deinit_modular_node(self)
+	if not Engine.is_editor_hint():
+		ModularGlobals.deinit_modular_node(self)
 
-func GetHealth() -> float:
-	return OwnerAttributes.get_attribute_current_value(AttributeSet.Health) if OwnerAttributes else 0.0
+func get_health() -> float:
+	return owner_attribute_set.get_attribute_current_value(AttributeSet.Health) if owner_attribute_set else 0.0
 
-func GetMaxHealth() -> float:
-	return OwnerAttributes.get_attribute_current_value(AttributeSet.MaxHealth) if OwnerAttributes else 0.0
+func get_max_health() -> float:
+	return owner_attribute_set.get_attribute_current_value(AttributeSet.MaxHealth) if owner_attribute_set else 0.0
 
-func SetHealth(in_value: float) -> void:
-	return OwnerAttributes.set_attribute_base_value(AttributeSet.Health, clampf(in_value, 0.0, GetMaxHealth()))
+func get_health_fraction() -> float:
+	
+	if owner_attribute_set.has_attribute(AttributeSet.Health) and owner_attribute_set.has_attribute(AttributeSet.MaxHealth):
+		return get_health() / get_max_health()
+	else:
+		return -1.0
 
-func SetMaxHealth(in_value: float) -> void:
-	return OwnerAttributes.set_attribute_base_value(AttributeSet.MaxHealth, in_value)
+func set_health(in_value: float) -> void:
+	return owner_attribute_set.set_attribute_base_value(AttributeSet.Health, clampf(in_value, 0.0, get_max_health()))
+
+func set_max_health(in_value: float) -> void:
+	return owner_attribute_set.set_attribute_base_value(AttributeSet.MaxHealth, in_value)
 
 func IsDamageLethal(in_damage: float) -> bool:
-	return GetHealth() <= in_damage
+	return get_health() <= in_damage
 
 func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, InShouldIgnoreImmunityTime: bool) -> bool:
 	
@@ -118,12 +134,12 @@ func CalcLastDamageImpulse2D() -> Vector2:
 	if not Source2D:
 		return Vector2.ZERO
 	
-	var FromSourceDirection := Source2D.global_position.direction_to(OwnerBody2D.global_position)
+	var FromSourceDirection := Source2D.global_position.direction_to(owner_body_2d.global_position)
 	return FromSourceDirection * LastDamage * DamageToImpulseMagnitudeMul
 
 func HandleReceivedDamage(in_ignored_immunity_time: bool):
 	ReceivedLethalDamage = IsDamageLethal(LastDamage)
-	SetHealth(GetHealth() - LastDamage)
+	set_health(get_health() - LastDamage)
 
 func AddDamageImmunityTo(InMask: int):
 	DamageImmunityMask |= InMask

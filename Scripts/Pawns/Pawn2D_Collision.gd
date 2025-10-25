@@ -12,11 +12,11 @@ func _ready() -> void:
 	
 	assert(OwnerPawn)
 	
-	var SizeScale := OwnerPawn.GetSizeScale()
-	#var SizeScale := 1.0
+	var size_scale := OwnerPawn.get_size_scale()
+	#var size_scale := 1.0
 	
-	shape = ResourceGlobals.GetOrCreateScaledShape(shape, SizeScale, 0.0)
-	position *= SizeScale
+	shape = ResourceGlobals.GetOrCreateScaledShape(shape, size_scale, 0.0)
+	position *= size_scale
 	
 	var OwnerDamageReceiver := DamageReceiver.try_get_from(OwnerPawn)
 	if OwnerDamageReceiver:

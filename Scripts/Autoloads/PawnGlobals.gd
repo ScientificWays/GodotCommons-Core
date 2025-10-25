@@ -14,6 +14,8 @@ const TeamPlayer: StringName = &"Player"
 const TeamCrystal: StringName = &"Crystal"
 
 var DefaultAttributeValues: Dictionary = {
+	Health = -1.0,
+	MaxHealth = -1.0,
 	MoveSpeedMul = 1.0,
 	DamageResistance = 0.0,
 	FireDamageMul = 1.0,

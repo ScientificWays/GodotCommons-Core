@@ -46,7 +46,7 @@ func _ready() -> void:
 		var damage_receiver := DamageReceiver.try_get_from(self)
 		if not damage_receiver:
 			damage_receiver = DamageReceiver.new()
-			damage_receiver.OwnerBody2D = self
+			damage_receiver.owner_body_2d = self
 			add_child(damage_receiver)
 		damage_receiver.ReceiveDamage.connect(_handle_detonate_on_receive_damage)
 	

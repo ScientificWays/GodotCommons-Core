@@ -129,10 +129,10 @@ func _end_jump() -> void:
 	owner_movement.launch_velocity_damp = pre_launch_velocity_damp
 	pre_launch_velocity_damp = 0.0
 	
-	owner_pawn.collision_layer = pre_launch_collision_layer
+	owner_pawn.set_deferred(&"collision_layer", pre_launch_collision_layer)
 	pre_launch_collision_layer = 0
 	
-	owner_pawn.collision_mask = pre_launch_collision_mask
+	owner_pawn.set_deferred(&"collision_mask", pre_launch_collision_mask)
 	pre_launch_collision_mask = 0
 	
 	owner_pawn.z_index -= current_variant.z_index_additive

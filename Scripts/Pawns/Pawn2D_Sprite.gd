@@ -92,10 +92,12 @@ func _ready():
 	else:
 		assert(owner_pawn)
 		
-		owner_pawn.died.connect(TryRemoveWithDeathAnimation)
+		owner_pawn.died.connect(try_remove_with_death_animation)
 		
 		_ParticlesPivot = ParticlesPivot.new()
 		add_child(_ParticlesPivot)
+		
+		scale *= owner_pawn.get_size_scale()
 
 func _enter_tree():
 	
@@ -183,7 +185,7 @@ func PlayMoveAnimation(InSpeed: float):
 func PlayMoveToIdleAnimation():
 	play_override_animation(animation_data.GetMoveToIdleAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.MoveToIdle)
 
-func TryPlayDeathAnimation() -> bool:
+func try_play_death_animation() -> bool:
 	if animation_data.UseDeathAnimation:
 		play_override_animation(animation_data.GetDeathAnimationName(self), 1.0, false, true, false, AnimationData2D.Type.Death)
 		return true
@@ -221,14 +223,14 @@ func _HandleOverrideAnimationReset():
 	else:
 		PlayIdleAnimation()
 
-func TryRemoveWithDeathAnimation() -> bool:
+func try_remove_with_death_animation() -> bool:
 	
-	if TryPlayDeathAnimation():
+	if try_play_death_animation():
 		reparent(WorldGlobals._level._y_sorted)
-		animation_finished.connect(HandleRemove, Object.CONNECT_ONE_SHOT)
+		animation_finished.connect(handle_remove, Object.CONNECT_ONE_SHOT)
 		return true
 	return false
 
-func HandleRemove():
+func handle_remove():
 	_ParticlesPivot.detach_and_remove_all()
 	queue_free()

@@ -1,0 +1,94 @@
+@tool
+extends Node
+class_name Pawn2D_Split
+
+const splits_num_override_meta: StringName = &"Pawn2D_Split_splits_num_override"
+
+static func try_get_from(in_node: Node) -> Pawn2D_Split:
+	return ModularGlobals.try_get_from(in_node, Pawn2D_Split)
+
+@export_category("Owner")
+@export var owner_pawn: Pawn2D
+@export var owner_attribute_set: AttributeSet
+@export var owner_damage_receiver: DamageReceiver
+
+@export_category("Split")
+@export var health_fraction_threshold: float = 0.4
+@export var splits_num: int = 1
+
+@export_category("Pawns")
+@export var pawns_scene_path: String
+@export var pawns_num: int = 2
+@export var pawns_size_mul: float = 0.7
+@export var pawns_health_mul: float = 0.6
+
+func _ready() -> void:
+	
+	if Engine.is_editor_hint():
+		
+		if not owner_pawn:
+			owner_pawn = get_parent() as Pawn2D
+		
+		if owner_pawn:
+			if not owner_attribute_set:
+				owner_attribute_set = owner_pawn.find_child("*ttribute*")
+			if not owner_damage_receiver:
+				owner_damage_receiver = owner_pawn.find_child("*amage*eceiver")
+			if pawns_scene_path.is_empty():
+				pawns_scene_path = owner_pawn.scene_file_path
+	else:
+		splits_num = owner_pawn.get_meta(splits_num_override_meta, splits_num)
+		
+		if splits_num > 0:
+			
+			assert(owner_pawn)
+			assert(owner_attribute_set)
+			
+			var health_data := owner_attribute_set.get_or_init_attribute(AttributeSet.Health)
+			health_data.current_value_changed.connect(_on_owner_health_changed)
+			
+			var max_health_data := owner_attribute_set.get_or_init_attribute(AttributeSet.MaxHealth)
+			max_health_data.current_value_changed.connect(_on_owner_max_health_changed)
+		else:
+			queue_free()
+
+func _enter_tree():
+	if not Engine.is_editor_hint():
+		ModularGlobals.init_modular_node(self)
+
+func _exit_tree():
+	if not Engine.is_editor_hint():
+		ModularGlobals.deinit_modular_node(self)
+
+func _on_owner_health_changed(in_old_value: float, in_new_value: float) -> void:
+	try_split()
+
+func _on_owner_max_health_changed(in_old_value: float, in_new_value: float) -> void:
+	try_split()
+
+func try_split() -> bool:
+	
+	var fraction := owner_damage_receiver.get_health_fraction()
+	if fraction < 0.0 or fraction > health_fraction_threshold:
+		return false
+	
+	var base_angle := PI * randf()
+	var angle_step := PI / float(pawns_num)
+	
+	var pawns_scene := ResourceLoader.load(pawns_scene_path) as PackedScene
+	for sample_index: int in range(pawns_num):
+		
+		var new_pawn := pawns_scene.instantiate() as Pawn2D
+		new_pawn.position = owner_pawn.position + Vector2.from_angle(base_angle + angle_step * sample_index) * 8.0
+		new_pawn.size_scale = (owner_pawn.size_scale * pawns_size_mul)
+		new_pawn.size_scale_image = (owner_pawn.size_scale_image * pawns_size_mul)
+		new_pawn.max_health = (owner_pawn.max_health * pawns_health_mul)
+		new_pawn.set_meta(splits_num_override_meta, splits_num - 1)
+		
+		new_pawn.ready.connect(_init_pawn_post_ready.bind(new_pawn), Object.CONNECT_ONE_SHOT)
+		owner_pawn.get_parent().add_child.call_deferred(new_pawn)
+	owner_pawn.kill()
+	return true
+
+func _init_pawn_post_ready(in_pawn: Pawn2D) -> void:
+	pass
