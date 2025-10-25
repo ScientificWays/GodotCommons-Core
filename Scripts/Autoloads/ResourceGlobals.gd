@@ -1,10 +1,22 @@
 extends Node
 
 var Pools: Dictionary = {}
+#var pending_resources: Array[String]
 
-func _ready() -> void:
-	#LoadShaderMaterials()
-	pass
+#signal resource_threaded_load_finished(in_path: String, in_status: ResourceLoader.ThreadLoadStatus)
+
+#func _ready() -> void:
+#	process_mode = Node.PROCESS_MODE_ALWAYS
+
+#func _process(in_delta: float) -> void:
+#	
+#	for sample_pending: String in pending_resources:
+#		
+#		var sample_status := ResourceLoader.load_threaded_get_status(sample_pending)
+#		if sample_status != ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS:
+#			resource_threaded_load_finished.emit(sample_pending, sample_status)
+#			pending_resources.erase(sample_pending)
+#			break
 
 func UtilGetOrCreate(InKeyArray: Array, InInitCallable: Callable) -> Variant:
 	
@@ -26,19 +38,9 @@ func UtilGetOrCreate(InKeyArray: Array, InInitCallable: Callable) -> Variant:
 	#	print("Getting ", SubPool[FinalKey], " from Pool")
 	return SubPool[FinalKey]
 
-## Shaders
-#var CacheShaderMaterialPaths: Array[String] = [
-#	"res://addons/GodotCommons-Core/Assets/Tiles/Grass/DirtGrassFloor001a_Material.tres",
-#	"res://addons/GodotCommons-Core/Assets/Tiles/Grass/DirtGrassWall001a_Material.tres",
-#	"res://addons/GodotCommons-Core/Assets/Tiles/Grass/StoneGrassFloor001a_Material.tres",
-#	"res://addons/GodotCommons-Core/Assets/Tiles/Grass/StoneGrassWall001a_Material.tres",
-#]
-
-#func LoadShaderMaterials():
-#	
-#	for SamplePath: String in CacheShaderMaterialPaths:
-#		if not ResourceLoader.has_cached(SamplePath):
-#			ResourceLoader.load(SamplePath)
+## Loading
+#func force_get_resource(in_path: String) -> Resource:
+#	return ResourceLoader.load_threaded_get(in_path)
 
 ## Shapes
 func GetOrCreateScaledShape(InShape: Shape2D, InMul: float, InAdditive: float) -> Shape2D:

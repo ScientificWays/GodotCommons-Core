@@ -217,27 +217,30 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_should_ignit
 		#if SampleNeighborWallTerrain != BetterTerrain.TileCategory.EMPTY and SampleNeighborFloorTerrain == BetterTerrain.TileCategory.EMPTY:
 		#	BetterTerrain.set_cell(self, sample_neighbor, NeighborTerrainData.FallTerrainName))
 	
-	if floor_layer:
-		BetterTerrain.set_cell.call_deferred(floor_layer, in_cell, floor_layer.level_tile_set.get_terrain_id(cell_terrain_data.post_break_floor_terrain_name))
-	
 	if MarkedToFallWallCellWeights.has(in_cell):
 		MarkedToFallWallCellWeights.erase(in_cell)
 	
 	damage_layer.ClearCellData(in_cell)
-	erase_cell(in_cell)
+	
+	if floor_layer:
+		BetterTerrain.set_cell(floor_layer, in_cell, floor_layer.level_tile_set.get_terrain_id(cell_terrain_data.post_break_floor_terrain_name))
+	
+	if (not floor_layer) or (self != floor_layer):
+		BetterTerrain.set_cell(self, in_cell, BetterTerrain.TileCategory.EMPTY)
 	
 	if in_should_update_terrain_and_navigation:
 		BetterTerrain.update_terrain_cell(self, in_cell)
 		WorldGlobals._level.request_nav_update()
 	
-	if cell_terrain_data.gibs_scene:
+	var gibs_scene := cell_terrain_data.load_gib_scene()
+	if gibs_scene:
 		
 		var gibs_position := map_to_local(in_cell)
 		
 		if cell_terrain_data.is_gibs_template:
-			GibsTemplate2D.spawn(gibs_position, cell_terrain_data.gibs_scene, -in_impulse, in_should_ignite, 0.5)
+			GibsTemplate2D.spawn(gibs_position, gibs_scene, -in_impulse, in_should_ignite, 0.5)
 		else:
-			var new_gib := Gib2D.spawn(gibs_position, cell_terrain_data.gibs_scene)
+			var new_gib := Gib2D.spawn(gibs_position, gibs_scene)
 			new_gib.ready.connect(new_gib.apply_central_impulse.bind(-in_impulse.rotated(randf_range(-0.5, 0.5))), CONNECT_DEFERRED)
 			if in_should_ignite and new_gib.ignite_probability > 0.0:
 				GameGlobals.ignite_target(new_gib, randf_range(1.0, 5.0))

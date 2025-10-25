@@ -21,8 +21,8 @@ enum Direction
 	Down = 3
 }
 
-func Init(InSprite: Pawn2D_Sprite):
-	InSprite.ShouldUpdateVelocityBasedAnimations = CanUpdateVelocityBasedAnimations
+func init_sprite(in_sprite: Pawn2D_Sprite):
+	in_sprite.ShouldUpdateVelocityBasedAnimations = CanUpdateVelocityBasedAnimations
 
 @export var CanUpdateVelocityBasedAnimations: bool = true
 

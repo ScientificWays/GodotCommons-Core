@@ -7,13 +7,18 @@ static func try_get_from(in_node: Node) -> Pawn2D_Sprite:
 
 var _ParticlesPivot: ParticlesPivot
 
-@export var _AnimationData: AnimationData2D = null:
+@export_category("Owner")
+@export var owner_pawn: Pawn2D
+
+@export var animation_data: AnimationData2D = null:
 	set(InData):
 		
-		_AnimationData = InData
+		animation_data = InData
 		
-		if _AnimationData:
-			_AnimationData.Init(self)
+		if animation_data and not Engine.is_editor_hint():
+			if not is_node_ready():
+				await ready
+			animation_data.init_sprite(self)
 
 @export var StatusEffectParticlesRadius: float = 16.0
 @export var AlwaysLookAtRelevantTarget: bool = false
@@ -26,7 +31,7 @@ var _Direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
 			
 			_Direction = InDirection
 			
-			if _AnimationData.UseHorizontalDirectionFlip:
+			if animation_data.UseHorizontalDirectionFlip:
 				flip_h = _Direction == AnimationData2D.Direction.Left
 
 func IsIdleAnimationType() -> bool:
@@ -55,7 +60,7 @@ var linear_velocity: Vector2 = Vector2.ZERO:
 			assert(not is_nan(LinearSpeed))
 			
 			if not is_instance_valid(LookAtTarget):
-				_Direction = _AnimationData.GetNewDirectionForVelocity(self)
+				_Direction = animation_data.GetNewDirectionForVelocity(self)
 			
 			if ShouldUpdateVelocityBasedAnimations:
 				UpdateVelocityBasedAnimations()
@@ -82,8 +87,13 @@ var StatusEffectModulateArray: Array[Color] = []
 func _ready():
 	
 	if Engine.is_editor_hint():
-		pass
+		if not owner_pawn:
+			owner_pawn = get_parent() as Pawn2D
 	else:
+		assert(owner_pawn)
+		
+		owner_pawn.died.connect(TryRemoveWithDeathAnimation)
+		
 		_ParticlesPivot = ParticlesPivot.new()
 		add_child(_ParticlesPivot)
 
@@ -104,7 +114,7 @@ func _exit_tree():
 func _process(in_delta: float):
 	
 	if is_instance_valid(LookAtTarget):
-		_Direction = _AnimationData.GetNewDirectionForLookAtTarget(self)
+		_Direction = animation_data.GetNewDirectionForLookAtTarget(self)
 
 func UpdateVelocityBasedAnimations():
 	
@@ -120,7 +130,7 @@ func UpdateVelocityBasedAnimations():
 
 func HandleSwitchToMoveAnimation():
 	
-	if _AnimationData.UseIdleToMoveTransition:
+	if animation_data.UseIdleToMoveTransition:
 		
 		if IsIdleAnimationType():
 			PlayIdleToMoveAnimation()
@@ -128,7 +138,7 @@ func HandleSwitchToMoveAnimation():
 		elif IsMoveToIdleAnimationType():
 			
 			var MoveToIdleFrame = frame
-			var MoveToIdleFrameNum = sprite_frames.get_frame_count(_AnimationData.GetMoveToIdleAnimationName(self))
+			var MoveToIdleFrameNum = sprite_frames.get_frame_count(animation_data.GetMoveToIdleAnimationName(self))
 			
 			PlayIdleToMoveAnimation()
 			frame = MoveToIdleFrameNum - 1 - MoveToIdleFrame
@@ -142,7 +152,7 @@ func UpdateMoveAnimationSpeed():
 
 func HandleSwitchToIdleAnimation():
 	
-	if _AnimationData.UseMoveToIdleTransition:
+	if animation_data.UseMoveToIdleTransition:
 		
 		if IsMoveAnimationType():
 			PlayMoveToIdleAnimation()
@@ -150,7 +160,7 @@ func HandleSwitchToIdleAnimation():
 		elif IsIdleToMoveAnimationType():
 			
 			var IdleToMoveFrame = frame
-			var IdleToMoveFrameNum = sprite_frames.get_frame_count(_AnimationData.GetIdleToMoveAnimationName(self))
+			var IdleToMoveFrameNum = sprite_frames.get_frame_count(animation_data.GetIdleToMoveAnimationName(self))
 			
 			PlayMoveToIdleAnimation()
 			frame = IdleToMoveFrameNum - 1 - IdleToMoveFrame
@@ -161,21 +171,21 @@ func HandleSwitchToIdleAnimation():
 
 func PlayIdleAnimation():
 	_AnimationType = AnimationData2D.Type.Idle
-	play(_AnimationData.GetIdleAnimationName(self))
+	play(animation_data.GetIdleAnimationName(self))
 
 func PlayIdleToMoveAnimation():
-	play_override_animation(_AnimationData.GetIdleToMoveAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.IdleToMove)
+	play_override_animation(animation_data.GetIdleToMoveAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.IdleToMove)
 
 func PlayMoveAnimation(InSpeed: float):
 	_AnimationType = AnimationData2D.Type.Move
-	play(_AnimationData.GetMoveAnimationName(self), InSpeed)
+	play(animation_data.GetMoveAnimationName(self), InSpeed)
 
 func PlayMoveToIdleAnimation():
-	play_override_animation(_AnimationData.GetMoveToIdleAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.MoveToIdle)
+	play_override_animation(animation_data.GetMoveToIdleAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.MoveToIdle)
 
 func TryPlayDeathAnimation() -> bool:
-	if _AnimationData.UseDeathAnimation:
-		play_override_animation(_AnimationData.GetDeathAnimationName(self), 1.0, false, true, false, AnimationData2D.Type.Death)
+	if animation_data.UseDeathAnimation:
+		play_override_animation(animation_data.GetDeathAnimationName(self), 1.0, false, true, false, AnimationData2D.Type.Death)
 		return true
 	return false
 
@@ -183,7 +193,7 @@ func play_override_animation(in_name: StringName, InCustomSpeed: float = 1.0, In
 	
 	assert(sprite_frames.has_animation(in_name))
 	
-	ShouldUpdateVelocityBasedAnimations = _AnimationData.CanUpdateVelocityBasedAnimations and InKeepUpdateVelocityBasedAnimations
+	ShouldUpdateVelocityBasedAnimations = animation_data.CanUpdateVelocityBasedAnimations and InKeepUpdateVelocityBasedAnimations
 	
 	_AnimationType = InType
 	play(in_name, InCustomSpeed, InFromEnd)
@@ -204,7 +214,7 @@ func CancelOverrideAnimation(in_name: StringName = &""):
 
 func _HandleOverrideAnimationReset():
 	
-	ShouldUpdateVelocityBasedAnimations = _AnimationData.CanUpdateVelocityBasedAnimations
+	ShouldUpdateVelocityBasedAnimations = animation_data.CanUpdateVelocityBasedAnimations
 	
 	if ShouldUpdateVelocityBasedAnimations:
 		UpdateVelocityBasedAnimations()
@@ -214,7 +224,7 @@ func _HandleOverrideAnimationReset():
 func TryRemoveWithDeathAnimation() -> bool:
 	
 	if TryPlayDeathAnimation():
-		reparent(WorldGlobals._level._YSorted)
+		reparent(WorldGlobals._level._y_sorted)
 		animation_finished.connect(HandleRemove, Object.CONNECT_ONE_SHOT)
 		return true
 	return false

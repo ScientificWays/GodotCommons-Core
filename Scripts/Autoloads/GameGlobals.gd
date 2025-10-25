@@ -292,8 +292,8 @@ func generate_new_status_effect_handle() -> int:
 ##
 ## Ignite
 ##
-@export var ignite_small_scene: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001.tscn")
-@export var ignite_small_scene_web: PackedScene = preload("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_CPU.tscn")
+@onready var ignite_small_scene: PackedScene = load("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001.tscn")
+@onready var ignite_small_scene_web: PackedScene = load("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_CPU.tscn")
 
 func ignite_target(in_target: Node2D, in_duration: float) -> void:
 	

@@ -1,5 +1,5 @@
 extends Resource
-class_name PawnDashVariantData
+class_name PawnDashVariantData2D
 
 @export_category("Duration")
 @export var duration: float = 1.0

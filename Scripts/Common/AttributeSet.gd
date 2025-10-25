@@ -16,12 +16,16 @@ static func try_get_from(in_node: Node) -> AttributeSet:
 
 class AttributeData:
 	
-	var base_value: float
+	var base_value: float:
+		set(in_value):
+			base_value = in_value
+			reset()
+	
 	var current_value: float:
 		set(in_value):
-			var OldValue = current_value
+			var old_value = current_value
 			current_value = in_value
-			current_value_changed.emit(OldValue, current_value)
+			current_value_changed.emit(old_value, current_value)
 	
 	signal current_value_changed(in_old_value: float, in_new_value: float)
 	

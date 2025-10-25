@@ -28,8 +28,11 @@ class_name LevelTileSet_TerrainData
 
 @export_category("Physics")
 @export var can_fall: bool = false
-@export var gibs_scene: PackedScene
+@export var gib_scene_path: String
 @export var is_gibs_template: bool = false
+
+func load_gib_scene() -> PackedScene:
+	return null if gib_scene_path.is_empty() else ResourceLoader.load(gib_scene_path, "PackedScene")
 
 @export_category("Debris")
 @export var debris_probability: float = 0.0

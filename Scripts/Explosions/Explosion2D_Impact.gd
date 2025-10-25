@@ -9,8 +9,6 @@ const ReceiveImpulseMethodName: StringName = &"Explosion2D_receive_impulse"
 @export var owner_explosion: Explosion2D
 @export var owner_sprite: Explosion2D_Sprite
 
-var should_ignore_instigator: bool = false
-
 func _ready() -> void:
 	
 	assert(owner_explosion)
@@ -19,10 +17,11 @@ func _ready() -> void:
 	var RadiusMul := owner_explosion._radius / base_radius;
 	shape = ResourceGlobals.GetOrCreateScaledShape(shape, RadiusMul, 0.0)
 	
-	if owner_explosion.data.impact_sound_event:
+	var impact_sound_event := owner_explosion.data.load_impact_sound_event()
+	if impact_sound_event:
 		var PitchMul := maxf(1.8 - sqrt(owner_explosion._radius) * 0.1, 0.5)
 		var VolumeDb := -15.0 + owner_explosion._radius * 0.15
-		AudioGlobals.try_play_sound_varied_at_global_position(owner_explosion.data.sound_bank_label, owner_explosion.data.impact_sound_event, global_position, PitchMul, VolumeDb)
+		AudioGlobals.try_play_sound_varied_at_global_position(owner_explosion.data.sound_bank_label, impact_sound_event, global_position, PitchMul, VolumeDb)
 	
 	if owner_explosion.data.impact_delay > 0.0:
 		GameGlobals.spawn_one_shot_timer_for(self, HandleImpact, owner_explosion.data.impact_delay)
@@ -50,20 +49,21 @@ func HandleImpact():
 		var ShakeMaxRotation := owner_explosion._max_impulse * 0.00015 * owner_explosion.data.shake_strength_scale
 		ShakeSource2D.spawn(GlobalPosition, owner_explosion._radius * owner_explosion.data.shake_radius_scale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
 	
-	var smoke_particles_scene = owner_explosion.data.get_smoke_particles_scene()
+	var smoke_particles_scene = owner_explosion.data.load_smoke_particles_scene()
 	if owner_explosion.data.smoke_particles_scene:
 		
 		var smoke_particles := smoke_particles_scene.instantiate()
 		smoke_particles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)
 		smoke_particles.modulate = owner_explosion.data.smoke_particles_modulate
 	
-	if owner_explosion.data.burn_scene:
+	var burn_scene := owner_explosion.data.load_burn_scene()
+	if burn_scene:
 		
 		if WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 2):
-			ExplosionBurn2D.spawn(GlobalPosition, owner_explosion.data.burn_scene, owner_explosion._radius)
+			ExplosionBurn2D.spawn(GlobalPosition, burn_scene, owner_explosion._radius)
 		elif WorldGlobals._level.has_available_tile_floor_extent_at(GlobalPosition, 1):
 			var snapped_position = WorldGlobals._level.snap_position_to_tile_floor(GlobalPosition)
-			ExplosionBurn2D.spawn(snapped_position, owner_explosion.data.burn_scene, owner_explosion._radius * 0.5)
+			ExplosionBurn2D.spawn(snapped_position, burn_scene, owner_explosion._radius * 0.5)
 	
 	#if _Data.ImpactSoundEvent:
 	#	var VolumeDb := -12.0 + _radius * 0.1
@@ -79,7 +79,7 @@ func TryApplyImpact(in_target: Node2D) -> void:
 		return
 	AffectedTargetsDictionary[in_target] = true
 	
-	if should_ignore_instigator and in_target == owner_explosion._instigator:
+	if owner_explosion.should_ignore_instigator and in_target == owner_explosion._instigator:
 		return
 	
 	TryApplyImpulseTo(in_target)
@@ -121,7 +121,7 @@ func TryApplyDamageTo(in_target: Node) -> void:
 
 func HandlePostImpact():
 	
-	if owner_sprite.visible and owner_sprite.is_playing():
+	if owner_sprite and owner_sprite.visible and owner_sprite.is_playing():
 		await owner_sprite.animation_finished
 	else:
 		await get_tree().create_timer(0.1).timeout

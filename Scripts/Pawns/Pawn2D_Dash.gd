@@ -18,7 +18,7 @@ func calc_impulse() -> float:
 		out_impulse *= owner_movement.mass
 	return out_impulse
 
-var current_variant: PawnDashVariantData
+var current_variant: PawnDashVariantData2D
 
 signal dash_begin()
 signal dash_end()
@@ -48,7 +48,7 @@ func get_dash_target_position(in_check_relevant_target: bool, in_check_navigatio
 		return owner_navigation.get_next_path_position()
 	return Vector2.INF
 
-func try_dash(in_dash_variant: PawnDashVariantData, in_check_relevant_target: bool, in_check_navigation_position: bool) -> bool:
+func try_dash(in_dash_variant: PawnDashVariantData2D, in_check_relevant_target: bool, in_check_navigation_position: bool) -> bool:
 	
 	assert(in_dash_variant)
 	
@@ -67,7 +67,7 @@ func try_dash(in_dash_variant: PawnDashVariantData, in_check_relevant_target: bo
 var pre_dash_damage_initial_delay: float = 0.0
 var pre_dash_launch_velocity_damp: float = 0.0
 
-func _begin_dash(in_dash_variant: PawnDashVariantData, in_target_position: Vector2) -> void:
+func _begin_dash(in_dash_variant: PawnDashVariantData2D, in_target_position: Vector2) -> void:
 	
 	current_variant = in_dash_variant
 	

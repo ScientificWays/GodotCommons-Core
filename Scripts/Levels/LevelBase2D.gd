@@ -30,20 +30,10 @@ class_name LevelBase2D
 const WorldBankLabel: String = "World"
 #const MusicBankLabel: String = "Music"
 
-var _YSorted: Node2D
+var _y_sorted: Node2D
 
-@export var _CanvasModulate: CanvasModulate
-
-#signal CreatureSpawned(InCreature: Creature)
-#signal BossCreatureSpawned(InCreature: Creature)
-
-#signal CreatureDied(InCreature: Creature)
-#signal BossCreatureDied(InCreature: Creature)
-
-#signal StageBossDefeated(InBossCreature: Creature)
-#signal ChapterBossDefeated(InBossCreature: Creature)
-
-#signal CreatureRelevantDetectedTargetChanged(InCreature: Creature, InOldTarget: Node2D, InNewTarget: Node2D)
+#var enter_tree_ticks_ms: int = 0
+#var begin_play_ticks_ms: int = 0
 
 func _ready() -> void:
 	
@@ -53,10 +43,9 @@ func _ready() -> void:
 		if not level_navigation_region:
 			level_navigation_region = find_child("*avigation*") as LevelNavigationRegion2D
 	else:
-		_YSorted = Node2D.new()
-		_YSorted.y_sort_enabled = true
-		add_child(_YSorted)
-		move_child(_YSorted, 0)
+		_y_sorted = YSorted2D.new()
+		add_child(_y_sorted)
+		move_child(_y_sorted, 0)
 		
 		if not UIGlobals.pause_menu_ui:
 			await UIGlobals.pause_menu_ui_created
@@ -72,6 +61,8 @@ func _enter_tree() -> void:
 	
 	if Engine.is_editor_hint():
 		return
+	
+	#enter_tree_ticks_ms = Time.get_ticks_msec()
 	
 	WorldGlobals._level = self
 
@@ -105,10 +96,10 @@ func _handle_begin_play() -> void:
 	if StartLevelMusicOnBeginPlay and not AudioGlobals.IsMusicPlaying(LevelMusicBankLabel, LevelMusic):
 		AudioGlobals.TryPlayMusic(LevelMusicBankLabel, LevelMusic)
 	
-	#_LevelTileMap.UpdateUnbreakableCells()
-	#_LevelTileMap.InitNavigation()
-	
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STARTED)
+	#begin_play_ticks_ms = Time.get_ticks_msec()
+	
+	#print("Level _handle_begin_play() from enter_tree_ticks_ms to begin_play_ticks_ms took %d ms" % (begin_play_ticks_ms - enter_tree_ticks_ms))
 
 func _handle_end_play() -> void:
 	
@@ -139,8 +130,11 @@ func has_available_tile_floor_extent_at(in_global_position: Vector2, in_extent: 
 	
 	for sample_x: int in range(-in_extent + 1, in_extent):
 		for sample_y: int in range(-in_extent + 1, in_extent):
+			
 			var sample_coords := center_coords + Vector2i(sample_x, sample_y)
-			if not floor_tile_map_layer.has_cell(sample_coords):
+			var sample_terrain := BetterTerrain.get_cell(floor_tile_map_layer, sample_coords)
+			
+			if sample_terrain == BetterTerrain.TileCategory.EMPTY:
 				return false
 	return true
 

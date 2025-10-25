@@ -66,6 +66,12 @@ func GetHealth() -> float:
 func GetMaxHealth() -> float:
 	return OwnerAttributes.get_attribute_current_value(AttributeSet.MaxHealth) if OwnerAttributes else 0.0
 
+func SetHealth(in_value: float) -> void:
+	return OwnerAttributes.set_attribute_base_value(AttributeSet.Health, clampf(in_value, 0.0, GetMaxHealth()))
+
+func SetMaxHealth(in_value: float) -> void:
+	return OwnerAttributes.set_attribute_base_value(AttributeSet.MaxHealth, in_value)
+
 func IsDamageLethal(in_damage: float) -> bool:
 	return GetHealth() <= in_damage
 
@@ -116,12 +122,8 @@ func CalcLastDamageImpulse2D() -> Vector2:
 	return FromSourceDirection * LastDamage * DamageToImpulseMagnitudeMul
 
 func HandleReceivedDamage(in_ignored_immunity_time: bool):
-	
 	ReceivedLethalDamage = IsDamageLethal(LastDamage)
-	
-	var Health := GetHealth()
-	var MaxHealth := GetMaxHealth()
-	Health = clampf(Health - LastDamage, 0.0, MaxHealth)
+	SetHealth(GetHealth() - LastDamage)
 
 func AddDamageImmunityTo(InMask: int):
 	DamageImmunityMask |= InMask

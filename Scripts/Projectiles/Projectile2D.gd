@@ -1,7 +1,7 @@
 extends RigidBody2D
 class_name Projectile2D
 
-static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level: int, in_instigator: Node, in_parent: Node = WorldGlobals._level._YSorted) -> Projectile2D:
+static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level: int, in_instigator: Node, in_parent: Node = WorldGlobals._level._y_sorted) -> Projectile2D:
 	
 	assert(in_data)
 	assert(in_data.scene)

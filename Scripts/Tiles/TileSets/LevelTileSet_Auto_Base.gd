@@ -17,7 +17,7 @@ func get_terrain_id(in_name: String) -> int:
 		
 		if SampleData.name == in_name:
 			return SampleID
-	return -1
+	return BetterTerrain.TileCategory.EMPTY
 
 func categories_to_indices(in_array: Array[String]) -> Array[int]:
 	

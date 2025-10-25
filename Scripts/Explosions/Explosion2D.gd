@@ -33,6 +33,8 @@ var data: ExplosionData2D
 var _instigator: Node
 var _level: int = 0
 
+var should_ignore_instigator: bool = false
+
 var _radius: float = base_radius
 var _max_damage: float = base_damage
 var _max_impulse: float = base_impulse
