@@ -5,6 +5,7 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 	return ModularGlobals.try_get_from(in_node, Pawn2D_CharacterMovement)
 
 @export_category("Owner")
+@export var owner_pawn: Pawn2D
 @export var owner_body: CharacterBody2D
 @export var owner_sprite: Pawn2D_Sprite
 @export var owner_attribute_set: AttributeSet
@@ -20,6 +21,8 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 @export var launch_velocity_damp: float = 4.0
 
 func _ready() -> void:
+	
+	mass *= owner_pawn.get_size_scale()
 	
 	if sync_with_sprite_move_animation_base_speed:
 		assert(owner_sprite)

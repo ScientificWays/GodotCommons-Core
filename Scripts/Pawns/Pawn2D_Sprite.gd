@@ -92,7 +92,7 @@ func _ready():
 	else:
 		assert(owner_pawn)
 		
-		owner_pawn.died.connect(try_remove_with_death_animation)
+		owner_pawn.died.connect(_on_owner_pawn_died)
 		
 		_ParticlesPivot = ParticlesPivot.new()
 		add_child(_ParticlesPivot)
@@ -223,13 +223,21 @@ func _HandleOverrideAnimationReset():
 	else:
 		PlayIdleAnimation()
 
-func try_remove_with_death_animation() -> bool:
+func _on_owner_pawn_died(in_immediately: bool) -> void:
+	if not in_immediately:
+		try_remove_with_animation()
+
+func try_remove_with_animation(in_custom_animation_name: StringName = StringName()) -> bool:
 	
-	if try_play_death_animation():
-		reparent(WorldGlobals._level._y_sorted)
-		animation_finished.connect(handle_remove, Object.CONNECT_ONE_SHOT)
-		return true
-	return false
+	if in_custom_animation_name:
+		play_override_animation(in_custom_animation_name)
+	else:
+		if not try_play_death_animation():
+			return false
+	
+	reparent(WorldGlobals._level._y_sorted)
+	animation_finished.connect(handle_remove, Object.CONNECT_ONE_SHOT)
+	return true
 
 func handle_remove():
 	_ParticlesPivot.detach_and_remove_all()

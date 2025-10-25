@@ -24,6 +24,8 @@ var DefaultAttributeValues: Dictionary = {
 	RamDamageMul = 1.0,
 }
 
+signal init_pawn_healthbar(in_pawn: Pawn2D)
+
 func GetDefaultAttributeValue(in_name: StringName) -> float:
 	return DefaultAttributeValues.get(in_name, 0.0)
 

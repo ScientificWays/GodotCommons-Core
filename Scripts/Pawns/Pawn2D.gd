@@ -10,7 +10,7 @@ enum Type
 
 @export_category("Common")
 @export var UniqueName: StringName = &"None"
-@export var _DisplayData: ResourceDisplayData
+@export var display_data: ResourceDisplayData
 @export var _Type: Type = Type.Common
 @export var SpawnValue: float = 1.0
 @export var DangerValue: float = 1.0
@@ -19,8 +19,10 @@ enum Type
 @export var size_scale_image: float = 1.0
 
 @export_category("Attributes")
-@export var max_health: float = 10.0
 @export var attribute_set: AttributeSet
+@export var max_health: float = 10.0
+@export var init_health_bar: bool = false
+@export var health_bar_size_mul: float = 1.0
 
 @export_category("Damage")
 @export var damage_receiver: DamageReceiver
@@ -53,7 +55,9 @@ var _Controller: PlayerController:
 signal ControllerChanged()
 signal ControllerTapInput(InTapScreenPosition: Vector2, InTapGlobalPosition: Vector2)
 
-signal died()
+signal died(in_immediately: bool)
+
+var is_alive: bool = true
 
 func _ready() -> void:
 	
@@ -64,12 +68,14 @@ func _ready() -> void:
 			damage_receiver = find_child("*amage*eceiver*")
 	else:
 		if damage_receiver:
-			
 			damage_receiver.ReceiveLethalDamage.connect(OnReceiveLethalDamage)
 			
 			assert(damage_receiver.owner_attribute_set)
 			damage_receiver.set_max_health(max_health)
 			damage_receiver.set_health(max_health)
+		
+		if init_health_bar:
+			PawnGlobals.init_pawn_healthbar.emit.call_deferred(self)
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level
@@ -94,20 +100,18 @@ func DamageArea2D_receive_impulse(in_damage_area: DamageArea2D, in_impulse: Vect
 		return false
 
 func OnReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
-	handle_died()
+	handle_died(false)
 
-func kill() -> void:
-	handle_died()
+func kill(in_immediately: bool) -> void:
+	handle_died(in_immediately)
 
-var has_died: bool = false
-
-func handle_died() -> void:
+func handle_died(in_immediately: bool) -> void:
 	
-	if has_died:
+	if not is_alive:
 		return
 	
-	has_died = true
-	died.emit()
+	is_alive = false
+	died.emit(in_immediately)
 	
 	if LethalDamageSoundEvent:
 		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, LethalDamageSoundEvent, global_position)

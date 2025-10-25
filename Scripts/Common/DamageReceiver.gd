@@ -44,7 +44,7 @@ func TryGetLastDamagePosition(InPrioritiseInstigator: bool) -> Vector2:
 var DamageImmunityEndTime: float = 0.0
 var ReceivedLethalDamage: bool = false
 
-signal ReceiveDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
+signal receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
 signal ReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
 
 func _ready():
@@ -118,7 +118,7 @@ func try_receive_damage(in_source: Node, in_instigator: Node, in_damage: float, 
 		DamageImmunityEndTime = LastDamageTime + PostDamageImmunityDuration
 		
 		HandleReceivedDamage(InShouldIgnoreImmunityTime)
-		ReceiveDamage.emit(in_source, in_damage, InShouldIgnoreImmunityTime)
+		receive_damage.emit(in_source, in_damage, InShouldIgnoreImmunityTime)
 		
 		if ReceivedLethalDamage:
 			ReceiveLethalDamage.emit(in_source, in_damage, InShouldIgnoreImmunityTime)

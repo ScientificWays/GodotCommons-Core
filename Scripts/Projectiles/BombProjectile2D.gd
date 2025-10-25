@@ -48,7 +48,7 @@ func _ready() -> void:
 			damage_receiver = DamageReceiver.new()
 			damage_receiver.owner_body_2d = self
 			add_child(damage_receiver)
-		damage_receiver.ReceiveDamage.connect(_handle_detonate_on_receive_damage)
+		damage_receiver.receive_damage.connect(_handle_detonate_on_receive_damage)
 	
 	data.handle_post_init(self)
 
