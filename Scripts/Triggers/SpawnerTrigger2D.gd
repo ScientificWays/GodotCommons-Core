@@ -3,22 +3,10 @@ extends Area2D
 class_name SpawnerTrigger2D
 
 @export_category("Points")
-@export var spawn_points: Array[Node2D]:
-	get():
-		if spawn_points.is_empty():
-			var valid_points: Array[Node2D] = []
-			for sample_child: Node in find_children("*pawn*"):
-				if sample_child is Node2D: valid_points.append(sample_child)
-			return valid_points
-		return spawn_points
+@export var spawn_points: Array[Node2D]
 
 @export_category("Animations")
-@export var animation_player: AnimationPlayer:
-	get():
-		if not animation_player:
-			return find_child("*nimation*layer*")
-		return animation_player
-
+@export var animation_player: AnimationPlayer
 @export var animation_name: StringName = &"trigger"
 
 @export_category("Pawns")
@@ -35,7 +23,15 @@ var pool_left: float = 0.0
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
-		pass
+		
+		if spawn_points.is_empty():
+			var valid_points: Array[Node2D] = []
+			for sample_child: Node in find_children("*pawn*"):
+				if sample_child is Node2D: valid_points.append(sample_child)
+			spawn_points = valid_points
+		
+		if not animation_player:
+			animation_player = find_child("*nimation*layer*")
 	else:
 		if spawn_points.is_empty():
 			spawn_points.append(self)

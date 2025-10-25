@@ -5,15 +5,15 @@ static func spawn(in_position: Vector2, InTemplateScene: PackedScene, in_impulse
 	
 	assert(InTemplateScene)
 	
-	var OutGibs := InTemplateScene.instantiate() as GibsTemplate2D
-	OutGibs._Impulse = in_impulse
-	OutGibs._CanIgnite = InCanIgnite
-	OutGibs._GibsNumMul = InGibsNumMul
-	OutGibs.position = in_position
+	var out_template := InTemplateScene.instantiate() as GibsTemplate2D
+	out_template._Impulse = in_impulse
+	out_template._CanIgnite = InCanIgnite
+	out_template._GibsNumMul = InGibsNumMul
+	out_template.position = in_position
 	
 	assert(in_parent)
-	in_parent.add_child.call_deferred(OutGibs)
-	return OutGibs
+	in_parent.add_child.call_deferred(out_template)
+	return out_template
 
 @export_category("Gibs")
 @export var SpawnGibsNumMinMax: Vector2i = Vector2i(1, 2)
@@ -81,7 +81,7 @@ func InitGib(in_gib: Gib2D) -> bool:
 	in_gib.apply_torque(randf_range(-0.1, 0.1))
 	
 	if _CanIgnite and GibsIgniteProbability > 0.0 and randf() < GibsIgniteProbability:
-		GameGlobals.Ignite.call_deferred(in_gib, randf_range(5.0, 10.0), 2.0, 2)
+		GameGlobals.ignite_target(in_gib, randf_range(5.0, 10.0))
 	
 	if ParticlesScene:
 		var SampleParticlesNum := randi_range(ParticlesMinMax.x, ParticlesMinMax.y)

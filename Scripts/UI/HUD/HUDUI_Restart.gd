@@ -1,20 +1,25 @@
+@tool
 extends Control
 class_name HUDUI_Restart
 
 @export_category("Owner")
-@export var OwnerHUD: HUDUI
+@export var owner_hud: HUDUI
 
 @export_category("Label")
 @export var TextLabel: VHSFX
 
 func _ready() -> void:
 	
-	assert(OwnerHUD)
-	
-	TextLabel.SetInstantLerpVisible(false)
-	
-	OwnerHUD.OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
-	OnOwnerControlledPawnChanged()
+	if Engine.is_editor_hint():
+		if not owner_hud:
+			owner_hud = find_parent("*HUD*")
+	else:
+		assert(owner_hud)
+		
+		TextLabel.SetInstantLerpVisible(false)
+		
+		owner_hud.owner_player_controller.controlled_pawn_changed.connect(_on_owner_controlled_pawn_changed)
+		_on_owner_controlled_pawn_changed()
 
 var RestartEnableTicksMs: int = 0
 var ScreenTouchWasPressed: bool = false
@@ -37,11 +42,11 @@ func _input(InEvent: InputEvent) -> void:
 		else:
 			return
 		
-		OwnerHUD.OwnerPlayerController.Restart()
+		owner_hud.owner_player_controller.Restart()
 
-func OnOwnerControlledPawnChanged():
+func _on_owner_controlled_pawn_changed():
 	
-	if is_instance_valid(OwnerHUD.OwnerPlayerController.ControlledPawn):
+	if is_instance_valid(owner_hud.owner_player_controller.ControlledPawn):
 		HideRestart()
 	else:
 		ShowRestart()

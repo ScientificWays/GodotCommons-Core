@@ -2,19 +2,23 @@
 extends TileMapLayer
 class_name LevelTileMapLayer_Damage
 
-@export var target_layer: LevelTileMapLayer:
-	get():
-		if not target_layer: return find_parent("*?ayer*")
-		return target_layer
-
+@export var target_layer: LevelTileMapLayer
 @export var health_fraction_remap_curve: Curve
 
 class PerCellData:
 	var health: float
-	func _init(InLayer: LevelTileMapLayer, in_cell: Vector2i):
-		health = InLayer.level_tile_set.get_terrain_data(BetterTerrain.get_cell(InLayer, in_cell)).health
+	func _init(in_layer: LevelTileMapLayer, in_cell: Vector2i):
+		health = in_layer.level_tile_set.get_terrain_data(BetterTerrain.get_cell(in_layer, in_cell)).health
 
 var PerCellDataDictionary: Dictionary[Vector2i, PerCellData]
+
+func _ready() -> void:
+	
+	if Engine.is_editor_hint():
+		if not target_layer:
+			target_layer = get_parent()
+		if not health_fraction_remap_curve and name.contains("loor"):
+			health_fraction_remap_curve = load("res://addons/GodotCommons-Core/Assets/Tiles/DefaultFloorDamageFractionCurve.tres")
 
 func get_cell_data(in_cell: Vector2i) -> PerCellData:
 	

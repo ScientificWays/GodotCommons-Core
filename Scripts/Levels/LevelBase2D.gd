@@ -7,12 +7,7 @@ class_name LevelBase2D
 @export var DefaultGameModeArgs: Dictionary
 
 @export_category("Players")
-@export var default_player_spawn: Node2D:
-	get():
-		if not default_player_spawn:
-			return find_child("*layer*pawn*")
-		return default_player_spawn
-
+@export var default_player_spawn: Node2D
 @export var RespawnAllPlayersOnBeginPlay: bool = true
 
 @export_category("Music")
@@ -53,22 +48,25 @@ var _YSorted: Node2D
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
-		return
-	
-	_YSorted = Node2D.new()
-	_YSorted.y_sort_enabled = true
-	add_child(_YSorted)
-	move_child(_YSorted, 0)
-	
-	if not UIGlobals.pause_menu_ui:
-		await UIGlobals.pause_menu_ui_created
-	UIGlobals.pause_menu_ui.can_be_enabled = true
-	UIGlobals.pause_menu_ui.skip_lerp_visible()
-	
-	_sync_with_game_state()
-	WorldGlobals._game_state.handle_level_ready()
-	
-	#print(self, " _ready() WorldGlobals._game_state._game_args = ", WorldGlobals._game_state._game_args)
+		if not default_player_spawn:
+			default_player_spawn = find_child("*layer*pawn*")
+		if not level_navigation_region:
+			level_navigation_region = find_child("*avigation*") as LevelNavigationRegion2D
+	else:
+		_YSorted = Node2D.new()
+		_YSorted.y_sort_enabled = true
+		add_child(_YSorted)
+		move_child(_YSorted, 0)
+		
+		if not UIGlobals.pause_menu_ui:
+			await UIGlobals.pause_menu_ui_created
+		UIGlobals.pause_menu_ui.can_be_enabled = true
+		UIGlobals.pause_menu_ui.skip_lerp_visible()
+		
+		_sync_with_game_state()
+		WorldGlobals._game_state.handle_level_ready()
+		
+		#print(self, " _ready() WorldGlobals._game_state._game_args = ", WorldGlobals._game_state._game_args)
 
 func _enter_tree() -> void:
 	

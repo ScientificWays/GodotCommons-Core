@@ -1,8 +1,10 @@
+@tool
 extends Camera2D
 class_name PlayerCamera2D
 
 @export_category("Owner")
-@export var OwnerPlayerController: PlayerController
+@export var owner_player_controller: PlayerController
+
 @export var TriggerLagOnPawnChanged: bool = true
 @export var TriggerLagOnPawnTeleport: bool = true
 
@@ -28,20 +30,24 @@ signal ReachedPendingZoom()
 
 func _ready() -> void:
 	
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	
-	assert(OwnerPlayerController)
-	
-	PlayerGlobals.default_camera_zoom_changed.connect(ResetZoom)
-	ResetZoom()
-	
-	OnViewportSizeChanged()
-	
-	OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerControlledPawnChanged)
-	OnOwnerControlledPawnChanged()
-	
-	OwnerPlayerController.ControlledPawnTeleport.connect(OnOwnerControlledPawnTeleport)
-	OnOwnerControlledPawnTeleport(true)
+	if Engine.is_editor_hint():
+		if not owner_player_controller:
+			owner_player_controller = find_parent("*layer*")
+	else:
+		process_mode = Node.PROCESS_MODE_ALWAYS
+		
+		assert(owner_player_controller)
+		
+		PlayerGlobals.default_camera_zoom_changed.connect(ResetZoom)
+		ResetZoom()
+		
+		OnViewportSizeChanged()
+		
+		owner_player_controller.controlled_pawn_changed.connect(OnOwnercontrolled_pawn_changed)
+		OnOwnercontrolled_pawn_changed()
+		
+		owner_player_controller.ControlledPawnTeleport.connect(OnOwnerControlledPawnTeleport)
+		OnOwnerControlledPawnTeleport(true)
 
 func _enter_tree() -> void:
 	get_viewport().size_changed.connect(OnViewportSizeChanged)
@@ -59,8 +65,8 @@ func _physics_process(in_delta: float) -> void:
 	
 	if is_instance_valid(OverrideTarget):
 		global_position = OverrideTarget.global_position
-	elif is_instance_valid(OwnerPlayerController.ControlledPawn):
-		global_position = OwnerPlayerController.ControlledPawn.global_position
+	elif is_instance_valid(owner_player_controller.ControlledPawn):
+		global_position = owner_player_controller.ControlledPawn.global_position
 	
 	var FinalZoom := PendingZoom * GetMovementZoomMul()
 	
@@ -74,7 +80,7 @@ func OnViewportSizeChanged() -> void:
 	if is_node_ready():
 		pass
 
-func OnOwnerControlledPawnChanged() -> void:
+func OnOwnercontrolled_pawn_changed() -> void:
 	if TriggerLagOnPawnChanged:
 		TriggerLag()
 
@@ -118,8 +124,8 @@ func ResetZoom() -> void:
 
 func GetMovementZoomMul() -> float:
 	
-	if OwnerPlayerController.GetControlledPawnLinearVelocity().length() > 64.0 \
-	and not OwnerPlayerController.MovementInput.is_zero_approx():
+	if owner_player_controller.GetControlledPawnLinearVelocity().length() > 64.0 \
+	and not owner_player_controller.MovementInput.is_zero_approx():
 		return 0.9
 	else:
 		return 1.0

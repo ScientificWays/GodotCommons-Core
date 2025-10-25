@@ -29,6 +29,7 @@ class_name LevelTileSet_TerrainData
 @export_category("Physics")
 @export var can_fall: bool = false
 @export var gibs_scene: PackedScene
+@export var is_gibs_template: bool = false
 
 @export_category("Debris")
 @export var debris_probability: float = 0.0

@@ -2,16 +2,13 @@
 extends Area2D
 class_name Debris2D
 
-@export var sprite: Node2D:
-	get():
-		if not sprite: return find_child("*?prite*")
-		return sprite
+@export var sprite: Node2D
 
 @export var break_gibs: Array[PackedScene] = [
 	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
 ]
 @export var break_gibs_num_min_max: Vector2i = Vector2i(1, 2)
-@export var break_stages_num: int = 1
+@export var break_stages_num: int = 0
 @export var break_stages_animation_name: StringName = &"Break"
 @export var remove_on_last_break_stage: bool = true
 
@@ -24,8 +21,11 @@ var break_current_stage: int = 0
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
-		pass
+		if not sprite:
+			sprite = find_child("*?prite*")
 	else:
+		assert(sprite)
+		
 		if sprite is Sprite2D:
 			sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)
 		elif sprite is AnimatedSprite2D:

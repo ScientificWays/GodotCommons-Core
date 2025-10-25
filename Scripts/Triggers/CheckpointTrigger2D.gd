@@ -2,18 +2,21 @@
 extends Area2D
 class_name CheckpointTrigger2D
 
+@export_category("Respawn")
 @export var new_player_respawn: Node2D
-@export var animation_player: AnimationPlayer:
-	get():
-		if not animation_player:
-			return find_child("*nimation*layer*")
-		return animation_player
 
+@export_category("Animations")
+@export var animation_player: AnimationPlayer
 @export var animation_name: StringName = &"trigger"
 
 func _ready() -> void:
-	area_entered.connect(_on_target_entered)
-	body_entered.connect(_on_target_entered)
+	
+	if Engine.is_editor_hint():
+		if not animation_player:
+			return find_child("*nimation*layer*")
+	else:
+		area_entered.connect(_on_target_entered)
+		body_entered.connect(_on_target_entered)
 
 func _on_target_entered(in_target: Node2D) -> void:
 	activate_for(in_target)

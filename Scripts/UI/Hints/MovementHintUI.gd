@@ -4,7 +4,7 @@ class_name MovementHintUI
 const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
 
 @export_category("Owner")
-@export var OwnerHUD: HUDUI
+@export var owner_hud: HUDUI
 
 @export_category("Components")
 @export var VHSControl: VHSFX
@@ -44,7 +44,7 @@ func _ready() -> void:
 		queue_free()
 		return
 	
-	assert(OwnerHUD)
+	assert(owner_hud)
 	assert(KeysTextureRect)
 	
 	assert(highlight_animation_player)
@@ -62,7 +62,7 @@ func _process(in_delta: float) -> void:
 	if display_time_left <= 0.0:
 		return
 	
-	var movement_input := OwnerHUD.OwnerPlayerController.MovementInput
+	var movement_input := owner_hud.owner_player_controller.MovementInput
 	
 	if movement_input.is_zero_approx():
 		KeysTextureRect.texture = NoneTexture

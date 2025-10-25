@@ -2,7 +2,7 @@ extends Control
 class_name HUDUI_Attribute
 
 @export_category("Owner")
-@export var OwnerHUD: HUDUI
+@export var owner_hud: HUDUI
 
 @export_category("Attribute")
 @export var AttributeName: StringName = &"Experience"
@@ -15,16 +15,16 @@ class_name HUDUI_Attribute
 
 func _ready() -> void:
 	
-	assert(OwnerHUD)
-	assert(OwnerHUD.OwnerPlayerController)
+	assert(owner_hud)
+	assert(owner_hud.owner_player_controller)
 	
 	if UseControllerAttributeSet:
 		
-		var OwnerAS := AttributeSet.try_get_from(OwnerHUD.OwnerPlayerController)
+		var OwnerAS := AttributeSet.try_get_from(owner_hud.owner_player_controller)
 		OwnerAttributeData = OwnerAS.get_or_init_attribute(AttributeName) if OwnerAS else null
 		assert(OwnerAttributeData)
 	else:
-		OwnerHUD.OwnerPlayerController.ControlledPawnChanged.connect(OnOwnerPawnChanged)
+		owner_hud.owner_player_controller.controlled_pawn_changed.connect(OnOwnerPawnChanged)
 		OnOwnerPawnChanged()
 
 var OwnerAttributeData: AttributeSet.AttributeData:
@@ -42,7 +42,7 @@ var OwnerAttributeData: AttributeSet.AttributeData:
 
 func OnOwnerPawnChanged() -> void:
 	
-	var NewPawn := OwnerHUD.OwnerPlayerController.ControlledPawn
+	var NewPawn := owner_hud.owner_player_controller.ControlledPawn
 	if is_instance_valid(NewPawn) and not NewPawn.is_node_ready():
 		await NewPawn.ready
 	

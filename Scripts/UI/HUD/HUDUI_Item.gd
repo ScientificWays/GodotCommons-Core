@@ -3,7 +3,7 @@ extends Control
 class_name HUDUI_Item
 
 @export_category("Owner")
-@export var OwnerHUD: HUDUI
+@export var owner_hud: HUDUI
 
 @export_category("Data")
 @export var container_script: Script
@@ -26,11 +26,14 @@ var target_container: ItemContainer
 
 func _ready() -> void:
 	
-	if not Engine.is_editor_hint():
-		assert(OwnerHUD)
-		assert(OwnerHUD.OwnerPlayerController)
+	if Engine.is_editor_hint():
+		if not owner_hud:
+			owner_hud = find_parent("*HUD*")
+	else:
+		assert(owner_hud)
+		assert(owner_hud.owner_player_controller)
 		
-		target_container = ModularGlobals.try_get_from(OwnerHUD.OwnerPlayerController, container_script)
+		target_container = ModularGlobals.try_get_from(owner_hud.owner_player_controller, container_script)
 		assert(target_container)
 		
 		target_container.item_added.connect(_on_container_item_added)

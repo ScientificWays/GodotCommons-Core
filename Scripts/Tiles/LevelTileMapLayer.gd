@@ -18,25 +18,13 @@ const InvalidCell: Vector2i = Vector2i.MAX
 #	Vector2(-6.0, -6.0)
 #]
 
-@export var floor_layer: LevelTileMapLayer:
-	get():
-		if not floor_layer:
-			var pivot := find_parent("*?ivot*")
-			if pivot: return pivot.find_child("*?loor*")
-		return floor_layer
-
-@export var damage_layer: LevelTileMapLayer_Damage:
-	get():
-		if not damage_layer:
-			var pivot := find_parent("*?ivot*")
-			if pivot: return pivot.find_child("*?amage*")
-		return damage_layer
+@export var floor_layer: LevelTileMapLayer
+@export var damage_layer: LevelTileMapLayer_Damage
 
 @export var TilePlaceCheckShape: Shape2D
 
 var level_tile_set: LevelTileSet_Auto_Base:
-	get():
-		return tile_set
+	get(): return tile_set
 
 signal regenerated_tile_set()
 
@@ -54,6 +42,13 @@ var PendingTilePlaceArray: Array[TilePlaceData]
 signal ImpactApplied(in_cell: Vector2i)
 
 func _ready():
+	
+	if Engine.is_editor_hint():
+		if not floor_layer:
+			floor_layer = get_parent().find_child("*?loor*")
+		if not damage_layer:
+			damage_layer = find_child("*?amage*")
+	
 	try_regenerate_tile_set()
 
 func _enter_tree() -> void:
@@ -153,7 +148,7 @@ func get_cell_terrain_data(in_cell: Vector2i) -> LevelTileSet_TerrainData:
 	assert(has_cell(in_cell))
 	return level_tile_set.get_terrain_data(BetterTerrain.get_cell(self, in_cell))
 
-func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
+func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Vector2.ZERO, in_can_ignite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
 	
 	var OutImpacted := false
 	
@@ -161,6 +156,9 @@ func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Ve
 		return OutImpacted
 	
 	var cell_terrain_data := get_cell_terrain_data(in_cell)
+	var should_ignite := in_can_ignite \
+		and in_damage >= cell_terrain_data.ignite_damage_threshold \
+		and cell_terrain_data.ignite_damage_probability_mul >= randf()
 	
 	if not cell_terrain_data.is_unbreakable:
 		
@@ -169,15 +167,12 @@ func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Ve
 		if CellHealthData.health > in_damage:
 			UtilHandleCellDamage(in_cell, in_damage, in_impulse)
 		else:
-			UtilHandleCellBreak(in_cell, in_impulse, InCanIgnite, in_should_update_terrain_and_navigation)
+			UtilHandleCellBreak(in_cell, in_impulse, should_ignite, in_should_update_terrain_and_navigation)
 		OutImpacted = true
 	
 	if has_cell(in_cell):
 		
-		if InCanIgnite \
-		and cell_terrain_data.can_ignite \
-		and (in_damage >= cell_terrain_data.ignite_damage_threshold) \
-		and (cell_terrain_data.ignite_damage_probability_mul >= randf()):
+		if cell_terrain_data.can_ignite and should_ignite:
 			
 			var BreakProbability := in_damage * cell_terrain_data.ignite_damage_to_break_probability_mul
 			
@@ -191,15 +186,15 @@ func TryImpactCell(in_cell: Vector2i, in_damage: float, in_impulse: Vector2 = Ve
 		ImpactApplied.emit(in_cell)
 	return OutImpacted
 
-func TryBreakCell(in_cell: Vector2i, in_impulse: Vector2 = Vector2.ZERO, InCanIgnite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
-	return TryImpactCell(in_cell, INF, in_impulse, InCanIgnite, in_should_update_terrain_and_navigation)
+func TryBreakCell(in_cell: Vector2i, in_impulse: Vector2 = Vector2.ZERO, in_can_ignite: bool = false, in_should_update_terrain_and_navigation: bool = true) -> bool:
+	return TryImpactCell(in_cell, INF, in_impulse, in_can_ignite, in_should_update_terrain_and_navigation)
 
 func UtilHandleCellDamage(in_cell: Vector2i, in_damage: float, in_impulse: Vector2):
 	damage_layer.SubtractCellHealth(in_cell, in_damage)
 
 var MarkedToFallWallCellWeights: Dictionary = {}
 
-func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_debris: bool, in_should_update_terrain_and_navigation: bool) -> void:
+func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_should_ignite: bool, in_should_update_terrain_and_navigation: bool) -> void:
 	
 	var cell_terrain_data := get_cell_terrain_data(in_cell)
 	
@@ -236,7 +231,16 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_can_ignite_d
 		WorldGlobals._level.request_nav_update()
 	
 	if cell_terrain_data.gibs_scene:
-		GibsTemplate2D.spawn(map_to_local(in_cell), cell_terrain_data.gibs_scene, in_impulse, in_can_ignite_debris, 0.5)
+		
+		var gibs_position := map_to_local(in_cell)
+		
+		if cell_terrain_data.is_gibs_template:
+			GibsTemplate2D.spawn(gibs_position, cell_terrain_data.gibs_scene, -in_impulse, in_should_ignite, 0.5)
+		else:
+			var new_gib := Gib2D.spawn(gibs_position, cell_terrain_data.gibs_scene)
+			new_gib.ready.connect(new_gib.apply_central_impulse.bind(-in_impulse.rotated(randf_range(-0.5, 0.5))), CONNECT_DEFERRED)
+			if in_should_ignite and new_gib.ignite_probability > 0.0:
+				GameGlobals.ignite_target(new_gib, randf_range(1.0, 5.0))
 
 func util_handle_cell_fall(in_cell: Vector2i, in_break_impulse: Vector2) -> void:
 	

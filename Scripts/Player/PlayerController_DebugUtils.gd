@@ -1,15 +1,20 @@
+@tool
 extends Node
 class_name PlayerController_DebugUtils
 
 @export_category("Owner")
-@export var OwnerPlayerController: PlayerController
+@export var owner_player_controller: PlayerController
 
 func _ready() -> void:
 	
-	assert(OwnerPlayerController)
-	
-	if not OS.has_feature("debug"):
-		queue_free()
+	if Engine.is_editor_hint():
+		if not owner_player_controller:
+			owner_player_controller = find_parent("*layer*")
+	else:
+		assert(owner_player_controller)
+		
+		if not OS.has_feature("debug"):
+			queue_free()
 
 func _unhandled_input(InEvent: InputEvent) -> void:
 	
@@ -22,28 +27,33 @@ func _unhandled_input(InEvent: InputEvent) -> void:
 		#DebugSelfDamage()
 		#DebugUnlock()
 		#DebugToggleVisibility()
+		#debug_fade()
 		get_viewport().set_input_as_handled()
 		
 	elif InEvent.is_action_pressed(&"DebugScrollUp"):
-		OwnerPlayerController._camera.PendingZoom *= 1.25
-		print("Set camera zoom to ", OwnerPlayerController._camera.PendingZoom)
+		owner_player_controller._camera.PendingZoom *= 1.25
+		print("Set camera zoom to ", owner_player_controller._camera.PendingZoom)
 		get_viewport().set_input_as_handled()
 		
 	elif InEvent.is_action_pressed(&"DebugScrollDown"):
-		OwnerPlayerController._camera.PendingZoom *= 0.8
-		print("Set camera zoom to ", OwnerPlayerController._camera.PendingZoom)
+		owner_player_controller._camera.PendingZoom *= 0.8
+		print("Set camera zoom to ", owner_player_controller._camera.PendingZoom)
 		get_viewport().set_input_as_handled()
 		
 
 func DebugTeleport() -> void:
 	
-	if not is_instance_valid(OwnerPlayerController.ControlledPawn):
+	if not is_instance_valid(owner_player_controller.ControlledPawn):
 		return
 	
-	var TeleportPosition := OwnerPlayerController.ControlledPawn.get_global_mouse_position()
-	OwnerPlayerController.ControlledPawn.teleport_to(TeleportPosition)
+	var TeleportPosition := owner_player_controller.ControlledPawn.get_global_mouse_position()
+	owner_player_controller.ControlledPawn.teleport_to(TeleportPosition)
 
 func DebugSelfDamage() -> void:
 	
-	var damage_receiver := DamageReceiver.try_get_from(OwnerPlayerController.ControlledPawn)
-	damage_receiver.try_receive_damage(self, OwnerPlayerController, 10.0, DamageReceiver.DamageType_MeleeHit, true)
+	var damage_receiver := DamageReceiver.try_get_from(owner_player_controller.ControlledPawn)
+	damage_receiver.try_receive_damage(self, owner_player_controller, 10.0, DamageReceiver.DamageType_MeleeHit, true)
+
+func debug_fade() -> void:
+	await owner_player_controller.trigger_fade_in(1.0)
+	owner_player_controller.trigger_fade_out(1.0)

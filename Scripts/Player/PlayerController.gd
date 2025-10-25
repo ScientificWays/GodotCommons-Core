@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name PlayerController
 
@@ -19,18 +20,24 @@ var _UniqueName: String = "zana"
 
 func _ready() -> void:
 	
-	assert(_camera)
-	assert(default_pawn_scene)
-	
+	if Engine.is_editor_hint():
+		if not _camera:
+			_camera = find_child("*?amera*")
+		set_process(false)
+	else:
+		assert(_camera)
+		assert(default_pawn_scene)
 
 func _process(in_delta: float) -> void:
 	ProcessMovementInputs(in_delta)
 
 func _enter_tree() -> void:
-	PlayerGlobals.PlayerArray.append(self)
+	if not Engine.is_editor_hint():
+		PlayerGlobals.PlayerArray.append(self)
 
 func _exit_tree() -> void:
-	PlayerGlobals.PlayerArray.erase(self)
+	if not Engine.is_editor_hint():
+		PlayerGlobals.PlayerArray.erase(self)
 
 ##
 ## Pawn
@@ -48,9 +55,9 @@ var ControlledPawn: Pawn2D:
 			ControlledPawn.tree_exited.connect(OnControlledPawnTreeExited)
 			ControlledPawn.set_meta(PlayerControllerMeta, self)
 		
-		ControlledPawnChanged.emit()
+		controlled_pawn_changed.emit()
 
-signal ControlledPawnChanged()
+signal controlled_pawn_changed()
 signal ControlledPawnTeleport(in_reset_camera: bool)
 
 func OnControlledPawnTreeExited() -> void:
@@ -139,3 +146,21 @@ func HandleNumberInput(InNumber: int) -> void:
 
 func HandleLeaveBarrelInput() -> void:
 	pass
+
+##
+## UI
+##
+signal fade_in_trigger(in_duration: float, in_color: Color, in_blend: float)
+signal fade_out_trigger(in_duration: float, in_color: Color, in_blend: float)
+
+func trigger_fade_in(in_duration: float, in_color: Color = Color.BLACK, in_blend: float = 0.2) -> void:
+	
+	if in_duration > 0.0:
+		fade_in_trigger.emit(in_duration, in_color, in_blend)
+		await GameGlobals.spawn_await_timer(self, in_duration).timeout
+
+func trigger_fade_out(in_duration: float, in_color: Color = Color.BLACK, in_blend: float = 0.2) -> void:
+	
+	if in_duration > 0.0:
+		fade_out_trigger.emit(in_duration, in_color, in_blend)
+		await GameGlobals.spawn_await_timer(self, in_duration).timeout

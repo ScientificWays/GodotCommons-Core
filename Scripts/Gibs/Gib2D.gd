@@ -9,18 +9,14 @@ static func spawn(in_position: Vector2, in_scene: PackedScene, in_parent: Node =
 	
 	assert(in_scene)
 	
-	var out_gib := WorldGlobals.GibScene.instantiate() as Gib2D
+	var out_gib := in_scene.instantiate() as Gib2D
 	if should_spawn(out_gib):
 		out_gib.position = in_position
 		in_parent.add_child.call_deferred(out_gib)
 		return out_gib
 	return null
 
-@export var sprite: Sprite2D:
-	get():
-		if not sprite: return find_child("*?prite*")
-		return sprite
-
+@export var sprite: Sprite2D
 @export var ignite_probability: float = 0.0
 
 @export_category("Optimization")
@@ -31,9 +27,9 @@ static func spawn(in_position: Vector2, in_scene: PackedScene, in_parent: Node =
 func _ready():
 	
 	if Engine.is_editor_hint():
-		pass
+		if not sprite:
+			sprite = find_child("*?prite*")
 	else:
-		
 		assert(sprite)
 		
 		sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)

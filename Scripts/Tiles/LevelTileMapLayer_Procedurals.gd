@@ -2,29 +2,28 @@
 extends TileMapLayer
 class_name LevelTileMapLayer_Procedurals
 
+@export_category("Actions")
 @export_tool_button("Generate") var generate_action: Callable = handle_generate
 @export_tool_button("Reset") var reset_action: Callable = reset_generate
-@export var floor_layer: LevelTileMapLayer:
-	get():
-		if not floor_layer:
-			var pivot := find_parent("*?ivot*")
-			if pivot: return pivot.find_child("*?loor*")
-		return floor_layer
 
-@export var wall_layer: LevelTileMapLayer:
-	get():
-		if not wall_layer:
-			var pivot := find_parent("*?ivot*")
-			if pivot: return pivot.find_child("*?all*")
-		return wall_layer
+@export_category("Layers")
+@export var floor_layer: LevelTileMapLayer
+@export var wall_layer: LevelTileMapLayer
 
+@export_category("Noise")
 @export var noise_data: Array[LevelTileSet_ProceduralData]
 
 var procedurals_tile_set: LevelTileSet_Procedurals:
-	get():
-		return tile_set
+	get(): return tile_set
 
 func _ready():
+	
+	if Engine.is_editor_hint():
+		if not floor_layer:
+			floor_layer = get_parent().find_child("*?loor*")
+		if not wall_layer:
+			wall_layer = get_parent().find_child("*?all*")
+	
 	wall_layer.regenerated_tile_set.connect(handle_generate)
 	handle_generate()
 
@@ -49,6 +48,9 @@ func handle_generate() -> void:
 	
 	reset_generate()
 	
+	if not Engine.is_editor_hint():
+		print(name, " handle_generate()")
+	
 	for sample_cell: Vector2i in floor_layer.get_used_cells():
 		
 		if wall_layer.has_cell(sample_cell):
@@ -65,6 +67,7 @@ func handle_generate() -> void:
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
 		
+		sample_noise_data.noise.set_deferred(&"seed", sample_noise_data.noise.seed)
 		sample_noise_data.noise.seed = randi()
 		
 		var prev_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.target_terrain_name)
@@ -90,6 +93,12 @@ func handle_generate() -> void:
 		BetterTerrain.update_terrain_cells(wall_layer, sample_wall_update.cells, false)
 
 func reset_generate() -> void:
+	
+	if not Engine.is_editor_hint():
+		print(name, " reset_generate()")
+	
+	if not wall_layer.level_tile_set:
+		return
 	
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
