@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://djhucnr4u1bjm"]
 
-[ext_resource type="Material" uid="uid://bdr8fpexgwbu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001_Material.tres" id="1_i0ywv"]
+[ext_resource type="Material" uid="uid://bdr8fpexgwbu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001_M.tres" id="1_i0ywv"]
 [ext_resource type="Texture2D" uid="uid://usjo5eqyqwpu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001.png" id="2_ugayq"]
 
 [sub_resource type="Curve" id="Curve_tgbbl"]

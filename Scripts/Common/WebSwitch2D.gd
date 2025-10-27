@@ -2,23 +2,21 @@
 extends Node2D
 class_name WebSwitch2D
 
-@export var default_node: Node2D
-@export var web_node: Node2D
+@export var default_scene_path: String
+@export var web_scene_path: String
+@export var parent_override: Node
+
+var instantiated_node: Node
 
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
-		if not default_node:
-			default_node = find_child("*efault*")
-		if not web_node:
-			web_node = find_child("*eb*")
+		pass
 	else:
-		assert(default_node)
-		assert(web_node)
+		var scene := ResourceLoader.load(web_scene_path if PlatformGlobals_Class.IsWeb() else default_scene_path, "PackedScene") as PackedScene
+		instantiated_node = scene.instantiate()
 		
-		if PlatformGlobals_Class.IsWeb():
-			web_node.visible = true
-			default_node.queue_free()
+		if parent_override:
+			parent_override.add_child(instantiated_node)
 		else:
-			web_node.queue_free()
-			default_node.visible = true
+			add_child(instantiated_node)

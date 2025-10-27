@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://ckt5t70a5rjfk" path="res://addons/GodotCommons-Core/Assets/Lights/LightShaft001a.png" id="2_h6vfx"]
 [ext_resource type="Script" uid="uid://bsi5j6vgo7vtx" path="res://addons/GodotCommons-Core/Scripts/Lights/OptimizableLight2D.gd" id="3_8wpvu"]
-[ext_resource type="Material" uid="uid://1gqa2rwn3xs7" path="res://addons/GodotCommons-Core/Assets/Particles/Light/LightShaft001a.tres" id="4_8cfov"]
+[ext_resource type="Material" uid="uid://1gqa2rwn3xs7" path="res://addons/GodotCommons-Core/Assets/Particles/Light/LightShaft001a_PPM.tres" id="4_8cfov"]
 
 [node name="LightShaft001" type="Node2D"]
 y_sort_enabled = true

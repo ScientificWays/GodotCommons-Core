@@ -13,6 +13,9 @@ class_name LevelTileMapLayer_Procedurals
 @export_category("Noise")
 @export var noise_data: Array[LevelTileSet_ProceduralData]
 
+@export_category("Fog")
+@export var fog_density: float = 0.0
+
 var procedurals_tile_set: LevelTileSet_Procedurals:
 	get(): return tile_set
 
@@ -51,6 +54,8 @@ func handle_generate() -> void:
 	if not Engine.is_editor_hint():
 		print(name, " handle_generate()")
 	
+	var fog_dynamic_grid_size := procedurals_tile_set.get_random_fog_grid_size()
+	
 	for sample_cell: Vector2i in floor_layer.get_used_cells():
 		
 		if wall_layer.has_cell(sample_cell):
@@ -59,10 +64,15 @@ func handle_generate() -> void:
 		if not floor_layer.has_cell(sample_cell):
 			continue
 		
-		var terrain_data := floor_layer.get_cell_terrain_data(sample_cell)
-		var sample_id := terrain_data.get_random_debris_id_or_null()
-		if sample_id > 0:
-			set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_id)
+		if sample_cell % fog_dynamic_grid_size == Vector2i.ZERO and fog_density > randf():
+			set_cell(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 1)
+			fog_dynamic_grid_size = procedurals_tile_set.get_random_fog_grid_size()
+		else:
+			
+			var terrain_data := floor_layer.get_cell_terrain_data(sample_cell)
+			var sample_id := terrain_data.get_random_debris_id_or_null()
+			if sample_id > 0:
+				set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_id)
 	
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:

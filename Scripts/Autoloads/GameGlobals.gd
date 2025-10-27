@@ -292,12 +292,14 @@ func generate_new_status_effect_handle() -> int:
 ##
 ## Ignite
 ##
-@onready var ignite_small_scene: PackedScene = load("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001.tscn")
-@onready var ignite_small_scene_web: PackedScene = load("res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_CPU.tscn")
+var ignite_small_scene_path: String = "res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_GPU.tscn"
+var ignite_small_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_CPU.tscn"
+
+@onready var ignite_small_scene: PackedScene = load(ignite_small_scene_path_web if PlatformGlobals_Class.IsWeb() else ignite_small_scene_path)
 
 func ignite_target(in_target: Node2D, in_duration: float) -> void:
 	
-	var new_ignite = (ignite_small_scene_web if PlatformGlobals.IsWeb() else ignite_small_scene).instantiate()
+	var new_ignite = ignite_small_scene.instantiate()
 	
 	var pivot := ParticlesPivot.new()
 	pivot.add_child(new_ignite)

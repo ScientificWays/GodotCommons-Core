@@ -29,12 +29,12 @@ func load_impact_sound_event() -> SoundEventResource:
 	return load(impact_sound_event)
 
 @export_category("Smoke")
-@export var smoke_particles_scene: String = "res://addons/GodotCommons-Core/Scenes/Particles/Smoke/Smoke001.tscn"
-@export var smoke_particles_scene_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Smoke/Smoke001_CPU.tscn"
+@export var smoke_particles_scene_path: String = "res://addons/GodotCommons-Core/Scenes/Particles/Smoke/Smoke001_GPU.tscn"
+@export var smoke_particles_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Smoke/Smoke001_CPU.tscn"
 @export var smoke_particles_modulate: Color = Color.WHITE
 
 func load_smoke_particles_scene() -> PackedScene:
-	return load(smoke_particles_scene_web if PlatformGlobals.IsWeb() else smoke_particles_scene)
+	return load(smoke_particles_scene_path_web if PlatformGlobals_Class.IsWeb() else smoke_particles_scene_path)
 
 @export_category("Burn")
 @export var burn_scene: String = "res://Scenes/Explosions/Burn001.tscn"

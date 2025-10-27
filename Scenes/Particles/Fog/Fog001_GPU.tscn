@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://dmgt5rp388l36"]
+
+[ext_resource type="Material" uid="uid://ctsmq5xfo8xuu" path="res://addons/GodotCommons-Core/Assets/Particles/Fog/Fog001a_M.tres" id="1_jtq2w"]
+[ext_resource type="Texture2D" uid="uid://boawmjba1h1mf" path="res://addons/GodotCommons-Core/Assets/Particles/Fog/Fog001.png" id="2_2l6ao"]
+[ext_resource type="Material" uid="uid://bvp2amxmdu0fk" path="res://addons/GodotCommons-Core/Assets/Particles/Fog/Fog001a_PPM.tres" id="3_nmx16"]
+
+[node name="Fog" type="GPUParticles2D"]
+modulate = Color(0, 0.78431374, 1, 0.101960786)
+z_index = 5
+z_as_relative = false
+material = ExtResource("1_jtq2w")
+texture = ExtResource("2_2l6ao")
+lifetime = 20.0
+preprocess = 4.0
+explosiveness = 0.5
+randomness = 0.5
+fixed_fps = 8
+visibility_rect = Rect2(-256, -128, 512, 256)
+draw_order = 0
+process_material = ExtResource("3_nmx16")

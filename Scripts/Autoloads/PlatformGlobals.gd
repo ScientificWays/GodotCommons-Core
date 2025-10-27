@@ -109,6 +109,15 @@ static func IsWeb() -> bool:
 	return OS.has_feature("web")
 
 ##
+## Render
+##
+@onready var rendering_method_setting: StringName = ProjectSettings.get_setting_with_override(&"rendering/renderer/rendering_method")
+const rendering_method_gl_compatibility : StringName = &"gl_compatibility"
+
+func is_gl_compatibility_rendering_method() -> bool:
+	return rendering_method_setting == rendering_method_gl_compatibility
+
+##
 ## Pause
 ##
 var web_is_paused: bool = false:

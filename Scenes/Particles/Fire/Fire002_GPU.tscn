@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://de4g22smssemf"]
 
-[ext_resource type="Material" uid="uid://bdr8fpexgwbu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001_Material.tres" id="1_5g0ol"]
-[ext_resource type="Material" uid="uid://7auw6lueh21i" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002a.tres" id="2_fuusa"]
+[ext_resource type="Material" uid="uid://bdr8fpexgwbu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001_M.tres" id="1_5g0ol"]
+[ext_resource type="Material" uid="uid://7auw6lueh21i" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002a_PPM.tres" id="2_fuusa"]
 [ext_resource type="Texture2D" uid="uid://usjo5eqyqwpu" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire001.png" id="3_trsls"]
 [ext_resource type="Script" uid="uid://dvlmq0jrtnpfm" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticleSystem2D.gd" id="4_njx8u"]
-[ext_resource type="Material" uid="uid://sa4u53i3kl2d" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002a_Motes.tres" id="5_mpt4i"]
+[ext_resource type="Material" uid="uid://sa4u53i3kl2d" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002a_Motes_PPM.tres" id="5_mpt4i"]
 
 [node name="Fire" type="GPUParticles2D"]
 z_index = 1

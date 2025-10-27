@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://t1kmb6y0m6hr"]
+
+[ext_resource type="Material" uid="uid://bf3ixh65qv10w" path="res://addons/GodotCommons-Core/Assets/Particles/Dust/Dust001a_M.tres" id="1_h6lfe"]
+[ext_resource type="Texture2D" uid="uid://ce1smq2cesuw2" path="res://addons/GodotCommons-Core/Assets/Particles/Dust/Dust001.png" id="2_twnh5"]
+
+[sub_resource type="Curve" id="Curve_msqf8"]
+_data = [Vector2(0, 1), 0.0, -0.8, 0, 1, Vector2(1, 0.2), -0.8, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_scp6u"]
+colors = PackedColorArray(0.5, 0.5, 0.5, 1, 1, 1, 1, 1)
+
+[node name="Dust" type="CPUParticles2D"]
+material = ExtResource("1_h6lfe")
+texture = ExtResource("2_twnh5")
+lifetime = 4.0
+explosiveness = 1.0
+lifetime_randomness = 0.8
+fixed_fps = 30
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 8.0
+gravity = Vector2(0, -2)
+scale_amount_min = 0.5
+scale_amount_max = 0.8
+scale_amount_curve = SubResource("Curve_msqf8")
+color = Color(0.8, 0.8, 0.8, 1)
+color_initial_ramp = SubResource("Gradient_scp6u")
+anim_offset_max = 1.0

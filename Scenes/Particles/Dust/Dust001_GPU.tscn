@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://5t3ua118pfel"]
+
+[ext_resource type="Material" uid="uid://bf3ixh65qv10w" path="res://addons/GodotCommons-Core/Assets/Particles/Dust/Dust001a_M.tres" id="1_w1dom"]
+[ext_resource type="Texture2D" uid="uid://ce1smq2cesuw2" path="res://addons/GodotCommons-Core/Assets/Particles/Dust/Dust001.png" id="2_3wwl6"]
+[ext_resource type="Material" uid="uid://c4sou60x5od0p" path="res://addons/GodotCommons-Core/Assets/Particles/Dust/Dust001a_PPM.tres" id="3_0bded"]
+
+[node name="Dust" type="GPUParticles2D"]
+material = ExtResource("1_w1dom")
+texture = ExtResource("2_3wwl6")
+lifetime = 4.0
+explosiveness = 1.0
+visibility_rect = Rect2(-32, -32, 64, 64)
+process_material = ExtResource("3_0bded")

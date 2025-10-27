@@ -50,7 +50,7 @@ func HandleImpact():
 		ShakeSource2D.spawn(GlobalPosition, owner_explosion._radius * owner_explosion.data.shake_radius_scale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
 	
 	var smoke_particles_scene = owner_explosion.data.load_smoke_particles_scene()
-	if owner_explosion.data.smoke_particles_scene:
+	if smoke_particles_scene:
 		
 		var smoke_particles := smoke_particles_scene.instantiate()
 		smoke_particles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)

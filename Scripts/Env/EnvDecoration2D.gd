@@ -2,19 +2,29 @@
 extends Area2D
 class_name Debris2D
 
+@export_category("Sprite")
 @export var sprite: Node2D
 
+@export_category("Gibs")
 @export var break_gibs: Array[PackedScene] = [
 	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
 ]
 @export var break_gibs_num_min_max: Vector2i = Vector2i(1, 2)
+
+@export_category("Stages")
 @export var break_stages_num: int = 0
 @export var break_stages_animation_name: StringName = &"Break"
 @export var remove_on_last_break_stage: bool = true
 
+@export_category("Past Break")
 @export var apply_past_last_break_stage_effects: bool = true
 @export var past_last_break_stage_darkening: float = 0.2
 @export var past_last_break_stage_shrinking_speed: float = 0.1
+
+@export_category("Particles")
+@export var break_particles_scene_path: String = "res://addons/GodotCommons-Core/Scenes/Particles/Dust/Dust001_GPU.tscn"
+@export var break_particles_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Dust/Dust001_CPU.tscn"
+@export var break_particles_min_max: Vector2i = Vector2i(0, 2)
 
 var break_current_stage: int = 0
 
@@ -53,7 +63,8 @@ func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 	
 	break_current_stage += 1
 	
-	spawn_break_gibs(in_impulse, in_try_ignite)
+	try_spawn_break_gibs(in_impulse, in_try_ignite)
+	try_spawn_break_particles(in_impulse, in_try_ignite)
 	
 	if break_current_stage == break_stages_num:
 		
@@ -67,9 +78,10 @@ func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 			sprite.frame = break_current_stage
 			sprite.pause()
 
-func spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> void:
+func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 	
-	assert(not break_gibs.is_empty())
+	if break_gibs.is_empty():
+		return false
 	
 	var impulse_magnitude := in_impulse.length()
 	
@@ -87,3 +99,23 @@ func spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> void:
 		
 		if in_try_ignite:
 			sample_gib.try_ignite(impulse_magnitude * randf_range(0.04, 0.08))
+	return true
+
+func try_spawn_break_particles(in_impulse: Vector2, in_try_ignite: bool) -> bool:
+	
+	var particles_scene_path := break_particles_scene_path_web if PlatformGlobals_Class.IsWeb() else break_particles_scene_path
+	if particles_scene_path.is_empty():
+		return false
+	
+	var particles_scene := ResourceLoader.load(particles_scene_path, "PackedScene")
+	
+	var particles_num := randi_range(break_particles_min_max.x, break_particles_min_max.y)
+	if particles_num > 0:
+		
+		var particles = particles_scene.instantiate()
+		if particles is ParticleSystem2D:
+			particles.InitAsOneShot(global_position, 0, 4.0)
+			particles.EmitParticlesWithVelocity(particles_num, in_impulse * 0.5)
+		elif particles is ParticleSystem2D_CPU:
+			particles.InitAsOneShot(global_position, particles_num, 4.0)
+	return true

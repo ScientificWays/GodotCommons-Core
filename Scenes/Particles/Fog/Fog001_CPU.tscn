@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://borxnslygkb2m"]
+
+[ext_resource type="Material" uid="uid://ctsmq5xfo8xuu" path="res://addons/GodotCommons-Core/Assets/Particles/Fog/Fog001a_M.tres" id="1_renky"]
+[ext_resource type="Texture2D" uid="uid://boawmjba1h1mf" path="res://addons/GodotCommons-Core/Assets/Particles/Fog/Fog001.png" id="2_gywlo"]
+
+[sub_resource type="Curve" id="Curve_msqf8"]
+_data = [Vector2(0, 0.6), 0.0, 0.8, 0, 1, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6), -0.8, 0.0, 1, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_psw57"]
+colors = PackedColorArray(1, 1, 1, 0.196078, 1, 1, 1, 1)
+
+[sub_resource type="Curve" id="Curve_sl5oq"]
+_limits = [-1.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, -1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Fog" type="CPUParticles2D"]
+modulate = Color(0, 0.78431374, 1, 0.101960786)
+z_index = 5
+z_as_relative = false
+material = ExtResource("1_renky")
+texture = ExtResource("2_gywlo")
+lifetime = 20.0
+preprocess = 4.0
+explosiveness = 0.5
+randomness = 0.5
+fixed_fps = 8
+emission_shape = 3
+emission_rect_extents = Vector2(32, 32)
+gravity = Vector2(0, 0)
+scale_amount_min = 0.25
+scale_amount_max = 1.5
+scale_amount_curve = SubResource("Curve_msqf8")
+color_initial_ramp = SubResource("Gradient_psw57")
+hue_variation_min = -0.02
+hue_variation_max = 0.05
+hue_variation_curve = SubResource("Curve_sl5oq")
+anim_offset_max = 1.0

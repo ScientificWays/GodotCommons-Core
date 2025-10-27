@@ -43,7 +43,7 @@ func OverrideRadius(in_radius: float):
 
 func EmitParticlesWithVelocity(InParticlesNum: int, in_velocity: Vector2):
 	
-	if ProjectSettings.get_setting_with_override(&"rendering/renderer/rendering_method") == &"gl_compatibility":
+	if PlatformGlobals.is_gl_compatibility_rendering_method():
 		print(self, " EmitParticlesWithVelocity() cancelled due to gl_compatibility renderer")
 		return
 	
