@@ -37,11 +37,11 @@ var time: float
 func _ready() -> void:
 	Update.call_deferred()
 
-func _notification(InCode: int) -> void:
+func _notification(in_code: int) -> void:
 	
-	if InCode == NOTIFICATION_EDITOR_PRE_SAVE:
+	if in_code == NOTIFICATION_EDITOR_PRE_SAVE:
 		Update()
-	elif InCode == NOTIFICATION_TRANSLATION_CHANGED:
+	elif in_code == NOTIFICATION_TRANSLATION_CHANGED:
 		Update()
 
 func _process(in_delta: float) -> void:

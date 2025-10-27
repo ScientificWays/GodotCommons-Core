@@ -1,0 +1,134 @@
+[gd_scene load_steps=9 format=3 uid="uid://iyu20be4ijlo"]
+
+[ext_resource type="Script" uid="uid://c4yoorlame4eh" path="res://addons/GodotCommons-Core/Scripts/UI/World/DamageNumberUI.gd" id="1_h87xj"]
+[ext_resource type="PackedScene" uid="uid://d3o4fa5w0r7ao" path="res://addons/GodotCommons-Core/Scenes/UI/FX/VHSLabel.tscn" id="2_jh8th"]
+[ext_resource type="Shader" uid="uid://de1yy6j4qmloa" path="res://addons/GodotCommons-Core/Assets/UI/FX/VHSFX_Shader.gdshader" id="3_kwpbl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jh8th"]
+shader = ExtResource("3_kwpbl")
+shader_parameter/time_speed = 1.0
+shader_parameter/split_amount = 1.5
+shader_parameter/flicker_intensity = 0.2
+shader_parameter/noise_strength = 0.05
+
+[sub_resource type="LabelSettings" id="LabelSettings_jh8th"]
+font_size = 64
+
+[sub_resource type="Animation" id="Animation_6r8jp"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.2, 0.2)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/Label:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_rb41u"]
+resource_name = "ShowDamagePercentageAnimation"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0.5, 0.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -32), Vector2(0, -64)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.1, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vngsq"]
+_data = {
+&"RESET": SubResource("Animation_6r8jp"),
+&"pop_up": SubResource("Animation_rb41u")
+}
+
+[node name="DefaultDamageNumber" type="Node2D" node_paths=PackedStringArray("label", "animation_player")]
+z_index = 25
+script = ExtResource("1_h87xj")
+label = NodePath("Control/Label")
+animation_player = NodePath("AnimationPlayer")
+metadata/_custom_type_script = "uid://c4yoorlame4eh"
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.2, 0.2)
+
+[node name="Label" parent="Control" instance=ExtResource("2_jh8th")]
+material = SubResource("ShaderMaterial_jh8th")
+custom_minimum_size = Vector2(84, 56)
+layout_mode = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 64.0
+offset_bottom = 36.0
+pivot_offset = Vector2(42, 28)
+label_text = "-100"
+label_settings = SubResource("LabelSettings_jh8th")
+scale_speed = 3.0
+rotation_speed = 0.5
+dissapear_probability = 0.05
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_vngsq")
+}

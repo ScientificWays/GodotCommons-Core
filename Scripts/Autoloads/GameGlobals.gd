@@ -8,13 +8,15 @@ signal post_explosion_apply_impulse(in_explosionImpact: Explosion2D_Impact, in_t
 
 signal PostBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll)
 
+signal post_damage_receiver_receive_damage(in_damage_receiver: DamageReceiver, in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
+
 signal RequestMiniGameBegin(InMiniGameScene: PackedScene)
 signal RequestMiniGameFinish(InForced: bool)
 
 var GetCanvasColorCallable: Callable
 func GetCanvasColor() -> Color:
 	return GetCanvasColorCallable.call()
-signal RequestSetCanvasColor(InColor: Color)
+signal RequestSetCanvasColor(in_color: Color)
 
 enum GraphicsOption
 {

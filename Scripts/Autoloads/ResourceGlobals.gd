@@ -91,8 +91,8 @@ func UtilInitEmissiveMaterial(InCurrentKeyArray: Array) -> ShaderMaterial:
 ## Outline
 var OutlineMaterialBase: ShaderMaterial = preload("res://addons/GodotCommons-Core/Assets/Common/OutlineMaterial.tres")
 
-func GetOrCreateOutlineMaterial(InColor: Color) -> ShaderMaterial:
-	return UtilGetOrCreate([ OutlineMaterialBase, InColor ], UtilInitOutlineMaterial)
+func GetOrCreateOutlineMaterial(in_color: Color) -> ShaderMaterial:
+	return UtilGetOrCreate([ OutlineMaterialBase, in_color ], UtilInitOutlineMaterial)
 
 func UtilInitOutlineMaterial(InCurrentKeyArray: Array) -> ShaderMaterial:
 	

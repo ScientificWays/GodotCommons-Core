@@ -31,9 +31,14 @@ func _ready() -> void:
 	
 	try_create_pause_menu_ui.call_deferred()
 	try_create_confirm_ui.call_deferred()
+	
+	GameGlobals.post_damage_receiver_receive_damage.connect(_handle_post_damage_receiver_receive_damage)
 
-func _notification(InCode: int) -> void:
-	match InCode:
+func _process(in_delta: float) -> void:
+	_process_pending_damage_numbers(in_delta)
+
+func _notification(in_code: int) -> void:
+	match in_code:
 		Node.NOTIFICATION_WM_GO_BACK_REQUEST:
 			Input.parse_input_event(load("res://addons/GodotCommons-Core/Assets/UI/Shortcuts/BackAction.tres"))
 
@@ -145,3 +150,39 @@ var BackgroundTextureOverride: Texture2D:
 		BackgroundTextureOverrideChanged.emit()
 
 signal BackgroundTextureOverrideChanged()
+
+##
+## DamageNumberUI
+##
+var damage_number_ui_scene_path: String = "res://addons/GodotCommons-Core/Scenes/UI/World/DefaultDamageNumber.tscn"
+var damage_number_ui: DamageNumberUI
+signal damage_number_ui_created()
+
+var pending_damage_numbers_damage: Dictionary[int, float]
+var pending_damage_numbers_positions: Dictionary[int, Vector2]
+
+func _process_pending_damage_numbers(in_delta: float) -> void:
+	
+	if pending_damage_numbers_damage.is_empty():
+		return
+	
+	for sample_instance_id: int in pending_damage_numbers_damage.keys():
+		try_create_damage_number_ui(pending_damage_numbers_damage[sample_instance_id], pending_damage_numbers_positions[sample_instance_id])
+	pending_damage_numbers_damage.clear()
+
+func _handle_post_damage_receiver_receive_damage(in_damage_receiver: DamageReceiver, in_source: Node, in_damage: float, in_ignored_immunity_time: bool) -> void:
+	
+	var instance_id := in_damage_receiver.get_instance_id()
+	pending_damage_numbers_damage[instance_id] = pending_damage_numbers_damage.get(instance_id, 0.0) + in_damage
+	pending_damage_numbers_positions[instance_id] = in_damage_receiver.owner_body_2d.global_position
+
+func try_create_damage_number_ui(in_damage: float, in_position: Vector2) -> void:
+	
+	assert(not damage_number_ui_scene_path.is_empty())
+	
+	var damage_number_ui_scene := ResourceLoader.load(damage_number_ui_scene_path)
+	var new_damage_number_ui := damage_number_ui_scene.instantiate() as DamageNumberUI
+	new_damage_number_ui.position = in_position
+	new_damage_number_ui.damage = in_damage
+	
+	WorldGlobals._level.add_child(new_damage_number_ui)
