@@ -41,5 +41,12 @@ func _ready() -> void:
 	var clamped_impact_value := clampf(impact_value, 0.0, 1.0)
 	modulate = Color(1.0, 1.0 - clamped_impact_value, 1.0 - clamped_impact_value)
 	
+	animation_player.animation_finished.connect(_on_animation_player_animation_finished)
+	
 	var duration := lerpf(2.0, 4.0, clamped_impact_value)
 	animation_player.play(pop_up_animation_name, -1.0, 1.0 / duration)
+
+func _on_animation_player_animation_finished(in_animation_name: StringName) -> void:
+	
+	if in_animation_name == pop_up_animation_name:
+		queue_free()
