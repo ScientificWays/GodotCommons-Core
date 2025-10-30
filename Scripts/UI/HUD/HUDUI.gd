@@ -39,7 +39,7 @@ func _ready() -> void:
 		assert(pause_button)
 		assert(fade_animation_player)
 		
-		WorldGlobals.TransitionAreaEnterBegin.connect(OnWorldTransitionAreaEnterBegin)
+		WorldGlobals.change_level_transition_begin.connect(_on_change_level_transition_begin)
 		TransitionBackground.FadeOut()
 		
 		pause_button.pressed.connect(_on_pause_button_pressed)
@@ -49,8 +49,8 @@ func _ready() -> void:
 		
 		PawnGlobals.init_pawn_healthbar.connect(_handle_init_pawn_healthbar)
 
-func OnWorldTransitionAreaEnterBegin(InTransitionArea: LevelTransitionArea2D) -> void:
-	TransitionBackground.FadeIn(InTransitionArea.TransitionDelay)
+func _on_change_level_transition_begin(in_change_level: ChangeLevel) -> void:
+	TransitionBackground.FadeIn(in_change_level.transtioin_delay)
 
 func _on_pause_button_pressed() -> void:
 	UIGlobals.pause_menu_ui.toggle()

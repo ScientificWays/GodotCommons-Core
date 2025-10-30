@@ -63,9 +63,11 @@ func _ready() -> void:
 	
 	if Engine.is_editor_hint():
 		if not attribute_set:
-			attribute_set = find_child("*ttribute*et*")
+			attribute_set = find_child("*ttribute*et*") as AttributeSet
 		if not damage_receiver:
-			damage_receiver = find_child("*amage*eceiver*")
+			damage_receiver = find_child("*amage*eceiver*") as DamageReceiver
+		if not character_movement:
+			character_movement = find_child("*arachter*ovement*") as Pawn2D_CharacterMovement
 	else:
 		if damage_receiver:
 			damage_receiver.ReceiveLethalDamage.connect(OnReceiveLethalDamage)

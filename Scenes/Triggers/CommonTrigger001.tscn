@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://br0k6rc238c2"]
+
+[ext_resource type="Script" uid="uid://bdcuxi62gksci" path="res://addons/GodotCommons-Core/Scripts/Triggers/CommonTrigger2D.gd" id="1_vugvg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0le3x"]
+resource_local_to_scene = true
+size = Vector2(32, 32)
+
+[node name="CommonTrigger" type="Area2D" node_paths=PackedStringArray("collision")]
+z_index = 5
+collision_layer = 0
+monitorable = false
+script = ExtResource("1_vugvg")
+collision = NodePath("Collision")
+collision_shape = SubResource("RectangleShape2D_0le3x")
+is_enabled = null
+metadata/_custom_type_script = "uid://bdcuxi62gksci"
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_0le3x")
+debug_color = Color(1, 0.64705884, 0, 0.25)

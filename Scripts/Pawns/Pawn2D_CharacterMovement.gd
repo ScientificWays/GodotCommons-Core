@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name Pawn2D_CharacterMovement
 
@@ -22,17 +23,33 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 
 func _ready() -> void:
 	
-	mass *= owner_pawn.get_size_scale()
-	
-	if sync_with_sprite_move_animation_base_speed:
-		assert(owner_sprite)
-		owner_sprite.move_animation_base_speed = move_speed
+	if Engine.is_editor_hint():
+		
+		set_physics_process(false)
+		
+		if not owner_pawn:
+			owner_pawn = get_parent() as Pawn2D
+		if not owner_body:
+			owner_body = get_parent() as CharacterBody2D
+		if owner_pawn:
+			if not owner_sprite:
+				owner_sprite = owner_pawn.find_child("*prite*") as Pawn2D_Sprite
+			if not owner_sprite:
+				owner_attribute_set = owner_pawn.find_child("*ttribute*et*") as AttributeSet
+	else:
+		mass *= owner_pawn.get_size_scale()
+		
+		if sync_with_sprite_move_animation_base_speed:
+			assert(owner_sprite)
+			owner_sprite.move_animation_base_speed = move_speed
 
 func _enter_tree():
-	ModularGlobals.init_modular_node(self)
+	if not Engine.is_editor_hint():
+		ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.deinit_modular_node(self)
+	if not Engine.is_editor_hint():
+		ModularGlobals.deinit_modular_node(self)
 
 var pending_launch_velocity: Vector2 = Vector2.ZERO
 
@@ -43,7 +60,7 @@ var movement_velocity: Vector2 = Vector2.ZERO:
 
 func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool):
 	
-	if in_scale_by_movement_speed_mul:
+	if in_scale_by_movement_speed_mul and owner_attribute_set:
 		movement_velocity = in_velocity * owner_attribute_set.get_attribute_current_value(AttributeSet.MoveSpeedMul)
 	else:
 		movement_velocity = in_velocity

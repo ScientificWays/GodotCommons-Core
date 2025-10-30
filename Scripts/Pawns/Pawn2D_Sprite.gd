@@ -21,7 +21,6 @@ var _ParticlesPivot: ParticlesPivot
 			animation_data.init_sprite(self)
 
 @export var StatusEffectParticlesRadius: float = 16.0
-@export var AlwaysLookAtRelevantTarget: bool = false
 
 var _AnimationType: AnimationData2D.Type = AnimationData2D.Type.Idle
 var _Direction: AnimationData2D.Direction = AnimationData2D.Direction.None:

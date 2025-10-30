@@ -1,7 +1,7 @@
 extends Node
 
-signal TransitionAreaEnterBegin(InTransitionArea: LevelTransitionArea2D)
-signal TransitionAreaEnterFinished(InTransitionArea: LevelTransitionArea2D)
+signal change_level_transition_begin(InTransitionArea: LevelTransitionArea2D)
+signal change_level_transition_finished(InTransitionArea: LevelTransitionArea2D)
 
 var _campaign_data: CampaignData
 var _game_state: GameState

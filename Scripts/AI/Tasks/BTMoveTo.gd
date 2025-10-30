@@ -2,8 +2,10 @@
 extends BTAction
 
 @export var move_target_var: StringName = &"patrol_position"
+@export var desired_distance: float = 8.0
 
 var owner_navigation: Pawn2D_Navigation
+var prev_desired_distance: float = 8.0
 
 func _enter() -> void:
 	
@@ -16,8 +18,12 @@ func _enter() -> void:
 		owner_navigation.target_position = move_target
 	else:
 		assert(false)
+	
+	prev_desired_distance = owner_navigation.target_desired_distance
+	owner_navigation.target_desired_distance = desired_distance
 
 func _exit() -> void:
+	owner_navigation.target_desired_distance = prev_desired_distance
 	owner_navigation.target_node = null
 	owner_navigation = null
 

@@ -186,3 +186,9 @@ func try_create_damage_number_ui(in_damage: float, in_position: Vector2) -> void
 	new_damage_number_ui.damage = in_damage
 	
 	WorldGlobals._level.add_child(new_damage_number_ui)
+
+##
+## DialogueUI
+##
+signal request_dialogue_sequence(in_sequence: DialogueSequence)
+signal request_cancel_dialogue()
