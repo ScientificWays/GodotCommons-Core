@@ -4,6 +4,8 @@ class_name Debris2D
 
 @export_category("Sprite")
 @export var sprite: Node2D
+@export var can_flip_h: bool = true
+@export var can_flip_v: bool = true
 
 @export_category("Gibs")
 @export var break_gibs: Array[PackedScene] = [
@@ -31,20 +33,41 @@ var break_current_stage: int = 0
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
+		
 		if not sprite:
-			sprite = find_child("*?prite*")
+			sprite = find_child("*?prite*") as Sprite2D
+		
+		var collision := find_child("*ollision*") as CollisionShape2D
+		if collision and get_parent() is TileMapLayer:
+			collision.visible = false
+			_update_sprite()
 	else:
-		assert(sprite)
-		
-		if sprite is Sprite2D:
-			sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)
-		elif sprite is AnimatedSprite2D:
-			pass
-		
 		break_current_stage = -1
+		
+		area_entered.connect(_on_target_entered)
+		body_entered.connect(_on_target_entered)
+		
+		_update_sprite()
+
+func _update_sprite() -> void:
 	
-	area_entered.connect(_on_target_entered)
-	body_entered.connect(_on_target_entered)
+	assert(sprite)
+	
+	if sprite is Sprite2D:
+		
+		sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)
+		
+		if can_flip_h:
+			sprite.flip_h = ((randi() % 2) == 0)
+		if can_flip_v:
+			sprite.flip_v = ((randi() % 2) == 0)
+		
+	elif sprite is AnimatedSprite2D:
+		
+		if can_flip_h:
+			sprite.flip_h = ((randi() % 2) == 0)
+		if can_flip_v:
+			sprite.flip_v = ((randi() % 2) == 0)
 
 func _on_target_entered(in_target: Node2D) -> void:
 	pass

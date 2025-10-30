@@ -1,3 +1,4 @@
+@tool
 extends Area2D
 class_name Fog2D
 
@@ -52,17 +53,31 @@ var current_state: int = STATE_ACTIVE:
 
 func _ready() -> void:
 	
-	area_entered.connect(_on_interact_trigger_target_entered)
-	body_entered.connect(_on_interact_trigger_target_entered)
-	
-	animation_player.animation_finished.connect(_on_animation_finished)
-	
-	if PlatformGlobals.is_gl_compatibility_rendering_method():
-		web_switch.instantiated_node.modulate.a *= 2.0
-	
-	_update_optimization()
-	
-	current_state = STATE_ACTIVE
+	if Engine.is_editor_hint():
+		
+		var preview_sprite := Sprite2D.new()
+		preview_sprite.texture = load("res://addons/GodotCommons-Core/Assets/Particles/Fog/Fog001.png")
+		preview_sprite.hframes = 2
+		preview_sprite.vframes = 2
+		preview_sprite.frame = randi_range(0, 3)
+		preview_sprite.modulate = Color(Color.CYAN, 0.2)
+		add_child(preview_sprite)
+		
+		var collision := find_child("*ollision*") as CollisionShape2D
+		if collision and get_parent() is TileMapLayer:
+			collision.visible = false
+	else:
+		area_entered.connect(_on_interact_trigger_target_entered)
+		body_entered.connect(_on_interact_trigger_target_entered)
+		
+		animation_player.animation_finished.connect(_on_animation_finished)
+		
+		if PlatformGlobals.is_gl_compatibility_rendering_method():
+			web_switch.instantiated_node.modulate.a *= 2.0
+		
+		_update_optimization()
+		
+		current_state = STATE_ACTIVE
 
 func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2, in_offset: Vector2) -> bool:
 	

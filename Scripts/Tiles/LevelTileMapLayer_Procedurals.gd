@@ -64,12 +64,14 @@ func handle_generate() -> void:
 		if not floor_layer.has_cell(sample_cell):
 			continue
 		
-		if sample_cell % fog_dynamic_grid_size == Vector2i.ZERO and fog_density > randf():
+		var terrain_data := floor_layer.get_cell_terrain_data(sample_cell)
+		var cell_fog_density := fog_density * terrain_data.fog_density_mul
+		
+		if sample_cell % fog_dynamic_grid_size == Vector2i.ZERO and cell_fog_density > randf():
 			set_cell(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 1)
 			fog_dynamic_grid_size = procedurals_tile_set.get_random_fog_grid_size()
 		else:
 			
-			var terrain_data := floor_layer.get_cell_terrain_data(sample_cell)
 			var sample_id := terrain_data.get_random_debris_id_or_null()
 			if sample_id > 0:
 				set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_id)

@@ -39,6 +39,9 @@ func load_gib_scene() -> PackedScene:
 @export var debris_ids: Array[int]
 @export var debris_weights: Array[float]
 
+@export_category("Fog")
+@export var fog_density_mul: float = 1.0
+
 func get_random_debris_id_or_null(in_random_fraction: float = randf()) -> int:
 	
 	if randf() > debris_probability:
