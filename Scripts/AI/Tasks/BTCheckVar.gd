@@ -2,7 +2,7 @@ extends BTDecorator
 
 @export var variable: StringName = &"chase_target"
 @export var check_type: LimboUtility.CheckType = LimboUtility.CheckType.CHECK_NOT_EQUAL
-@export var value: Variant = null
+@export var value: Variant
 
 @export var check_cooldown_time: float = 1.0
 var check_cooldown_time_left: float = 0.0

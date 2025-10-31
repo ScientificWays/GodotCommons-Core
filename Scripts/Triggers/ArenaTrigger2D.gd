@@ -124,7 +124,7 @@ func pause_waves() -> void:
 		current_wave_index -= 1
 	
 	for sample_pawn: Pawn2D in current_wave_pawns:
-		sample_pawn.damage_receiver.ReceiveLethalDamage.disconnect(_on_pawn_receive_lethal_damage)
+		sample_pawn.damage_receiver.receive_damage_lethal.disconnect(_on_pawn_receive_lethal_damage)
 		sample_pawn.tree_exited.disconnect(_on_pawn_exited_tree)
 	current_wave_pawns.clear()
 	
@@ -158,7 +158,7 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	in_pawn.position = sample_spawn.position
 	sample_spawn.add_sibling.call_deferred(in_pawn)
 	
-	in_pawn.damage_receiver.ReceiveLethalDamage.connect(_on_pawn_receive_lethal_damage.bind(in_pawn))
+	in_pawn.damage_receiver.receive_damage_lethal.connect(_on_pawn_receive_lethal_damage.bind(in_pawn))
 	in_pawn.tree_exited.connect(_on_pawn_exited_tree.bind(in_pawn))
 	current_wave_pawns.append(in_pawn)
 

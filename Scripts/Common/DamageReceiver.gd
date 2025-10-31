@@ -45,7 +45,7 @@ var DamageImmunityEndTime: float = 0.0
 var ReceivedLethalDamage: bool = false
 
 signal receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
-signal ReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
+signal receive_damage_lethal(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
 
 func _ready():
 	
@@ -121,7 +121,7 @@ func try_receive_damage(in_source: Node, in_instigator: Node, in_damage: float, 
 		receive_damage.emit(in_source, in_damage, in_should_ignore_immunity_time)
 		
 		if ReceivedLethalDamage:
-			ReceiveLethalDamage.emit(in_source, in_damage, in_should_ignore_immunity_time)
+			receive_damage_lethal.emit(in_source, in_damage, in_should_ignore_immunity_time)
 		GameGlobals.post_damage_receiver_receive_damage.emit(self, in_source, in_damage, in_should_ignore_immunity_time)
 		return true
 	return false

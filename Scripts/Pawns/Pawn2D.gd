@@ -33,6 +33,9 @@ enum Type
 @export_category("Movement")
 @export var character_movement: Pawn2D_CharacterMovement
 
+@export_category("AI")
+@export var bt_player: BTPlayer
+
 @export_category("Audio")
 @export var sound_bank_label: String = "Pawn"
 
@@ -68,9 +71,12 @@ func _ready() -> void:
 			damage_receiver = find_child("*amage*eceiver*") as DamageReceiver
 		if not character_movement:
 			character_movement = find_child("*arachter*ovement*") as Pawn2D_CharacterMovement
+		if not bt_player:
+			bt_player = find_child("???layer") as BTPlayer
 	else:
 		if damage_receiver:
-			damage_receiver.ReceiveLethalDamage.connect(OnReceiveLethalDamage)
+			damage_receiver.receive_damage.connect(_on_receive_damage)
+			damage_receiver.receive_damage_lethal.connect(_on_receive_damage_lethal)
 			
 			assert(damage_receiver.owner_attribute_set)
 			damage_receiver.set_max_health(max_health)
@@ -101,8 +107,11 @@ func DamageArea2D_receive_impulse(in_damage_area: DamageArea2D, in_impulse: Vect
 	else:
 		return false
 
-func OnReceiveLethalDamage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
+func _on_receive_damage_lethal(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
 	handle_died(false)
+
+func _on_receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
+	pass
 
 func kill(in_immediately: bool) -> void:
 	handle_died(in_immediately)
