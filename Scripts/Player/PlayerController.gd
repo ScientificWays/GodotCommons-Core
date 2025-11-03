@@ -83,41 +83,41 @@ func GetControlledPawnLinearVelocity() -> Vector2:
 ##
 ## Inputs
 ##
-var DisableMovementInputs: bool = false
-var DisableTapInputs: bool = false
+var disable_movement_inputs: bool = false
+var disable_tap_inputs: bool = false
 
-var MovementInput: Vector2
+var movement_input: Vector2
 
 func ProcessMovementInputs(in_delta: float) -> void:
 	
-	if DisableMovementInputs or _camera.ShouldBlockMovementInputs():
-		MovementInput = Vector2.ZERO
+	if disable_movement_inputs or _camera.ShouldBlockMovementInputs():
+		movement_input = Vector2.ZERO
 	else:
-		MovementInput = Input.get_vector(&"Left", &"Right", &"Up", &"Down")
+		movement_input = Input.get_vector(&"Left", &"Right", &"Up", &"Down")
 
-func _unhandled_input(InEvent: InputEvent) -> void:
+func _unhandled_input(in_event: InputEvent) -> void:
 	
-	if InEvent is InputEventScreenTouch:
+	if in_event is InputEventScreenTouch:
 		
-		if DisableTapInputs or _camera.ShouldBlockTapInputs():
+		if disable_tap_inputs or _camera.ShouldBlockTapInputs():
 			pass
 		else:
-			HandleTapInput(InEvent.position, InEvent.is_released())
+			handle_tap_input(in_event.position, in_event.is_released())
 		get_viewport().set_input_as_handled()
 		
-	elif InEvent.is_action_pressed(&"1"):
+	elif in_event.is_action_pressed(&"1"):
 		HandleNumberInput(1)
 		get_viewport().set_input_as_handled()
 		
-	elif InEvent.is_action_pressed(&"2"):
+	elif in_event.is_action_pressed(&"2"):
 		HandleNumberInput(2)
 		get_viewport().set_input_as_handled()
 		
-	elif InEvent.is_action_pressed(&"3"):
+	elif in_event.is_action_pressed(&"3"):
 		HandleNumberInput(3)
 		get_viewport().set_input_as_handled()
 		
-	elif InEvent.is_action_pressed(&"LeaveBarrel"):
+	elif in_event.is_action_pressed(&"LeaveBarrel"):
 		HandleLeaveBarrelInput()
 		get_viewport().set_input_as_handled()
 		
@@ -126,7 +126,7 @@ var TapInputCallableArray: Array[Callable] = []
 
 signal TapInputHandled(InScreenPosition: Vector2, InGlobalPosition: Vector2, InReleased: bool, InConsumedByPawn: bool)
 
-func HandleTapInput(InScreenPosition: Vector2, InReleased: bool) -> void:
+func handle_tap_input(InScreenPosition: Vector2, InReleased: bool) -> void:
 	
 	var GlobalPosition := get_viewport().get_canvas_transform().affine_inverse() * InScreenPosition
 	#DamageNumberUI.spawn(GlobalPosition + Vector2(randf_range(-10.0, 10.0), 0.0), 1)

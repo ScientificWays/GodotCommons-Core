@@ -24,20 +24,20 @@ func _ready() -> void:
 var RestartEnableTicksMs: int = 0
 var ScreenTouchWasPressed: bool = false
 
-func _input(InEvent: InputEvent) -> void:
+func _input(in_event: InputEvent) -> void:
 	
-	if Time.get_ticks_msec() > RestartEnableTicksMs and not InEvent.is_echo():
+	if Time.get_ticks_msec() > RestartEnableTicksMs and not in_event.is_echo():
 		
 		if PlatformGlobals_Class.IsPC():
-			if InEvent.is_action_pressed(&"Restart"):
+			if in_event.is_action_pressed(&"Restart"):
 				pass
 			else:
 				return
-		elif InEvent is InputEventScreenTouch:
-			if InEvent.is_released() and ScreenTouchWasPressed:
+		elif in_event is InputEventScreenTouch:
+			if in_event.is_released() and ScreenTouchWasPressed:
 				pass
 			else:
-				ScreenTouchWasPressed = InEvent.is_pressed()
+				ScreenTouchWasPressed = in_event.is_pressed()
 				return
 		else:
 			return

@@ -94,8 +94,8 @@ func IsPointInsideControlArea(InPoint: Vector2, InControl: Control) -> bool:
 	var y: bool = InPoint.y >= InControl.global_position.y and InPoint.y <= InControl.global_position.y + (InControl.size.y * InControl.get_global_transform_with_canvas().get_scale().y)
 	return x and y
 
-func is_left_mouse_button_press_event(InEvent: InputEvent) -> bool:
-	return (InEvent is InputEventMouseButton) and InEvent.is_pressed() and (InEvent.button_index == MouseButton.MOUSE_BUTTON_LEFT)
+func is_left_mouse_button_press_event(in_event: InputEvent) -> bool:
+	return (in_event is InputEventMouseButton) and in_event.is_pressed() and (in_event.button_index == MouseButton.MOUSE_BUTTON_LEFT)
 
 signal BombStockPreferenceChanged()
 

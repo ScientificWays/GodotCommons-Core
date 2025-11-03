@@ -26,11 +26,16 @@ func get_current_data() -> DialogueData:
 
 func begin_sequence() -> void:
 	
+	assert(not has_started())
+	
 	was_finished = false
 	current_index = 0
 	
 	UIGlobals.request_cancel_dialogue.connect(_on_cancelled)
 	UIGlobals.request_dialogue_sequence.emit(self)
+
+func has_started() -> bool:
+	return current_index > -1
 
 func _on_cancelled() -> void:
 	handle_finished()

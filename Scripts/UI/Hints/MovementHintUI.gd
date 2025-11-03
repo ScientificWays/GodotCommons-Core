@@ -62,7 +62,7 @@ func _process(in_delta: float) -> void:
 	if display_time_left <= 0.0:
 		return
 	
-	var movement_input := owner_hud.owner_player_controller.MovementInput
+	var movement_input := owner_hud.owner_player_controller.movement_input
 	
 	if movement_input.is_zero_approx():
 		KeysTextureRect.texture = NoneTexture

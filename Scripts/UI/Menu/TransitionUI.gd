@@ -14,16 +14,16 @@ func _ready() -> void:
 	set_process_input(false)
 	ContinueLabel.SetInstantLerpVisible(false)
 
-func _input(InEvent: InputEvent) -> void:
+func _input(in_event: InputEvent) -> void:
 	
-	if not InEvent.is_echo():
+	if not in_event.is_echo():
 		
 		if PlatformGlobals_Class.IsPC():
-			if InEvent.is_action_pressed(&"Continue"):
+			if in_event.is_action_pressed(&"Continue"):
 				pass
 			else:
 				return
-		elif InEvent is InputEventScreenTouch:
+		elif in_event is InputEventScreenTouch:
 			pass
 		else:
 			return

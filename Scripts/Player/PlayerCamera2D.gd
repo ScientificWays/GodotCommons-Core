@@ -125,7 +125,7 @@ func ResetZoom() -> void:
 func GetMovementZoomMul() -> float:
 	
 	if owner_player_controller.GetControlledPawnLinearVelocity().length() > 64.0 \
-	and not owner_player_controller.MovementInput.is_zero_approx():
+	and not owner_player_controller.movement_input.is_zero_approx():
 		return 0.9
 	else:
 		return 1.0

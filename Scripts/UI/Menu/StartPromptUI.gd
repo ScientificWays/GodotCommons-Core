@@ -20,20 +20,20 @@ func _ready() -> void:
 	StartLabel.SetInstantLerpVisible(false)
 	GameGlobals.spawn_one_shot_timer_for(self, ShowStartLabel, 1.0)
 
-func _input(InEvent: InputEvent) -> void:
+func _input(in_event: InputEvent) -> void:
 	
 	if Time.get_ticks_msec() < StartEnableTicksMs:
 		return
 	
-	if InEvent.is_echo():
+	if in_event.is_echo():
 		return
 	
 	if PlatformGlobals_Class.IsPC():
-		if InEvent.is_action_pressed(&"Continue"):
+		if in_event.is_action_pressed(&"Continue"):
 			pass
 		else:
 			return
-	elif InEvent is InputEventScreenTouch:
+	elif in_event is InputEventScreenTouch:
 		pass
 	else:
 		return

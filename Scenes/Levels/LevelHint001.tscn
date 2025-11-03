@@ -5,9 +5,9 @@
 [sub_resource type="LabelSettings" id="LabelSettings_eq6sr"]
 
 [node name="LevelHint" type="Marker2D" node_paths=PackedStringArray("label")]
+z_index = 5
 script = ExtResource("1_m4msj")
 label = NodePath("Label")
-label_text = "Hint"
 label_settings = SubResource("LabelSettings_eq6sr")
 
 [node name="Label" type="Label" parent="."]

@@ -2,6 +2,8 @@
 extends LevelHint2D
 class_name PawnSpawner2D
 
+const init_pawn_method_name: StringName = &"PawnSpawner2D_init_pawn"
+
 @export_category("Pawn")
 @export var weighted_variants: Dictionary[PackedScene, float]
 @export var deferred_spawn: bool = true
@@ -30,6 +32,8 @@ func try_spawn() -> bool:
 		return false
 	
 	new_pawn.position = position
+	if new_pawn.has_method(init_pawn_method_name):
+		new_pawn.call(init_pawn_method_name, self, new_pawn)
 	
 	if deferred_spawn:
 		add_sibling.call_deferred(new_pawn)
@@ -37,5 +41,5 @@ func try_spawn() -> bool:
 		add_sibling(new_pawn)
 	
 	spawned.emit()
-	spawned_verbose.emit()
+	spawned_verbose.emit(new_pawn)
 	return true
