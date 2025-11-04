@@ -25,7 +25,7 @@ func _ready() -> void:
 
 func _gui_input(in_event: InputEvent) -> void:
 	
-	if in_event is InputEventScreenTouch:
+	if in_event is InputEventScreenTouch and in_event.is_pressed():
 		
 		if animation_player.is_playing() and \
 			animation_player.current_animation == display_animation_name:

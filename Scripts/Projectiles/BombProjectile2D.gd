@@ -44,10 +44,9 @@ func _ready() -> void:
 	if data.should_detonate_on_receive_damage:
 		
 		var damage_receiver := DamageReceiver.try_get_from(self)
-		if not damage_receiver:
-			damage_receiver = DamageReceiver.new()
-			damage_receiver.owner_body_2d = self
-			add_child(damage_receiver)
+		assert(damage_receiver)
+		assert(damage_receiver.owner_attribute_set)
+		
 		damage_receiver.receive_damage.connect(_handle_detonate_on_receive_damage)
 	
 	data.handle_post_init(self)

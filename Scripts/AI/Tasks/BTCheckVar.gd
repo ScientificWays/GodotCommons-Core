@@ -25,7 +25,7 @@ func _tick(in_delta: float) -> Status:
 		check_cooldown_time_left = check_cooldown_time
 	
 	var variable_value := blackboard.get_var(variable, null, false)
-	#print("check ", check_type, " for ", variable_value, " and ", value, " result ", LimboUtility.perform_check(check_type, variable_value, value))
+	#print(variable, " check ", check_type, " for ", variable_value, " and ", value, " result ", LimboUtility.perform_check(check_type, variable_value, value))
 	if LimboUtility.perform_check(check_type, variable_value, value):
 		var child_task := get_child(0)
 		return child_task.execute(in_delta)

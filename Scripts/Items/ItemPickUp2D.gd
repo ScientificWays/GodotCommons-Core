@@ -20,7 +20,7 @@ var block_pick_up_counter: int = 0
 var freeze_counter: int = 0:
 	set(in_counter):
 		freeze_counter = in_counter
-		freeze = freeze_counter > 0
+		freeze = (freeze_counter > 0)
 
 signal pick_up_begin(in_target: Node)
 signal pick_up_fail(in_target: Node)
@@ -39,8 +39,17 @@ func _ready() -> void:
 func _on_target_entered(in_target: Node2D) -> void:
 	try_pick_up(in_target)
 
+var can_pick_up_extra_checks: Array[Callable]
+
 func can_pick_up(in_target: Node) -> bool:
-	return block_pick_up_counter <= 0 and item_data.can_pick_up(in_target)
+	
+	if (block_pick_up_counter > 0) or not item_data.can_pick_up(in_target):
+		return false
+	
+	for sample_check: Callable in can_pick_up_extra_checks:
+		if not sample_check.call(in_target):
+			return false
+	return true
 
 func try_pick_up(in_target: Node) -> bool:
 	
