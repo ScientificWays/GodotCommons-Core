@@ -16,6 +16,12 @@ class_name ItemPickUp2D
 @export_category("Explosions")
 @export var explosion_impulse_mul: float = 0.12
 
+var block_pick_up_counter: int = 0
+var freeze_counter: int = 0:
+	set(in_counter):
+		freeze_counter = in_counter
+		freeze = freeze_counter > 0
+
 signal pick_up_begin(in_target: Node)
 signal pick_up_fail(in_target: Node)
 signal pick_up_success(in_target: Node)
@@ -34,7 +40,7 @@ func _on_target_entered(in_target: Node2D) -> void:
 	try_pick_up(in_target)
 
 func can_pick_up(in_target: Node) -> bool:
-	return item_data.can_pick_up(in_target)
+	return block_pick_up_counter <= 0 and item_data.can_pick_up(in_target)
 
 func try_pick_up(in_target: Node) -> bool:
 	

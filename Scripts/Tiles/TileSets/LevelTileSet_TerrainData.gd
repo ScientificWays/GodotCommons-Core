@@ -47,4 +47,4 @@ func get_random_debris_id_or_null(in_random_fraction: float = randf()) -> int:
 	if randf() > debris_probability:
 		return -1
 	
-	return debris_ids[GameGlobals_Class.ArrayGetRandomIndexWeighted(debris_weights, in_random_fraction)]
+	return debris_ids[GameGlobals_Class.array_get_random_index_weighted(debris_weights, in_random_fraction)]

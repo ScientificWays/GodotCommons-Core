@@ -158,7 +158,7 @@ static func ArrayRemoveDuplicates(InArray: Array):
 		UniqueElementsDictionary[SampleElement] = true
 	InArray.assign(UniqueElementsDictionary.keys())
 
-static func ArrayGetRandomIndexWeighted(InWeightArray: Array[float], InRandomFraction: float = randf()) -> int:
+static func array_get_random_index_weighted(InWeightArray: Array[float], InRandomFraction: float = randf()) -> int:
 	
 	var WeightSum: float = 0.0
 	
@@ -173,9 +173,9 @@ static func ArrayGetRandomIndexWeighted(InWeightArray: Array[float], InRandomFra
 			return SampleIndex
 	
 	if InRandomFraction > 1.0 or InRandomFraction < 0.0:
-		OS.alert("ArrayGetRandomIndexWeighted() bad InRandomFraction \"%s!\"" % InRandomFraction)
+		OS.alert("array_get_random_index_weighted() bad InRandomFraction \"%s!\"" % InRandomFraction)
 	if InWeightArray.is_empty():
-		OS.alert("ArrayGetRandomIndexWeighted() InWeightArray is empty!")
+		OS.alert("array_get_random_index_weighted() InWeightArray is empty!")
 	assert(false)
 	return -1
 

@@ -26,6 +26,8 @@ const DamageType_Fall: int = 64
 @export var SpawnDamageImmunityDuration: float = 0.0
 @export var PostDamageImmunityDuration: float = 0.0
 
+@export var ignore_damage: bool = false
+
 var LastDamage: float
 var LastDamageTime: float
 var LastDamageSource: Node
@@ -93,11 +95,14 @@ func IsDamageLethal(in_damage: float) -> bool:
 
 func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> bool:
 	
+	if ignore_damage:
+		return false
+	
 	var CurrentTime := Time.get_unix_time_from_system()
 	if not in_should_ignore_immunity_time and CurrentTime < DamageImmunityEndTime:
 		return false
 	else:
-		return InDamageType & DamageImmunityMask == 0
+		return (InDamageType & DamageImmunityMask) == 0
 
 func AdjustReceivedDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> float:
 	return in_damage

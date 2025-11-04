@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://b75q7f0db1eob"]
 
-[ext_resource type="Script" uid="uid://cds2u061ni1mr" path="res://addons/GodotCommons-Core/Scripts/Levels/PawnSpawner2D.gd" id="1_o8huq"]
+[ext_resource type="Script" uid="uid://cds2u061ni1mr" path="res://addons/GodotCommons-Core/Scripts/Levels/SceneSpawner2D.gd" id="1_o8huq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_o8huq"]
 resource_local_to_scene = true
 
-[node name="PawnSpawner" type="Marker2D" node_paths=PackedStringArray("label")]
+[node name="SceneSpawner" type="Marker2D" node_paths=PackedStringArray("label")]
 script = ExtResource("1_o8huq")
 label = NodePath("Label")
 label_text = "Pawn
@@ -25,8 +25,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
-text = "Pawn
-Spawner"
+text = "Spawner"
 label_settings = SubResource("LabelSettings_o8huq")
 horizontal_alignment = 1
 vertical_alignment = 1

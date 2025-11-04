@@ -19,7 +19,7 @@ func try_spawn_wave(init_pawn_callable: Callable, in_pool_max: float = -1.0) -> 
 	
 	while wave_size > 0.0:
 		
-		var sample_pawn_scene := pawns[GameGlobals_Class.ArrayGetRandomIndexWeighted(pawns_weights)]
+		var sample_pawn_scene := pawns[GameGlobals_Class.array_get_random_index_weighted(pawns_weights)]
 		var sample_pawn := sample_pawn_scene.instantiate() as Pawn2D
 		
 		init_pawn_callable.call(sample_pawn)

@@ -7,7 +7,7 @@ var _campaign_data: CampaignData
 var _game_state: GameState
 var _level: LevelBase2D
 
-signal load_scene_finished
+signal load_scene_finished()
 
 func _enter_tree() -> void:
 	if _game_state:
