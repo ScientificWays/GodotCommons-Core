@@ -65,8 +65,8 @@ func _physics_process(in_delta: float) -> void:
 	
 	if is_instance_valid(OverrideTarget):
 		global_position = OverrideTarget.global_position
-	elif is_instance_valid(owner_player_controller.ControlledPawn):
-		global_position = owner_player_controller.ControlledPawn.global_position
+	elif is_instance_valid(owner_player_controller.controlled_pawn):
+		global_position = owner_player_controller.controlled_pawn.global_position
 	
 	var FinalZoom := PendingZoom * GetMovementZoomMul()
 	

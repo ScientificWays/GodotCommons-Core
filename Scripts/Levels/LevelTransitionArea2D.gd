@@ -13,3 +13,12 @@ func _ready() -> void:
 
 func _on_target_entered(in_target: Node2D):
 	change_level.trigger_transition()
+
+func is_enabled() -> bool:
+	return monitoring
+
+func enable() -> void:
+	monitoring = true
+
+func disable() -> void:
+	monitoring = false

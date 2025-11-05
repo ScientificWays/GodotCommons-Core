@@ -9,8 +9,8 @@ enum TileDirection
 	Invalid = 0
 }
 
-func IsOppositeTileDirections(InA: TileDirection, InB: TileDirection) -> bool:
-	return InA == -InB
+func IsOppositeTileDirections(in_a: TileDirection, in_b: TileDirection) -> bool:
+	return in_a == -in_b
 
 func GetTileDirection(in_layer: TileMapLayer, InCoords: Vector2) -> int:
 	

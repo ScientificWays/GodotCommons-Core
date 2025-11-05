@@ -42,18 +42,18 @@ func _exit_tree() -> void:
 ##
 ## Pawn
 ##
-var ControlledPawn: Pawn2D:
+var controlled_pawn: Pawn2D:
 	set(InPawn):
 		
-		if is_instance_valid(ControlledPawn):
-			ControlledPawn.tree_exited.disconnect(OnControlledPawnTreeExited)
-			ControlledPawn.remove_meta(PlayerControllerMeta)
+		if is_instance_valid(controlled_pawn):
+			controlled_pawn.tree_exited.disconnect(OnControlledPawnTreeExited)
+			controlled_pawn.remove_meta(PlayerControllerMeta)
 		
-		ControlledPawn = InPawn
+		controlled_pawn = InPawn
 		
-		if is_instance_valid(ControlledPawn):
-			ControlledPawn.tree_exited.connect(OnControlledPawnTreeExited)
-			ControlledPawn.set_meta(PlayerControllerMeta, self)
+		if is_instance_valid(controlled_pawn):
+			controlled_pawn.tree_exited.connect(OnControlledPawnTreeExited)
+			controlled_pawn.set_meta(PlayerControllerMeta, self)
 		
 		controlled_pawn_changed.emit()
 
@@ -61,23 +61,23 @@ signal controlled_pawn_changed()
 signal ControlledPawnTeleport(in_reset_camera: bool)
 
 func OnControlledPawnTreeExited() -> void:
-	ControlledPawn = null
+	controlled_pawn = null
 
 func Restart() -> void:
 	
 	var _level := WorldGlobals._level as LevelBase2D
 	var RestartPosition := _level.get_player_spawn_position(self)
 	
-	ControlledPawn = default_pawn_scene.instantiate()
-	ControlledPawn.position = RestartPosition
-	_level.add_child.call_deferred(ControlledPawn)
+	controlled_pawn = default_pawn_scene.instantiate()
+	controlled_pawn.position = RestartPosition
+	_level.add_child.call_deferred(controlled_pawn)
 	
-	ControlledPawn._Controller = self
+	controlled_pawn._Controller = self
 
 func GetControlledPawnLinearVelocity() -> Vector2:
 	
-	if is_instance_valid(ControlledPawn):
-		return PhysicsServer2D.body_get_state(ControlledPawn.get_rid(), PhysicsServer2D.BODY_STATE_LINEAR_VELOCITY)
+	if is_instance_valid(controlled_pawn):
+		return PhysicsServer2D.body_get_state(controlled_pawn.get_rid(), PhysicsServer2D.BODY_STATE_LINEAR_VELOCITY)
 	return Vector2.ZERO
 
 ##
@@ -134,8 +134,8 @@ func handle_tap_input(InScreenPosition: Vector2, InReleased: bool) -> void:
 	var ConsumedByPawn := false
 	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, InReleased ]):
 		pass
-	elif is_instance_valid(ControlledPawn):
-		ControlledPawn.ControllerTapInput.emit(InScreenPosition, GlobalPosition, InReleased)
+	elif is_instance_valid(controlled_pawn):
+		controlled_pawn.ControllerTapInput.emit(InScreenPosition, GlobalPosition, InReleased)
 		ConsumedByPawn = true
 	
 	TapInputHandled.emit(InScreenPosition, GlobalPosition, InReleased, ConsumedByPawn)

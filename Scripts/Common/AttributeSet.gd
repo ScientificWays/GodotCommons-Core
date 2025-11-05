@@ -55,12 +55,12 @@ func has_attribute(in_name: StringName):
 func get_attribute_current_value(in_name: StringName) -> float:
 	if has_attribute(in_name):
 		return attributes_dictionary[in_name].current_value
-	return PawnGlobals.GetDefaultAttributeValue(in_name)
+	return PawnGlobals.get_default_attribute_value(in_name)
 
 func get_or_init_attribute(in_name: StringName) -> AttributeData:
 	
 	if not attributes_dictionary.has(in_name):
-		attributes_dictionary[in_name] = AttributeData.new(PawnGlobals.GetDefaultAttributeValue(in_name))
+		attributes_dictionary[in_name] = AttributeData.new(PawnGlobals.get_default_attribute_value(in_name))
 	return attributes_dictionary[in_name]
 
 func set_attribute_base_value(in_name: StringName, in_value: float) -> void:

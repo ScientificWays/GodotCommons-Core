@@ -15,7 +15,7 @@ func _ready() -> void:
 	
 	var base_radius := shape.radius as float
 	var RadiusMul := owner_explosion._radius / base_radius;
-	shape = ResourceGlobals.GetOrCreateScaledShape(shape, RadiusMul, 0.0)
+	shape = ResourceGlobals.get_or_create_scaled_shape(shape, RadiusMul, 0.0)
 	
 	var impact_sound_event := owner_explosion.data.load_impact_sound_event()
 	if impact_sound_event:

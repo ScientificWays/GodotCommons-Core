@@ -42,11 +42,11 @@ var OwnerAttributeData: AttributeSet.AttributeData:
 
 func OnOwnerPawnChanged() -> void:
 	
-	var NewPawn := owner_hud.owner_player_controller.ControlledPawn
-	if is_instance_valid(NewPawn) and not NewPawn.is_node_ready():
-		await NewPawn.ready
+	var new_pawn := owner_hud.owner_player_controller.controlled_pawn
+	if is_instance_valid(new_pawn) and not new_pawn.is_node_ready():
+		await new_pawn.ready
 	
-	var OwnerAS := AttributeSet.try_get_from(NewPawn)
+	var OwnerAS := AttributeSet.try_get_from(new_pawn)
 	OwnerAttributeData = OwnerAS.get_or_init_attribute(AttributeName) if OwnerAS else null
 
 func OnOwnerCurrentValueChanged(in_old_value: float, in_new_value: float) -> void:

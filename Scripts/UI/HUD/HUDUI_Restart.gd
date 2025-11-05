@@ -46,7 +46,7 @@ func _input(in_event: InputEvent) -> void:
 
 func _on_owner_controlled_pawn_changed():
 	
-	if is_instance_valid(owner_hud.owner_player_controller.ControlledPawn):
+	if is_instance_valid(owner_hud.owner_player_controller.controlled_pawn):
 		HideRestart()
 	else:
 		ShowRestart()

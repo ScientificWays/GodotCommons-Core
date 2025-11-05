@@ -41,7 +41,7 @@ func _ready() -> void:
 		if not default_player_spawn:
 			default_player_spawn = find_child("*layer*pawn*") as Node2D
 			if not default_player_spawn:
-				default_player_spawn = find_child("*layer*art*") as Node2D
+				default_player_spawn = find_child("*layer*awn*") as Node2D
 		if not level_navigation_region:
 			level_navigation_region = find_child("*avigation*") as LevelNavigationRegion2D
 	else:

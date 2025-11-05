@@ -156,6 +156,18 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	
 	var sample_spawn := spawn_points_queue.pop_back()
 	in_pawn.position = sample_spawn.position
+	
+	in_pawn.ready.connect(func():
+		
+		var perception := Pawn2D_Perception.try_get_from(in_pawn)
+		perception.on_sight_shape_size_mul *= 4.0
+		
+		if current_target is Node2D:
+			perception.force_add_sight_target(current_target)
+		elif current_target is PlayerController:
+			perception.force_add_sight_target(current_target.controlled_pawn)
+	)
+	
 	sample_spawn.add_sibling.call_deferred(in_pawn)
 	
 	in_pawn.damage_receiver.receive_damage_lethal.connect(_on_pawn_receive_lethal_damage.bind(in_pawn))

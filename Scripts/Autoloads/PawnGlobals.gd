@@ -1,19 +1,10 @@
 extends Node
 class_name PawnGlobals_Class
 
-@export var CommonModifiersDictionary: Dictionary = {
-	#&"Giant": preload("res://Creatures/Content/Common/Modifiers/Giant.tres"),
-	#&"Tiny": preload("res://Creatures/Content/Common/Modifiers/Tiny.tres"),
-	#&"Crystal": preload("res://Creatures/Content/Common/Modifiers/Crystal.tres"),
-	#&"Blue": preload("res://Creatures/Content/Common/Modifiers/Blue.tres"),
-	#&"Red": preload("res://Creatures/Content/Common/Modifiers/Red.tres"),
-}
+const team_none: StringName = &"None"
+const team_player: StringName = &"Player"
 
-const TeamNone: StringName = &"None"
-const TeamPlayer: StringName = &"Player"
-const TeamCrystal: StringName = &"Crystal"
-
-var DefaultAttributeValues: Dictionary = {
+var default_attribute_values: Dictionary = {
 	Health = -1.0,
 	MaxHealth = -1.0,
 	MoveSpeedMul = 1.0,
@@ -26,14 +17,16 @@ var DefaultAttributeValues: Dictionary = {
 
 signal init_pawn_healthbar(in_pawn: Pawn2D)
 
-func GetDefaultAttributeValue(in_name: StringName) -> float:
-	return DefaultAttributeValues.get(in_name, 0.0)
+signal pawn_died(in_pawn: Pawn2D, in_immediately: bool)
+
+func get_default_attribute_value(in_name: StringName) -> float:
+	return default_attribute_values.get(in_name, 0.0)
 
 func _ready():
 	pass
 
-func AreTeamsHostile(InA: StringName, InB: StringName) -> bool:
+func are_teams_hostile(in_a: StringName, in_b: StringName) -> bool:
 	
-	if InA == TeamNone or InB == TeamNone:
+	if in_a == team_none or in_b == team_none:
 		return false
-	return InA != InB
+	return in_a != in_b

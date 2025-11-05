@@ -18,7 +18,7 @@ var Pools: Dictionary = {}
 #			pending_resources.erase(sample_pending)
 #			break
 
-func UtilGetOrCreate(InKeyArray: Array, InInitCallable: Callable) -> Variant:
+func util_get_or_create(InKeyArray: Array, InInitCallable: Callable) -> Variant:
 	
 	if not Pools.has(InKeyArray[0]) or not is_instance_valid(Pools[InKeyArray[0]]):
 		Pools[InKeyArray[0]] = {}
@@ -43,15 +43,15 @@ func UtilGetOrCreate(InKeyArray: Array, InInitCallable: Callable) -> Variant:
 #	return ResourceLoader.load_threaded_get(in_path)
 
 ## Shapes
-func GetOrCreateScaledShape(InShape: Shape2D, InMul: float, InAdditive: float) -> Shape2D:
-	assert(InShape)
-	return UtilGetOrCreate([ InShape, InMul, InAdditive ], UtilInitScaledShape)
+func get_or_create_scaled_shape(in_shape: Shape2D, in_mul: float, in_additive: float) -> Shape2D:
+	assert(in_shape)
+	return util_get_or_create([ in_shape, in_mul, in_additive ], util_init_scaled_shape)
 
-func UtilInitScaledShape(InCurrentKeyArray: Array) -> Shape2D:
+func util_init_scaled_shape(in_current_key_array: Array) -> Shape2D:
 	
-	var OutShape := InCurrentKeyArray[0] as Shape2D
-	var Mul := InCurrentKeyArray[1] as float
-	var Additive := InCurrentKeyArray[2] as float
+	var OutShape := in_current_key_array[0] as Shape2D
+	var Mul := in_current_key_array[1] as float
+	var Additive := in_current_key_array[2] as float
 	
 	if Mul != 1.0 or Additive != 0.0:
 		
@@ -69,35 +69,35 @@ func UtilInitScaledShape(InCurrentKeyArray: Array) -> Shape2D:
 
 ## Particles
 func GetOrCreatePPMWithRadius(InBasePPM: ParticleProcessMaterial, in_radius: float) -> ParticleProcessMaterial:
-	return UtilGetOrCreate([ InBasePPM, in_radius ], UtilInitPPMWithRadius)
+	return util_get_or_create([ InBasePPM, in_radius ], UtilInitPPMWithRadius)
 
-func UtilInitPPMWithRadius(InCurrentKeyArray: Array) -> ParticleProcessMaterial:
-	var OutPPM = InCurrentKeyArray[0].duplicate() as ParticleProcessMaterial
-	OutPPM.emission_sphere_radius = InCurrentKeyArray[1]
+func UtilInitPPMWithRadius(in_current_key_array: Array) -> ParticleProcessMaterial:
+	var OutPPM = in_current_key_array[0].duplicate() as ParticleProcessMaterial
+	OutPPM.emission_sphere_radius = in_current_key_array[1]
 	return OutPPM
 
 ## Emissive
 var EmissiveMaterialBase: ShaderMaterial = preload("res://addons/GodotCommons-Core/Assets/Common/EmissiveMaterial.tres")
 
-func GetOrCreateEmissiveMaterial(InMask: Texture2D, InMul: float) -> ShaderMaterial:
-	return UtilGetOrCreate([ EmissiveMaterialBase, InMask, InMul ], UtilInitEmissiveMaterial)
+func GetOrCreateEmissiveMaterial(InMask: Texture2D, in_mul: float) -> ShaderMaterial:
+	return util_get_or_create([ EmissiveMaterialBase, InMask, in_mul ], UtilInitEmissiveMaterial)
 
-func UtilInitEmissiveMaterial(InCurrentKeyArray: Array) -> ShaderMaterial:
-	var NewMaterial := InCurrentKeyArray[0].duplicate() as ShaderMaterial
-	NewMaterial.set_shader_parameter(&"Mask", InCurrentKeyArray[1])
-	NewMaterial.set_shader_parameter(&"Mul", InCurrentKeyArray[2])
+func UtilInitEmissiveMaterial(in_current_key_array: Array) -> ShaderMaterial:
+	var NewMaterial := in_current_key_array[0].duplicate() as ShaderMaterial
+	NewMaterial.set_shader_parameter(&"Mask", in_current_key_array[1])
+	NewMaterial.set_shader_parameter(&"Mul", in_current_key_array[2])
 	return NewMaterial
 
 ## Outline
 var OutlineMaterialBase: ShaderMaterial = preload("res://addons/GodotCommons-Core/Assets/Common/OutlineMaterial.tres")
 
 func GetOrCreateOutlineMaterial(in_color: Color) -> ShaderMaterial:
-	return UtilGetOrCreate([ OutlineMaterialBase, in_color ], UtilInitOutlineMaterial)
+	return util_get_or_create([ OutlineMaterialBase, in_color ], UtilInitOutlineMaterial)
 
-func UtilInitOutlineMaterial(InCurrentKeyArray: Array) -> ShaderMaterial:
+func UtilInitOutlineMaterial(in_current_key_array: Array) -> ShaderMaterial:
 	
-	var NewMaterial := InCurrentKeyArray[0].duplicate() as ShaderMaterial
-	var NewMaterialColor := InCurrentKeyArray[1] as Color
+	var NewMaterial := in_current_key_array[0].duplicate() as ShaderMaterial
+	var NewMaterialColor := in_current_key_array[1] as Color
 	NewMaterial.set_shader_parameter(&"Color", NewMaterialColor)
 	NewMaterial.set_shader_parameter(&"AlphaMul", NewMaterialColor.a)
 	return NewMaterial
@@ -106,22 +106,22 @@ func UtilInitOutlineMaterial(InCurrentKeyArray: Array) -> ShaderMaterial:
 var SoundBankByLabelDictionary: Dictionary
 
 func GetOrCreateSoundBankAndAppendEvent(InLabel: String, InData: SoundEventResource) -> SoundBank:
-	return UtilGetOrCreate([ InLabel, InData ], UtilInitSoundBankWithEvent)
+	return util_get_or_create([ InLabel, InData ], UtilInitSoundBankWithEvent)
 
-func UtilInitSoundBankWithEvent(InCurrentKeyArray: Array) -> SoundBank:
+func UtilInitSoundBankWithEvent(in_current_key_array: Array) -> SoundBank:
 	
 	var SampleBank: SoundBank = null
 	
-	if SoundBankByLabelDictionary.has(InCurrentKeyArray[0]):
-		SampleBank = SoundBankByLabelDictionary.get(InCurrentKeyArray[0])
-		SampleBank.events.append(InCurrentKeyArray[1])
+	if SoundBankByLabelDictionary.has(in_current_key_array[0]):
+		SampleBank = SoundBankByLabelDictionary.get(in_current_key_array[0])
+		SampleBank.events.append(in_current_key_array[1])
 	else:
 		SampleBank = SoundBank.new()
-		SampleBank.label = InCurrentKeyArray[0]
-		SampleBank.events = [InCurrentKeyArray[1]]
+		SampleBank.label = in_current_key_array[0]
+		SampleBank.events = [in_current_key_array[1]]
 		SampleBank.tree_exited.connect(UtilDeInitSoundBank.bind(SampleBank))
 		WorldGlobals._level.add_child(SampleBank)
-		SoundBankByLabelDictionary[InCurrentKeyArray[0]] = SampleBank
+		SoundBankByLabelDictionary[in_current_key_array[0]] = SampleBank
 	SoundManager._event_table[SampleBank.label]["events"] = SoundManager._create_events(SampleBank.events)
 	return SampleBank
 
@@ -133,22 +133,22 @@ func UtilDeInitSoundBank(InSoundBank: SoundBank) -> void:
 var MusicBankByLabelDictionary: Dictionary
 
 func GetOrCreateMusicBankAndAppendEvent(InLabel: String, InData: MusicTrackResource) -> MusicBank:
-	return UtilGetOrCreate([ InLabel, InData ], UtilInitMusicBankWithEvent)
+	return util_get_or_create([ InLabel, InData ], UtilInitMusicBankWithEvent)
 
-func UtilInitMusicBankWithEvent(InCurrentKeyArray: Array) -> MusicBank:
+func UtilInitMusicBankWithEvent(in_current_key_array: Array) -> MusicBank:
 	
 	var SampleBank: MusicBank = null
 	
-	if MusicBankByLabelDictionary.has(InCurrentKeyArray[0]):
-		SampleBank = MusicBankByLabelDictionary.get(InCurrentKeyArray[0])
-		SampleBank.tracks.append(InCurrentKeyArray[1])
+	if MusicBankByLabelDictionary.has(in_current_key_array[0]):
+		SampleBank = MusicBankByLabelDictionary.get(in_current_key_array[0])
+		SampleBank.tracks.append(in_current_key_array[1])
 	else:
 		SampleBank = MusicBank.new()
-		SampleBank.label = InCurrentKeyArray[0]
-		SampleBank.tracks = [InCurrentKeyArray[1]]
+		SampleBank.label = in_current_key_array[0]
+		SampleBank.tracks = [in_current_key_array[1]]
 		SampleBank.tree_exited.connect(UtilDeInitMusicBank.bind(SampleBank))
 		WorldGlobals.add_child(SampleBank)
-		MusicBankByLabelDictionary[InCurrentKeyArray[0]] = SampleBank
+		MusicBankByLabelDictionary[in_current_key_array[0]] = SampleBank
 	MusicManager._music_table[SampleBank.label]["tracks"] = MusicManager._create_tracks(SampleBank.tracks)
 	return SampleBank
 

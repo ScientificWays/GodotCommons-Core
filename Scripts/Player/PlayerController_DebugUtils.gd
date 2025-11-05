@@ -43,15 +43,15 @@ func _unhandled_input(in_event: InputEvent) -> void:
 
 func DebugTeleport() -> void:
 	
-	if not is_instance_valid(owner_player_controller.ControlledPawn):
+	if not is_instance_valid(owner_player_controller.controlled_pawn):
 		return
 	
-	var TeleportPosition := owner_player_controller.ControlledPawn.get_global_mouse_position()
-	owner_player_controller.ControlledPawn.teleport_to(TeleportPosition)
+	var TeleportPosition := owner_player_controller.controlled_pawn.get_global_mouse_position()
+	owner_player_controller.controlled_pawn.teleport_to(TeleportPosition)
 
 func DebugSelfDamage() -> void:
 	
-	var damage_receiver := DamageReceiver.try_get_from(owner_player_controller.ControlledPawn)
+	var damage_receiver := DamageReceiver.try_get_from(owner_player_controller.controlled_pawn)
 	damage_receiver.try_receive_damage(self, owner_player_controller, 10.0, DamageReceiver.DamageType_MeleeHit, true)
 
 func debug_fade() -> void:

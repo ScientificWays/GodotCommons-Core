@@ -18,7 +18,18 @@ class_name SpawnerTrigger2D
 
 var is_active: bool = false
 var delay_timer: Timer
-var pool_left: float = 0.0
+
+signal pool_depleted()
+var pool_left: float = 0.0:
+	set(in_left):
+		
+		pool_left = in_left
+		
+		if pool_left <= 0.0:
+			pool_depleted.emit()
+
+signal activated()
+signal deactivated()
 
 func _ready() -> void:
 	
@@ -58,6 +69,8 @@ func activate() -> void:
 	
 	trigger_delay_timer(true)
 	is_active = true
+	
+	activated.emit()
 
 func deactivate() -> void:
 	
@@ -66,6 +79,8 @@ func deactivate() -> void:
 	
 	stop_delay_timer()
 	is_active = false
+	
+	deactivated.emit()
 
 func trigger_delay_timer(in_initial: bool) -> void:
 	

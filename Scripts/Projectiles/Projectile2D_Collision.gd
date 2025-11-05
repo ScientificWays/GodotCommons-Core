@@ -14,7 +14,7 @@ func _ready() -> void:
 	var size_mul := _owner.data.get_size_mul(_owner._level)
 	var scaled_size_mul := size_mul * _owner._power
 	
-	shape = ResourceGlobals.GetOrCreateScaledShape(shape, scaled_size_mul, 0.0)
+	shape = ResourceGlobals.get_or_create_scaled_shape(shape, scaled_size_mul, 0.0)
 	position *= scaled_size_mul
 	
 	var monitor_hits_start_delay := get_meta(monitor_hits_start_delay_meta, 0.0) as float

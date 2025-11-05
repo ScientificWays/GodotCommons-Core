@@ -35,6 +35,7 @@ enum Type
 
 @export_category("AI")
 @export var bt_player: BTPlayer
+#@export var chase_target_var: StringName = &"chase_target"
 
 @export_category("Audio")
 @export var sound_bank_label: String = "Pawn"
@@ -62,6 +63,8 @@ signal died(in_immediately: bool)
 
 var is_alive: bool = true
 
+var modifiers: Array[Pawn2D_ModifierBase]
+
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
@@ -72,7 +75,9 @@ func _ready() -> void:
 		if not character_movement:
 			character_movement = find_child("*arachter*ovement*") as Pawn2D_CharacterMovement
 		if not bt_player:
-			bt_player = find_child("???layer") as BTPlayer
+			bt_player = find_child("???layer") as BTPlayer ## "for BTPlayer-like"
+		if not bt_player:
+			bt_player = find_child("??_?layer") as BTPlayer ## "for bt_player-like"
 	else:
 		if damage_receiver:
 			damage_receiver.receive_damage.connect(_on_receive_damage)
@@ -123,6 +128,7 @@ func handle_died(in_immediately: bool) -> void:
 	
 	is_alive = false
 	died.emit(in_immediately)
+	PawnGlobals.pawn_died.emit(self, in_immediately)
 	
 	if LethalDamageSoundEvent:
 		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, LethalDamageSoundEvent, global_position)
@@ -138,3 +144,14 @@ func teleport_to(in_position: Vector2, in_rotation: float = global_rotation, in_
 	if _Controller:
 		_Controller.ControlledPawnTeleport.emit(in_reset_camera)
 	return true
+
+#func override_chase_target(in_target: Node2D) -> void:
+#	
+#	assert(bt_player)
+#	bt_player.blackboard.set_var(chase_target_var, in_target)
+
+func has_modifier(in_modifier_script: Script) -> bool:
+	for sample_modifier: Pawn2D_ModifierBase in modifiers:
+		if sample_modifier.get_script() == in_modifier_script:
+			return true
+	return false
