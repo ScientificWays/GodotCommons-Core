@@ -28,6 +28,9 @@ class_name Debris2D
 @export var break_particles_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Dust/Dust001_CPU.tscn"
 @export var break_particles_min_max: Vector2i = Vector2i(0, 2)
 
+@export_category("Tile Map Layer")
+@export var local_occupation_coords: Array[Vector2i] = [ Vector2i.ZERO ]
+
 var break_current_stage: int = 0
 
 func _ready() -> void:
@@ -48,6 +51,19 @@ func _ready() -> void:
 		body_entered.connect(_on_target_entered)
 		
 		_update_sprite()
+	
+	var procedurals_layer := get_parent() as LevelTileMapLayer_Procedurals
+	if procedurals_layer:
+		var this_cell := procedurals_layer.local_to_map(position)
+		for sample_occupation: Vector2i in local_occupation_coords:
+			
+			var occupied_cell := this_cell + sample_occupation
+			if procedurals_layer.is_cell_occupied(occupied_cell) or procedurals_layer.wall_layer.has_cell(occupied_cell):
+				procedurals_layer.erase_cell(this_cell)
+				queue_free()
+				return
+			else:
+				procedurals_layer.mark_cell_occupied(occupied_cell, self)
 
 func _update_sprite() -> void:
 	

@@ -5,6 +5,9 @@ class_name LevelTileSet_Procedurals
 @export_category("Debris")
 @export var debris_source_id: int = 0
 
+@export_category("Foliage")
+@export var foliage_source_id: int = 1
+
 @export_category("Fog")
 @export var fog_source_id: int = 2
 @export var fog_grid_size_base: Vector2i = Vector2i(6, 3)

@@ -39,12 +39,24 @@ func load_gib_scene() -> PackedScene:
 @export var debris_ids: Array[int]
 @export var debris_weights: Array[float]
 
-@export_category("Fog")
-@export var fog_density_mul: float = 1.0
-
 func get_random_debris_id_or_null(in_random_fraction: float = randf()) -> int:
 	
 	if randf() > debris_probability:
 		return -1
 	
 	return debris_ids[GameGlobals_Class.array_get_random_index_weighted(debris_weights, in_random_fraction)]
+
+@export_category("Foliage")
+@export var foliage_probability: float = 0.0
+@export var foliage_ids: Array[int]
+@export var foliage_weights: Array[float]
+
+func get_random_foliage_id_or_null(in_random_fraction: float = randf()) -> int:
+	
+	if randf() > foliage_probability:
+		return -1
+	
+	return foliage_ids[GameGlobals_Class.array_get_random_index_weighted(foliage_weights, in_random_fraction)]
+
+@export_category("Fog")
+@export var fog_density_mul: float = 1.0
