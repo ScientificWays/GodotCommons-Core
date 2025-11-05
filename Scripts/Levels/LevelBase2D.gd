@@ -13,8 +13,8 @@ class_name LevelBase2D
 @export_category("Music")
 @export var LevelMusicBankLabel: String = "Music"
 @export var LevelMusic: MusicTrackResource
-@export var StartLevelMusicOnBeginPlay: bool = true
-@export var StopLevelMusicOnEndPlay: bool = true
+@export var start_default_level_music_on_begin_play: bool = true
+@export var stop_level_music_on_end_play: bool = true
 
 @export_category("Hints")
 @export var trigger_tutorial_hints: bool = false
@@ -25,15 +25,13 @@ class_name LevelBase2D
 @export_category("Tiles")
 @export var floor_tile_map_layer: LevelTileMapLayer
 
-#const ForceMoodMeta: StringName = &"ForceMood"
-
-const WorldBankLabel: String = "World"
-#const MusicBankLabel: String = "Music"
-
 var _y_sorted: Node2D
 
 #var enter_tree_ticks_ms: int = 0
 #var begin_play_ticks_ms: int = 0
+
+signal post_begin_play()
+signal post_end_play()
 
 func _ready() -> void:
 	
@@ -95,23 +93,93 @@ func _handle_begin_play() -> void:
 	if RespawnAllPlayersOnBeginPlay:
 		PlayerGlobals.RespawnAllPlayers()
 	
-	if StartLevelMusicOnBeginPlay and not AudioGlobals.IsMusicPlaying(LevelMusicBankLabel, LevelMusic):
-		AudioGlobals.TryPlayMusic(LevelMusicBankLabel, LevelMusic)
+	if start_default_level_music_on_begin_play:
+		start_default_level_music()
 	
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STARTED)
-	#begin_play_ticks_ms = Time.get_ticks_msec()
+	post_begin_play.emit()
 	
+	#begin_play_ticks_ms = Time.get_ticks_msec()
 	#print("Level _handle_begin_play() from enter_tree_ticks_ms to begin_play_ticks_ms took %d ms" % (begin_play_ticks_ms - enter_tree_ticks_ms))
 
 func _handle_end_play() -> void:
 	
-	if StopLevelMusicOnEndPlay and MusicManager._is_playing_music():
+	if stop_level_music_on_end_play and MusicManager._is_playing_music():
 		MusicManager.stop(1.0)
 	
 	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STOPPED)
+	post_end_play.emit()
 
 func get_player_spawn_position(in_player: PlayerController) -> Vector2:
 	return default_player_spawn.global_position if default_player_spawn else Vector2.ZERO
+
+##
+## Music
+##
+var default_level_music_started: bool = false
+
+func start_default_level_music() -> void:
+	default_level_music_started = true
+
+func update_level_music() -> void:
+	
+	var current_music: MusicTrackResource = null
+	
+	if default_level_music_started:
+		current_music = LevelMusic
+	
+	if override_level_music and not override_level_music_source_ids.is_empty():
+		current_music = override_level_music
+	
+	if current_music:
+		if not AudioGlobals.IsMusicPlaying(LevelMusicBankLabel, current_music):
+			AudioGlobals.TryPlayMusic(LevelMusicBankLabel, current_music)
+	else:
+		AudioGlobals.TryStopMusic()
+
+var override_level_music: MusicTrackResource
+var override_level_music_source_ids: Array[int]
+
+func set_override_level_music(in_music: MusicTrackResource) -> void:
+	
+	override_level_music = in_music
+	
+	update_level_music()
+
+func reset_override_level_music() -> void:
+	
+	override_level_music = null
+	override_level_music_source_ids.clear()
+	
+	update_level_music()
+
+func add_override_level_music_source(in_source: Node2D, in_update_delay: float = 0.0) -> void:
+	
+	in_source.tree_exited.connect(remove_override_level_music_source.bind(in_source))
+	
+	var source_id := in_source.get_instance_id()
+	
+	if in_update_delay > 0.0:
+		await GameGlobals.spawn_await_timer(self, in_update_delay).timeout
+	
+	assert(not override_level_music_source_ids.has(source_id))
+	override_level_music_source_ids.append(source_id)
+	
+	update_level_music()
+
+func remove_override_level_music_source(in_source: Node2D, in_update_delay: float = 0.0) -> void:
+	
+	in_source.tree_exited.disconnect(remove_override_level_music_source.bind(in_source))
+	
+	var source_id := in_source.get_instance_id()
+	
+	if in_update_delay > 0.0:
+		await GameGlobals.spawn_await_timer(self, in_update_delay).timeout
+	
+	assert(override_level_music_source_ids.has(source_id))
+	override_level_music_source_ids.erase(source_id)
+	
+	update_level_music()
 
 ##
 ## Tile Floor

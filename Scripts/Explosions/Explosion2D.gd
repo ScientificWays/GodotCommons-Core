@@ -30,7 +30,11 @@ static func spawn(in_global_position: Vector2, in_data: ExplosionData2D, in_leve
 
 var data: ExplosionData2D
 
-var _instigator: Node
+var _instigator: Node:
+	get():
+		if is_instance_valid(_instigator): return _instigator
+		return null
+
 var _level: int = 0
 
 var should_ignore_instigator: bool = false

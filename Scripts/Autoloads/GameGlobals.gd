@@ -78,7 +78,7 @@ func spawn_one_shot_timer_for(in_owner: Node, in_callable: Callable, in_delay: f
 			out_timer.timeout.connect(out_timer.queue_free)
 		
 		out_timer.wait_time = in_delay
-		in_owner.add_child(out_timer)
+		in_owner.add_child.call_deferred(out_timer)
 		return out_timer
 	in_callable.call()
 	return null
@@ -91,7 +91,7 @@ func spawn_regular_timer_for(in_owner: Node, in_callable: Callable, in_delay: fl
 	out_timer.one_shot = false
 	out_timer.timeout.connect(in_callable)
 	out_timer.wait_time = in_delay
-	in_owner.add_child(out_timer)
+	in_owner.add_child.call_deferred(out_timer)
 	return out_timer
 
 func spawn_await_timer(in_owner: Node, in_delay: float) -> Timer:
@@ -101,7 +101,7 @@ func spawn_await_timer(in_owner: Node, in_delay: float) -> Timer:
 	out_timer.autostart = true
 	out_timer.one_shot = false
 	out_timer.wait_time = in_delay
-	in_owner.add_child(out_timer)
+	in_owner.add_child.call_deferred(out_timer)
 	return out_timer
 
 func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable: Callable, in_delay: float, InTimerParent: Node):

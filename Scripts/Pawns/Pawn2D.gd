@@ -39,6 +39,11 @@ enum Type
 
 @export_category("Audio")
 @export var sound_bank_label: String = "Pawn"
+@export var override_level_music: MusicTrackResource
+@export var set_override_level_music_on_spawn: bool = true
+@export var reset_override_level_music_on_death: bool = false
+@export var add_override_level_music_delay: float = 0.0
+@export var remove_override_level_music_delay: float = 0.0
 
 var _level: int = 0
 
@@ -89,6 +94,19 @@ func _ready() -> void:
 		
 		if init_health_bar:
 			PawnGlobals.init_pawn_healthbar.emit.call_deferred(self)
+		
+		if override_level_music and set_override_level_music_on_spawn:
+			WorldGlobals._level.set_override_level_music(override_level_music)
+
+func _enter_tree() -> void:
+	if not Engine.is_editor_hint():
+		if override_level_music:
+			WorldGlobals._level.add_override_level_music_source(self, add_override_level_music_delay)
+
+func _exit_tree() -> void:
+	if not Engine.is_editor_hint():
+		if override_level_music:
+			WorldGlobals._level.remove_override_level_music_source(self, remove_override_level_music_delay)
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level
@@ -125,6 +143,9 @@ func handle_died(in_immediately: bool) -> void:
 	
 	if not is_alive:
 		return
+	
+	if override_level_music and reset_override_level_music_on_death:
+		WorldGlobals._level.reset_override_level_music()
 	
 	is_alive = false
 	died.emit(in_immediately)

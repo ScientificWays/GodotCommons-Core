@@ -47,6 +47,12 @@ func handle_level_ready():
 
 signal on_begin_play()
 
+func has_began_playing() -> bool:
+	return _state == STATE_BEGAN_PLAYING
+
+func has_ended_playing() -> bool:
+	return _state == STATE_ENDED_PLAYING
+
 func begin_play():
 	
 	_state = STATE_BEGAN_PLAYING

@@ -58,6 +58,9 @@ func _ready() -> void:
 			
 			var max_health_data := owner_attribute_set.get_or_init_attribute(AttributeSet.MaxHealth)
 			max_health_data.current_value_changed.connect(_on_owner_max_health_changed)
+			
+			owner_pawn.add_override_level_music_delay = maxf(owner_pawn.remove_override_level_music_delay, 1.5)
+			owner_pawn.remove_override_level_music_delay = maxf(owner_pawn.remove_override_level_music_delay, 2.0)
 		else:
 			queue_free()
 
