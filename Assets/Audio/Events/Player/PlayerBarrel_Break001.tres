@@ -7,6 +7,4 @@
 script = ExtResource("1_nemjx")
 name = "Break"
 bus = "World"
-volume = -6.0
-pitch = 1.0
 streams = Array[AudioStream]([ExtResource("2_wtr48")])

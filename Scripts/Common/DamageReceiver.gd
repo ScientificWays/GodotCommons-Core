@@ -43,8 +43,8 @@ func TryGetLastDamagePosition(InPrioritiseInstigator: bool) -> Vector2:
 		return get_parent().global_position
 	return Vector2.ZERO
 
-var DamageImmunityEndTime: float = 0.0
-var ReceivedLethalDamage: bool = false
+var damage_immunity_end_time: float = 0.0
+var received_lethal_damage: bool = false
 
 signal receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
 signal receive_damage_lethal(in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
@@ -61,7 +61,7 @@ func _ready():
 		#assert(owner_attribute_set)
 		
 		if SpawnDamageImmunityDuration > 0.0:
-			DamageImmunityEndTime = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
+			damage_immunity_end_time = Time.get_unix_time_from_system() + SpawnDamageImmunityDuration
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
@@ -99,18 +99,18 @@ func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, In
 		return false
 	
 	var CurrentTime := Time.get_unix_time_from_system()
-	if not in_should_ignore_immunity_time and CurrentTime < DamageImmunityEndTime:
+	if not in_should_ignore_immunity_time and CurrentTime < damage_immunity_end_time:
 		return false
 	else:
 		return (InDamageType & DamageImmunityMask) == 0
 
-func AdjustReceivedDamage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> float:
+func adjust_received_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> float:
 	return in_damage
 
 ## Can be called in physics frame in BarrelPawn.HandleImpactWith()
 func try_receive_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> bool:
 	
-	in_damage = AdjustReceivedDamage(in_source, in_instigator, in_damage, InDamageType, in_should_ignore_immunity_time)
+	in_damage = adjust_received_damage(in_source, in_instigator, in_damage, InDamageType, in_should_ignore_immunity_time)
 	assert(in_damage > 0.0)
 	
 	if CanReceiveDamage(in_source, in_instigator, in_damage, InDamageType, in_should_ignore_immunity_time):
@@ -120,12 +120,12 @@ func try_receive_damage(in_source: Node, in_instigator: Node, in_damage: float, 
 		LastDamageSource = in_source
 		LastDamageInstigator = in_instigator
 		LastDamageType = InDamageType
-		DamageImmunityEndTime = LastDamageTime + PostDamageImmunityDuration
+		damage_immunity_end_time = LastDamageTime + PostDamageImmunityDuration
 		
 		HandleReceivedDamage(in_should_ignore_immunity_time)
 		receive_damage.emit(in_source, in_damage, in_should_ignore_immunity_time)
 		
-		if ReceivedLethalDamage:
+		if received_lethal_damage:
 			receive_damage_lethal.emit(in_source, in_damage, in_should_ignore_immunity_time)
 		GameGlobals.post_damage_receiver_receive_damage.emit(self, in_source, in_damage, in_should_ignore_immunity_time)
 		return true
@@ -144,7 +144,7 @@ func CalcLastDamageImpulse2D() -> Vector2:
 	return FromSourceDirection * LastDamage * DamageToImpulseMagnitudeMul
 
 func HandleReceivedDamage(in_ignored_immunity_time: bool):
-	ReceivedLethalDamage = IsDamageLethal(LastDamage)
+	received_lethal_damage = IsDamageLethal(LastDamage)
 	set_health(get_health() - LastDamage)
 
 func AddDamageImmunityTo(InMask: int):

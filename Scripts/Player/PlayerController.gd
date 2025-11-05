@@ -72,7 +72,7 @@ func Restart() -> void:
 	controlled_pawn.position = RestartPosition
 	_level.add_child.call_deferred(controlled_pawn)
 	
-	controlled_pawn._Controller = self
+	controlled_pawn.controller = self
 
 func GetControlledPawnLinearVelocity() -> Vector2:
 	
@@ -135,7 +135,7 @@ func handle_tap_input(InScreenPosition: Vector2, InReleased: bool) -> void:
 	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, InReleased ]):
 		pass
 	elif is_instance_valid(controlled_pawn):
-		controlled_pawn.ControllerTapInput.emit(InScreenPosition, GlobalPosition, InReleased)
+		controlled_pawn.controller_tap_input.emit(InScreenPosition, GlobalPosition, InReleased)
 		ConsumedByPawn = true
 	
 	TapInputHandled.emit(InScreenPosition, GlobalPosition, InReleased, ConsumedByPawn)

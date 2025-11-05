@@ -21,10 +21,10 @@ func _unhandled_input(in_event: InputEvent) -> void:
 	if in_event.is_action_pressed(&"DebugAction"):
 		#DebugSpawnCreature()
 		#DebugSpawnExplosion()
-		DebugTeleport()
+		debug_teleport()
 		#DebugSpawnItem()
 		#DebugApplyStatusEffect()
-		#DebugSelfDamage()
+		#debug_self_damage()
 		#DebugUnlock()
 		#DebugToggleVisibility()
 		#debug_fade()
@@ -41,7 +41,7 @@ func _unhandled_input(in_event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		
 
-func DebugTeleport() -> void:
+func debug_teleport() -> void:
 	
 	if not is_instance_valid(owner_player_controller.controlled_pawn):
 		return
@@ -49,7 +49,7 @@ func DebugTeleport() -> void:
 	var TeleportPosition := owner_player_controller.controlled_pawn.get_global_mouse_position()
 	owner_player_controller.controlled_pawn.teleport_to(TeleportPosition)
 
-func DebugSelfDamage() -> void:
+func debug_self_damage() -> void:
 	
 	var damage_receiver := DamageReceiver.try_get_from(owner_player_controller.controlled_pawn)
 	damage_receiver.try_receive_damage(self, owner_player_controller, 10.0, DamageReceiver.DamageType_MeleeHit, true)

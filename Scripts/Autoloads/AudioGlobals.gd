@@ -130,15 +130,15 @@ func handle_ui_volume_changed():
 	AudioServer.set_bus_volume_db(UIBusIndex, linear_to_db(ui_volume_linear))
 	ui_volume_linear_changed.emit()
 
-func try_play_sound_varied_at_global_position(in_bank_label: String, in_sound_event: SoundEventResource, in_position: Vector2, in_pitch: float, in_volume: float) -> bool:
+func try_play_sound_varied_at_global_position(in_bank_label: String, in_sound_event: SoundEventResource, in_position: Vector2, in_pitch: float, in_volume_db: float) -> bool:
 	
 	if not SoundManager.has_loaded:
 		#await SoundManager.loaded
 		return false
 	
 	if in_sound_event:
-		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(in_bank_label, in_sound_event)
-		SoundManager.play_at_position_varied(in_bank_label, in_sound_event.name, in_position, in_pitch, in_volume)
+		ResourceGlobals.get_or_create_sound_bank_and_append_event(in_bank_label, in_sound_event)
+		SoundManager.play_at_position_varied(in_bank_label, in_sound_event.name, in_position, in_pitch, in_volume_db)
 		return true
 	else:
 		return false
@@ -150,7 +150,7 @@ func try_play_sound_at_global_position(in_bank_label: String, in_sound_event: So
 		return false
 	
 	if in_sound_event:
-		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(in_bank_label, in_sound_event)
+		ResourceGlobals.get_or_create_sound_bank_and_append_event(in_bank_label, in_sound_event)
 		SoundManager.play_at_position(in_bank_label, in_sound_event.name, in_position)
 		return true
 	else:
@@ -163,7 +163,7 @@ func try_play_sound_on_node_at_global_position(in_bank_label: String, in_sound_e
 		return null
 	
 	if in_sound_event:
-		ResourceGlobals.GetOrCreateSoundBankAndAppendEvent(in_bank_label, in_sound_event)
+		ResourceGlobals.get_or_create_sound_bank_and_append_event(in_bank_label, in_sound_event)
 		var out_instance := SoundManager.instance_on_node(in_bank_label, in_sound_event.name, in_node)
 		out_instance.trigger()
 		return out_instance

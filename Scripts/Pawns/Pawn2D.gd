@@ -26,7 +26,8 @@ enum Type
 
 @export_category("Damage")
 @export var damage_receiver: DamageReceiver
-@export var LethalDamageSoundEvent: SoundEventResource
+@export var damage_sound_event: SoundEventResource
+@export var lethal_damage_sound_event: SoundEventResource
 @export var die_on_lethal_damage: bool = true
 @export var remove_on_death: bool = true
 
@@ -47,22 +48,22 @@ enum Type
 
 var _level: int = 0
 
-var _LastController: PlayerController
-var _Controller: PlayerController:
+var last_controller: PlayerController
+var controller: PlayerController:
 	set(InController):
 		
-		_Controller = InController
+		controller = InController
 		
-		if is_instance_valid(_Controller):
-			set_meta(PlayerController.PlayerControllerMeta, _Controller)
-			_LastController = _Controller
+		if is_instance_valid(controller):
+			set_meta(PlayerController.PlayerControllerMeta, controller)
+			last_controller = controller
 		else:
 			remove_meta(PlayerController.PlayerControllerMeta)
 		
-		ControllerChanged.emit()
+		controller_changed.emit()
 
-signal ControllerChanged()
-signal ControllerTapInput(InTapScreenPosition: Vector2, InTapGlobalPosition: Vector2)
+signal controller_changed()
+signal controller_tap_input(in_tap_screen_position: Vector2, in_tap_global_position: Vector2)
 
 signal died(in_immediately: bool)
 
@@ -134,7 +135,8 @@ func _on_receive_damage_lethal(in_source: Node, in_damage: float, in_ignored_imm
 	handle_died(false)
 
 func _on_receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
-	pass
+	if not damage_receiver.received_lethal_damage and damage_sound_event:
+		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, damage_sound_event, global_position)
 
 func kill(in_immediately: bool) -> void:
 	handle_died(in_immediately)
@@ -151,8 +153,9 @@ func handle_died(in_immediately: bool) -> void:
 	died.emit(in_immediately)
 	PawnGlobals.pawn_died.emit(self, in_immediately)
 	
-	if LethalDamageSoundEvent:
-		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, LethalDamageSoundEvent, global_position)
+	var sound_event := lethal_damage_sound_event if lethal_damage_sound_event else damage_sound_event
+	if sound_event:
+		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, sound_event, global_position)
 	
 	if remove_on_death:
 		queue_free()
@@ -162,8 +165,8 @@ func teleport_to(in_position: Vector2, in_rotation: float = global_rotation, in_
 	var new_transform := Transform2D(in_rotation, in_position)
 	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, new_transform)
 	
-	if _Controller:
-		_Controller.ControlledPawnTeleport.emit(in_reset_camera)
+	if controller:
+		controller.ControlledPawnTeleport.emit(in_reset_camera)
 	return true
 
 #func override_chase_target(in_target: Node2D) -> void:

@@ -28,10 +28,10 @@ func _ready() -> void:
 		
 		if damage < 0.1:
 			decimals_num = 2
-			damage -= fmod(damage, 0.01)
+			damage = ceilf(damage * 100.0) * 0.01
 		else:
 			decimals_num = 1
-			damage -= fmod(damage, 0.1)
+			damage = ceilf(damage * 10.0) * 0.1
 	else:
 		damage = ceilf(damage)
 	

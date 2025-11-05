@@ -105,7 +105,7 @@ func UtilInitOutlineMaterial(in_current_key_array: Array) -> ShaderMaterial:
 ## SoundBanks
 var SoundBankByLabelDictionary: Dictionary
 
-func GetOrCreateSoundBankAndAppendEvent(InLabel: String, InData: SoundEventResource) -> SoundBank:
+func get_or_create_sound_bank_and_append_event(InLabel: String, InData: SoundEventResource) -> SoundBank:
 	return util_get_or_create([ InLabel, InData ], UtilInitSoundBankWithEvent)
 
 func UtilInitSoundBankWithEvent(in_current_key_array: Array) -> SoundBank:

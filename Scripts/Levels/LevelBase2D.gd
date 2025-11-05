@@ -120,6 +120,7 @@ var default_level_music_started: bool = false
 
 func start_default_level_music() -> void:
 	default_level_music_started = true
+	update_level_music()
 
 func update_level_music() -> void:
 	

@@ -263,11 +263,15 @@ func UtilHandleCellIgnite(in_cell: Vector2i):
 	IgniteParticlesPivot.SetExpireTime(randf_range(5.0, 10.0))
 	IgniteParticlesPivot.Expired.connect(OnCellIgniteExpired.bind(IgniteParticles, in_cell))
 
-func OnCellIgniteExpired(InIgniteParticles: Node, in_cell: Vector2i):
+func OnCellIgniteExpired(InIgniteParticles: Node, in_cell: Vector2i) -> void:
 	InIgniteParticles.queue_free()
 	UtilHandleCellPostIgnite(in_cell)
 
-func UtilHandleCellPostIgnite(in_cell: Vector2i):
+func UtilHandleCellPostIgnite(in_cell: Vector2i) -> void:
+	
+	if not has_cell(in_cell):
+		return
+	
 	var cell_terrain_data := get_cell_terrain_data(in_cell)
 	BetterTerrain.set_cell(self, in_cell, level_tile_set.get_terrain_id(cell_terrain_data.post_ignite_terrain_name))
 
