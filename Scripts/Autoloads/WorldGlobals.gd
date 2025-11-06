@@ -35,8 +35,9 @@ func load_scene_by_packed(in_packed: PackedScene) -> void:
 	
 	GameGlobals.RemoveAllPauseSources()
 	
-	if get_tree().change_scene_to_packed(in_packed) == OK:
-		await get_tree().scene_changed
+	var tree := get_tree()
+	if tree.change_scene_to_packed(in_packed) == OK:
+		await tree.scene_changed
 	
 	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STOPPED)
 	load_scene_finished.emit()

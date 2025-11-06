@@ -10,7 +10,7 @@ func _ready() -> void:
 ##
 func RespawnAllPlayers() -> void:
 	for SampelPlayer: PlayerController in PlayerArray:
-		SampelPlayer.Restart()
+		SampelPlayer.restart()
 
 ##
 ## Camera

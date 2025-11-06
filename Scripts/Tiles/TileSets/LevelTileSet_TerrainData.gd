@@ -36,27 +36,66 @@ func load_gib_scene() -> PackedScene:
 
 @export_category("Debris")
 @export var debris_probability: float = 0.0
-@export var debris_ids: Array[int]
-@export var debris_weights: Array[float]
+@export var debris_ids_custom_weights: Dictionary[int, float] = {
+	0: 1.0,
+	1: 0.0
+}
 
-func get_random_debris_id_or_null(in_random_fraction: float = randf()) -> int:
+func get_random_debris_id_or_null(in_tile_set: LevelTileSet_Procedurals, in_random_fraction: float = randf()) -> int:
 	
 	if randf() > debris_probability:
 		return -1
-	
-	return debris_ids[GameGlobals_Class.array_get_random_index_weighted(debris_weights, in_random_fraction)]
+	return get_random_id_or_null(in_tile_set.get_debris_scenes_collection(), in_random_fraction, debris_ids_custom_weights)
 
 @export_category("Foliage")
 @export var foliage_probability: float = 0.0
-@export var foliage_ids: Array[int]
-@export var foliage_weights: Array[float]
+@export var foliage_ids_custom_weights: Dictionary[int, float] = {
+	0: 0.5,
+	1: 1.0,
+	2: 0.5,
+	3: 1.0,
+}
 
-func get_random_foliage_id_or_null(in_random_fraction: float = randf()) -> int:
+func get_random_foliage_id_or_null(in_tile_set: LevelTileSet_Procedurals, in_random_fraction: float = randf()) -> int:
 	
 	if randf() > foliage_probability:
 		return -1
-	
-	return foliage_ids[GameGlobals_Class.array_get_random_index_weighted(foliage_weights, in_random_fraction)]
+	return get_random_id_or_null(in_tile_set.get_foliage_scenes_collection(), in_random_fraction, foliage_ids_custom_weights)
 
 @export_category("Fog")
 @export var fog_density_mul: float = 1.0
+
+var per_scene_collection_cache: Dictionary[TileSetScenesCollectionSource, Dictionary]
+
+func reset_random_id_cache() -> void:
+	per_scene_collection_cache.clear()
+
+func get_random_id_or_null(in_scenes_collection: TileSetScenesCollectionSource, in_random_fraction: float, in_default_weights: Dictionary[int, float]) -> int:
+	
+	var ids: Array[int]
+	var weights: Array[float]
+	
+	if per_scene_collection_cache.has(in_scenes_collection):
+		ids = per_scene_collection_cache[in_scenes_collection].ids
+		weights = per_scene_collection_cache[in_scenes_collection].weights
+	else:
+		var final_weights: Dictionary[int, float] = in_default_weights.duplicate()
+		
+		for sample_index: int in range(in_scenes_collection.get_scene_tiles_count()):
+			
+			var sample_id := in_scenes_collection.get_scene_tile_id(sample_index)
+			if final_weights.has(sample_id):
+				continue
+			else:
+				final_weights[sample_id] = 1.0
+		
+		for sample_id: int in final_weights.keys():
+			if not in_scenes_collection.has_scene_tile_id(sample_id):
+				final_weights.erase(sample_id)
+		
+		ids = final_weights.keys()
+		weights = final_weights.values()
+		
+		per_scene_collection_cache[in_scenes_collection] = { "ids": ids, "weights": weights }
+		#print(name, per_scene_collection_cache[in_scenes_collection])
+	return ids[GameGlobals_Class.array_get_random_index_weighted(weights, in_random_fraction)]

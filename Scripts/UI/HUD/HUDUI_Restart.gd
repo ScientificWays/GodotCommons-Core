@@ -42,7 +42,7 @@ func _input(in_event: InputEvent) -> void:
 		else:
 			return
 		
-		owner_hud.owner_player_controller.Restart()
+		owner_hud.owner_player_controller.restart()
 
 func _on_owner_controlled_pawn_changed():
 	

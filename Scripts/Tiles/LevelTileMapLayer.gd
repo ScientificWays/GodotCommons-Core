@@ -23,6 +23,8 @@ const InvalidCell: Vector2i = Vector2i.MAX
 
 @export var TilePlaceCheckShape: Shape2D
 
+@export var other_receiver_layers: Array[TileMapLayer]
+
 var level_tile_set: LevelTileSet_Auto_Base:
 	get(): return tile_set
 
@@ -54,12 +56,12 @@ func _ready():
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
 		GameGlobals.pre_explosion_impact.connect(HandleExplosionImpact)
-		GameGlobals.PostBarrelRamImpact.connect(HandleBarrelRamImpact)
+		GameGlobals.post_barrel_ram_impact.connect(HandleBarrelRamImpact)
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
 		GameGlobals.pre_explosion_impact.disconnect(HandleExplosionImpact)
-		GameGlobals.PostBarrelRamImpact.disconnect(HandleBarrelRamImpact)
+		GameGlobals.post_barrel_ram_impact.disconnect(HandleBarrelRamImpact)
 
 func _physics_process(in_delta: float):
 	if PendingTilePlaceArray.is_empty():
@@ -92,6 +94,8 @@ func try_regenerate_tile_set() -> bool:
 		assert(generated_tile_set_script)
 		if generated_tile_set_script:
 			tile_set = generated_tile_set_script.new(terrain_data_array)
+			for sample_other_layer: TileMapLayer in other_receiver_layers:
+				sample_other_layer.tile_set = tile_set
 			print("Generated tile_set for ", self)
 			regenerated_tile_set.emit()
 			return true

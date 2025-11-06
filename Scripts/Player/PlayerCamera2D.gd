@@ -144,16 +144,16 @@ func ShouldBlockTapInputs() -> bool:
 ##
 func set_camera_limits(in_center: Vector2, in_extents: Vector2, in_smoothed: bool = true) -> void:
 	
-	limit_enabled = true
-	
 	limit_right = in_center.x + in_extents.x
 	limit_left = in_center.x - in_extents.x
 	limit_top = in_center.y - in_extents.y
 	limit_bottom = in_center.y + in_extents.y
 	
 	limit_smoothed = in_smoothed
+	limit_enabled = true
 	
 	TriggerLag()
 
 func reset_camera_limits() -> void:
 	limit_enabled = false
+	limit_smoothed = false

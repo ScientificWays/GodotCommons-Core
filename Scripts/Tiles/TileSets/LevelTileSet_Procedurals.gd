@@ -5,8 +5,14 @@ class_name LevelTileSet_Procedurals
 @export_category("Debris")
 @export var debris_source_id: int = 0
 
+func get_debris_scenes_collection() -> TileSetScenesCollectionSource:
+	return get_source(debris_source_id)
+
 @export_category("Foliage")
 @export var foliage_source_id: int = 1
+
+func get_foliage_scenes_collection() -> TileSetScenesCollectionSource:
+	return get_source(foliage_source_id)
 
 @export_category("Fog")
 @export var fog_source_id: int = 2

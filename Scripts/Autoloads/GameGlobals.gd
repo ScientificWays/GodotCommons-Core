@@ -6,7 +6,7 @@ class_name GameGlobals_Class
 signal pre_explosion_impact(in_explosionImpact: Explosion2D_Impact)
 signal post_explosion_apply_impulse(in_explosionImpact: Explosion2D_Impact, in_target: Node2D, in_impulse: Vector2, in_offset: Vector2)
 
-signal PostBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll)
+signal post_barrel_ram_impact(InBarrelRoll: BarrelPawn2D_Roll)
 
 signal post_damage_receiver_receive_damage(in_damage_receiver: DamageReceiver, in_source: Node, in_damage: float, in_ignored_immunity_time: bool)
 

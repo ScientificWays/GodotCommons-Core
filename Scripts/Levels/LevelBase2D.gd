@@ -16,9 +16,6 @@ class_name LevelBase2D
 @export var start_default_level_music_on_begin_play: bool = true
 @export var stop_level_music_on_end_play: bool = true
 
-@export_category("Hints")
-@export var trigger_tutorial_hints: bool = false
-
 @export_category("Navigation")
 @export var level_navigation_region: LevelNavigationRegion2D
 
@@ -29,6 +26,8 @@ var _y_sorted: Node2D
 
 #var enter_tree_ticks_ms: int = 0
 #var begin_play_ticks_ms: int = 0
+
+signal post_init_game_state()
 
 signal post_begin_play()
 signal post_end_play()
@@ -52,7 +51,7 @@ func _ready() -> void:
 		UIGlobals.pause_menu_ui.can_be_enabled = true
 		UIGlobals.pause_menu_ui.skip_lerp_visible()
 		
-		_sync_with_game_state()
+		_init_game_state()
 		WorldGlobals._game_state.handle_level_ready()
 		
 		#print(self, " _ready() WorldGlobals._game_state._game_args = ", WorldGlobals._game_state._game_args)
@@ -73,7 +72,7 @@ func _exit_tree() -> void:
 	
 	WorldGlobals._level = null
 
-func _sync_with_game_state() -> void:
+func _init_game_state() -> void:
 	
 	if WorldGlobals._game_state:
 		pass
@@ -87,6 +86,8 @@ func _sync_with_game_state() -> void:
 	assert(WorldGlobals._game_state)
 	WorldGlobals._game_state.on_begin_play.connect(_handle_begin_play)
 	WorldGlobals._game_state.on_end_play.connect(_handle_end_play)
+	
+	post_init_game_state.emit()
 
 func _handle_begin_play() -> void:
 	
@@ -215,10 +216,16 @@ func has_available_tile_floor_extent_at(in_global_position: Vector2, in_extent: 
 func request_nav_update(in_is_on_thread: bool = true):
 	
 	if level_navigation_region:
-		if in_is_on_thread:
-			level_navigation_region.request_update()
+		
+		if Engine.is_editor_hint():
+			if level_navigation_region.is_baking():
+				await level_navigation_region.bake_finished
+			level_navigation_region.bake_navigation_polygon.call_deferred(in_is_on_thread)
 		else:
-			level_navigation_region.bake_navigation_polygon(false)
+			if in_is_on_thread:
+				level_navigation_region.request_update()
+			else:
+				level_navigation_region.bake_navigation_polygon(false)
 
 func get_random_nav_pos_in_radius(in_center: Vector2, in_radius: float) -> Vector2:
 	

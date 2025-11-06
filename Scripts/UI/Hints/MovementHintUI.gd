@@ -4,7 +4,7 @@ class_name MovementHintUI
 const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
 
 @export_category("Owner")
-@export var owner_hud: HUDUI
+var owner_hud: HUDUI
 
 @export_category("Components")
 @export var VHSControl: VHSFX
@@ -22,7 +22,7 @@ const HintFinishedMeta: StringName = &"MovementHintUI_Finished"
 @export var lerp_visible_speed: float = 4.0
 @export var highlight_animation_player: AnimationPlayer
 
-signal Finished()
+signal finished()
 
 var display_time_left: float = 0.0:
 	set(InTime):
@@ -38,11 +38,12 @@ var display_time_left: float = 0.0:
 
 func _ready() -> void:
 	
-	if not WorldGlobals._level.trigger_tutorial_hints \
-	or GameGlobals.get_meta(HintFinishedMeta, false) \
+	if GameGlobals.get_meta(HintFinishedMeta, false) \
 	or not PlatformGlobals_Class.IsPC(true):
 		queue_free()
 		return
+	
+	owner_hud = get_parent().get_parent()
 	
 	assert(owner_hud)
 	assert(KeysTextureRect)
@@ -106,4 +107,4 @@ func HandleFinished():
 	assert(not Engine.is_editor_hint())
 	
 	GameGlobals.set_meta(HintFinishedMeta, true)
-	Finished.emit()
+	finished.emit()

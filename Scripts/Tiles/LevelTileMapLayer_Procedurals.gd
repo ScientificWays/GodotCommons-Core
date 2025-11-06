@@ -13,6 +13,7 @@ class_name LevelTileMapLayer_Procedurals
 @export_category("Layers")
 @export var floor_layer: LevelTileMapLayer
 @export var wall_layer: LevelTileMapLayer
+@export var other_occupation_layers: Array[TileMapLayer]
 
 @export_category("Noise")
 @export var noise_data: Array[LevelTileSet_ProceduralData]
@@ -20,7 +21,11 @@ class_name LevelTileMapLayer_Procedurals
 @export_category("Distances")
 @export var max_distance_to_walls: int = 4
 
+@export_category("Debris")
+@export var override_debris_probability: Dictionary[int, float]
+
 @export_category("Foliage")
+@export var override_foliage_probability: Dictionary[int, float]
 @export var foliage_distance_to_walls_to_density_mul: Curve = preload("res://addons/GodotCommons-Core/Assets/Tiles/DefaultFoliageDensityMul.tres")
 
 @export_category("Fog")
@@ -38,7 +43,7 @@ func _ready():
 			wall_layer = get_parent().find_child("*?all*")
 	
 	wall_layer.regenerated_tile_set.connect(handle_generate)
-	handle_generate()
+	handle_generate.call_deferred()
 
 func _exit_tree() -> void:
 	clear()
@@ -67,7 +72,8 @@ var debug_labels: Array[Label]
 
 func handle_generate() -> void:
 	
-	if not is_node_ready() \
+	if not is_inside_tree() \
+	or not is_node_ready() \
 	or not floor_layer \
 	or not wall_layer \
 	or not wall_layer.is_node_ready():
@@ -79,6 +85,10 @@ func handle_generate() -> void:
 	
 	if not Engine.is_editor_hint():
 		print(name, " handle_generate()")
+	
+	for sample_other_layer: TileMapLayer in other_occupation_layers:
+		for sample_cell: Vector2i in sample_other_layer.get_used_cells():
+			mark_cell_occupied(sample_cell, sample_other_layer)
 	
 	var distance_to_walls: Dictionary[Vector2i, int]
 	
@@ -143,25 +153,27 @@ func handle_generate() -> void:
 		if distance_to_walls.has(sample_cell):
 			var sample_foliage_density := foliage_distance_to_walls_to_density_mul.sample_baked(float(distance_to_walls[sample_cell]))
 			if sample_foliage_density > randf():
-				var sample_foliage_id := terrain_data.get_random_foliage_id_or_null()
-				if sample_foliage_id > 0:
-					set_cell(sample_cell, procedurals_tile_set.foliage_source_id, Vector2i.ZERO, sample_foliage_id)
-					continue
+				var sample_foliage_id := terrain_data.get_random_foliage_id_or_null(procedurals_tile_set)
+				if sample_foliage_id >= 0:
+					if override_foliage_probability.get(sample_foliage_id, 1.0) > randf():
+						set_cell(sample_cell, procedurals_tile_set.foliage_source_id, Vector2i.ZERO, sample_foliage_id)
+						continue
 		
 		## Try set fog
 		if sample_cell % fog_dynamic_grid_size == Vector2i.ZERO:
 			
 			var cell_fog_density := terrain_data.fog_density_mul * fog_density
 			if cell_fog_density > randf():
-				set_cell(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 1)
+				set_cell(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 0)
 				fog_dynamic_grid_size = procedurals_tile_set.get_random_fog_grid_size()
 				continue
 		
 		## Try set debris
-		var sample_debris_id := terrain_data.get_random_debris_id_or_null()
-		if sample_debris_id > 0:
-			set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_debris_id)
-			continue
+		var sample_debris_id := terrain_data.get_random_debris_id_or_null(procedurals_tile_set)
+		if sample_debris_id >= 0:
+			if override_debris_probability.get(sample_debris_id, 1.0) > randf():
+				set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_debris_id)
+				continue
 	
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
@@ -191,6 +203,14 @@ func handle_generate() -> void:
 		BetterTerrain.set_cells(wall_layer, sample_wall_update.cells, sample_wall_update.new_id)
 		BetterTerrain.update_terrain_cells(wall_layer, sample_wall_update.cells, false)
 	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		var tree_current_scene := get_tree().current_scene
+		if tree_current_scene is LevelBase2D:
+			print("tree_current_scene.request_nav_update()")
+			tree_current_scene.request_nav_update()
+	
 	print("handle_generate() took %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
 
 func reset_generate() -> void:
@@ -201,6 +221,9 @@ func reset_generate() -> void:
 	for sample_debug_label: Label in debug_labels:
 		sample_debug_label.queue_free()
 	debug_labels.clear()
+	
+	for sample_terrain_data: LevelTileSet_TerrainData in (floor_layer.terrain_data_array + wall_layer.terrain_data_array):
+		sample_terrain_data.reset_random_id_cache()
 	
 	if wall_layer.level_tile_set:
 		

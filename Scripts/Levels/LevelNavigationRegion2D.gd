@@ -15,6 +15,10 @@ func _ready():
 	bake_finished.connect(_on_bake_finished)
 
 func request_update():
+	
+	if not is_node_ready():
+		await ready
+	
 	if _is_waiting_update_finish:
 		_should_request_update_again = true
 	elif _delayed_update_timer.is_stopped():

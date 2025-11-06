@@ -161,7 +161,7 @@ func apply_impulse_to(in_target: Node2D):
 	
 	var max_impulse := damage * randfn(damage_to_impulse_mul, damage_to_impulse_mul * 0.5)
 	
-	var target_impulse_with_offset := GameGlobals.calc_radial_impulse_with_offset_for_target(in_target, owner_body.global_position, max_impulse, 0.0)
+	var target_impulse_with_offset := GameGlobals.calc_radial_impulse_with_offset_for_target(in_target, owner_body.global_position if owner_body else global_position, max_impulse, 0.0)
 	var target_impulse := Vector2(target_impulse_with_offset.x, target_impulse_with_offset.y)
 	var impulse_offset := Vector2(target_impulse_with_offset.z, target_impulse_with_offset.w)
 	

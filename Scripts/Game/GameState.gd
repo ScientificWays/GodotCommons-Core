@@ -46,6 +46,9 @@ func handle_level_ready():
 		begin_play()
 
 signal on_begin_play()
+signal on_end_play()
+
+signal on_init_new_local_player(in_player: PlayerController)
 
 func has_began_playing() -> bool:
 	return _state == STATE_BEGAN_PLAYING
@@ -65,8 +68,6 @@ func begin_play():
 	
 	on_begin_play.emit()
 
-signal on_end_play()
-
 func end_play():
 	
 	_state = STATE_ENDED_PLAYING
@@ -83,6 +84,7 @@ func InitNewLocalPlayer() -> PlayerController:
 	
 	var NewLocalPlayer = _game_mode.PlayerControllerScene.instantiate() as PlayerController
 	WorldGlobals._level.add_child(NewLocalPlayer)
+	on_init_new_local_player.emit(NewLocalPlayer)
 	return NewLocalPlayer
 
 #func GetNewCreatureModifierNames(InCreature: Creature) -> Array[StringName]:

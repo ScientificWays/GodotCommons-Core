@@ -72,7 +72,10 @@ var collision_polygon_points: PackedVector2Array = [
 	Vector2(-8.0, 8.0),
 ]
 
-func _init(in_data_array: Array[LevelTileSet_TerrainData]) -> void:
+func _init(in_data_array: Array[LevelTileSet_TerrainData] = []) -> void:
+	
+	if in_data_array.is_empty():
+		return
 	
 	#var performance_start := Time.get_ticks_usec()
 	

@@ -46,13 +46,13 @@ var controlled_pawn: Pawn2D:
 	set(InPawn):
 		
 		if is_instance_valid(controlled_pawn):
-			controlled_pawn.tree_exited.disconnect(OnControlledPawnTreeExited)
+			controlled_pawn.tree_exited.disconnect(_on_controlled_pawn_tree_exited)
 			controlled_pawn.remove_meta(PlayerControllerMeta)
 		
 		controlled_pawn = InPawn
 		
 		if is_instance_valid(controlled_pawn):
-			controlled_pawn.tree_exited.connect(OnControlledPawnTreeExited)
+			controlled_pawn.tree_exited.connect(_on_controlled_pawn_tree_exited)
 			controlled_pawn.set_meta(PlayerControllerMeta, self)
 		
 		controlled_pawn_changed.emit()
@@ -60,19 +60,19 @@ var controlled_pawn: Pawn2D:
 signal controlled_pawn_changed()
 signal ControlledPawnTeleport(in_reset_camera: bool)
 
-func OnControlledPawnTreeExited() -> void:
+func _on_controlled_pawn_tree_exited() -> void:
 	controlled_pawn = null
 
-func Restart() -> void:
+func restart() -> void:
 	
 	var _level := WorldGlobals._level as LevelBase2D
 	var RestartPosition := _level.get_player_spawn_position(self)
 	
 	controlled_pawn = default_pawn_scene.instantiate()
 	controlled_pawn.position = RestartPosition
-	_level.add_child.call_deferred(controlled_pawn)
-	
 	controlled_pawn.controller = self
+	
+	_level._y_sorted.add_child.call_deferred(controlled_pawn)
 
 func GetControlledPawnLinearVelocity() -> Vector2:
 	
