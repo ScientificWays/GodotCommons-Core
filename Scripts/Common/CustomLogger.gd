@@ -48,7 +48,7 @@ func _log_error(
 	#var filestream = FileAccess.open("user://error_log.txt", FileAccess.WRITE)
 	#filestream.store_string(error_message)
 	#filestream.close()
-
+	
 	Output.print(error_message)
 	
 	_mutex.unlock()

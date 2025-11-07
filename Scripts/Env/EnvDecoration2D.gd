@@ -119,9 +119,10 @@ func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 		if remove_on_last_break_stage:
 			queue_free()
 		elif disable_collision_on_last_break_stage:
-			static_body.queue_free()
+			if is_instance_valid(static_body):
+				static_body.queue_free()
 		
-		if static_body:
+		if is_instance_valid(static_body):
 			WorldGlobals._level.request_nav_update()
 	else:
 		if sprite is AnimatedSprite2D:

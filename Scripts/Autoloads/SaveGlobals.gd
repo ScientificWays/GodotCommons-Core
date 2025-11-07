@@ -3,7 +3,7 @@ class_name SaveGlobals_Class
 
 var shaders_compiled_flag: bool = false
 
-var last_level_path_key: String = "last_level_path"
+const ALL_STORAGE_KEYS: String = "ALL_STORAGE_KEYS"
 
 var music_volume_linear_key: String = "music_volume_linear"
 var game_volume_linear_key: String = "game_volume_linear"
@@ -50,23 +50,26 @@ func on_default_camera_zoom_changed() -> void:
 func load_settings() -> void:
 	
 	var data_array := await SaveGlobals.get_data_from_storage({
+		ALL_STORAGE_KEYS: used_keys_dictionary,
 		music_volume_linear_key: AudioGlobals.music_volume_linear,
 		game_volume_linear_key: AudioGlobals.game_volume_linear,
 		ui_volume_linear_key: AudioGlobals.ui_volume_linear,
 		locale_key: TranslationServer.get_locale(),
 		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
 	})
-	AudioGlobals.music_volume_linear = data_array[0]
-	AudioGlobals.game_volume_linear = data_array[1]
-	AudioGlobals.ui_volume_linear = data_array[2]
+	used_keys_dictionary = data_array[0]
+	
+	AudioGlobals.music_volume_linear = data_array[1]
+	AudioGlobals.game_volume_linear = data_array[2]
+	AudioGlobals.ui_volume_linear = data_array[3]
 	
 	if PlatformGlobals.is_web():
 		pass
 	else:
-		if data_array[3] != TranslationServer.get_locale():
-			TranslationServer.set_locale(data_array[3])
+		if data_array[4] != TranslationServer.get_locale():
+			TranslationServer.set_locale(data_array[4])
 	
-	PlayerGlobals.default_camera_zoom = data_array[4]
+	PlayerGlobals.default_camera_zoom = data_array[5]
 
 func save_settings() -> void:
 	
@@ -114,8 +117,13 @@ func _get_data_from_storage_callback(in_success: bool, in_data: Array, out_array
 		if sample_data == null:
 			pass
 		else:
-			var sample_converted := type_convert(sample_data, typeof(sample_default))
-			out_array[sample_index] = sample_converted
+			if typeof(sample_data) == typeof(sample_default):
+				out_array[sample_index] = sample_data
+			else:
+				if typeof(sample_data) == TYPE_STRING:
+					out_array[sample_index] = str_to_var(sample_data)
+				else:
+					out_array[sample_index] = type_convert(sample_data, typeof(sample_default))
 	
 	is_loading_data_from_storage = false
 	loaded_data_from_storage.emit(in_success)
@@ -129,6 +137,8 @@ func set_data_in_storage(in_data: Dictionary[String, Variant]) -> void:
 var is_saving_data_in_storage: bool = false
 signal saved_data_in_storage(in_success: bool)
 
+var used_keys_dictionary: Dictionary
+
 func flush_set_data_in_storage() -> void:
 	
 	if is_saving_data_in_storage:
@@ -140,12 +150,43 @@ func flush_set_data_in_storage() -> void:
 	is_saving_data_in_storage = true
 	
 	assert(not storage_save_queued_data.is_empty())
-	Bridge.storage.set(storage_save_queued_data.keys(), storage_save_queued_data.values(), func(in_success: bool) -> void:
-		
-		if not in_success:
-			push_error("flush_set_data_in_storage() failed!")
-		
-		is_saving_data_in_storage = false
-		saved_data_in_storage.emit(in_success)
-	)
+	assert(not storage_save_queued_data.has(ALL_STORAGE_KEYS))
+	
+	var save_keys := storage_save_queued_data.keys()
+	var save_values := storage_save_queued_data.values()
+	
+	for sample_key: String in save_keys:
+		if not used_keys_dictionary.has(sample_key):
+			used_keys_dictionary[sample_key] = true
+	
+	save_keys.append(ALL_STORAGE_KEYS)
+	save_values.append(used_keys_dictionary)
+	print("flush_set_data_in_storage() saving %s" % storage_save_queued_data)
+	Bridge.storage.set(save_keys, save_values, _set_data_in_storage_callback)
 	storage_save_queued_data.clear()
+
+func _set_data_in_storage_callback(in_success: bool) -> void:
+	
+	if not in_success:
+		push_error("_set_data_in_storage_callback() failed!")
+	
+	is_saving_data_in_storage = false
+	saved_data_in_storage.emit(in_success)
+
+func delete_all_storage_data() -> void:
+	## TODO: is_saving_data_in_storage / is_deleting_data_in_storage check
+	var keys_to_delete := used_keys_dictionary.keys()
+	keys_to_delete.append(ALL_STORAGE_KEYS)
+	
+	Bridge.storage.delete(keys_to_delete, _delete_all_storage_data_callback.bind(keys_to_delete))
+
+func _delete_all_storage_data_callback(in_success: bool, in_deleted_keys: Array) -> void:
+	
+	if in_success:
+		
+		print("Keys were deleted from storage:\n%s" % var_to_str(in_deleted_keys))
+		
+		for sample_key in in_deleted_keys:
+			used_keys_dictionary.erase(sample_key)
+	else:
+		printerr("Failed to delete keys from storage:\n%s" % var_to_str(in_deleted_keys))

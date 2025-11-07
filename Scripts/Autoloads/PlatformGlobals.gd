@@ -108,6 +108,9 @@ static func is_pc(InCheckWeb: bool = true) -> bool:
 static func is_web() -> bool:
 	return OS.has_feature("web")
 
+static func is_release() -> bool:
+	return OS.has_feature("release")
+
 static func is_debug() -> bool:
 	return OS.has_feature("debug")
 
@@ -275,9 +278,12 @@ func _on_yandex_ads_interstitial_closed() -> void:
 ##
 ## Metrics
 ##
-func send_metrics(in_code: int, in_type: String, in_target_name: String):
+func send_metrics(in_code: int, in_type: String, in_target_name: String, in_release_only: bool = true):
 	
 	if not is_web():
+		return
+	
+	if in_release_only and not is_release():
 		return
 	
 	#print("PlatformGlobals.send_metrics() code = %d, target_name = %s", [ in_code, in_target_name ])

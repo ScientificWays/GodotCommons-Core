@@ -3,6 +3,7 @@ class_name ChangeLevel
 
 @export_category("Level")
 @export var level_scene_path: String
+@export var mark_current_level_completed: bool = true
 
 @export_category("Transition")
 @export var transtioin_delay: float = 1.0
@@ -26,6 +27,9 @@ func trigger_transition():
 	GameGlobals.spawn_one_shot_timer_for(self, change_level_immediately, transtioin_delay)
 
 func change_level_immediately() -> void:
+	
+	if mark_current_level_completed:
+		WorldGlobals._level.was_completed = true
 	
 	if is_transitioning:
 		is_transitioning = false

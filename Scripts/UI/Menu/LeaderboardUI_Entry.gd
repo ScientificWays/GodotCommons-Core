@@ -38,17 +38,28 @@ func _handle_photo_http_request() -> void:
 		push_error("%s _handle_photo_http_request() error code %d" % [ self, error ] )
 		player_photo.visible = false
 
-func _photo_http_request_completed(in_result, in_response_code, in_headers, in_body) -> void:
+func _photo_http_request_completed(in_result: int, in_response_code: int, in_headers: PackedStringArray, in_body: PackedByteArray) -> void:
 	
-	var image = Image.new()
-	var error = image.load_jpg_from_buffer(in_body)
+	#print("_photo_http_request_completed() %s %s %s %s" % [ in_result, in_response_code, in_headers, in_body ])
 	
-	if error != OK:
-		error = image.load_png_from_buffer(in_body)
-	
-	if error != OK:
-		push_error("%s _photo_http_request_completed() error code %d" % [ self, error ] )
-		player_photo.visible = false
+	if in_result == HTTPRequest.RESULT_SUCCESS and not in_body.is_empty():
+		
+		var image = Image.new()
+		var error := FAILED
+		
+		if not in_headers.is_empty() and in_headers[0].containsn("png"):
+			error = image.load_png_from_buffer(in_body)
+			if error != OK: error = image.load_jpg_from_buffer(in_body)
+		else:
+			error = image.load_jpg_from_buffer(in_body)
+			if error != OK: error = image.load_png_from_buffer(in_body)
+		
+		if error == OK:
+			player_photo.texture = ImageTexture.create_from_image(image)
+			player_photo.visible = true
+		else:
+			push_error("%s _photo_http_request_completed() error code %d" % [ self, error ] )
+			player_photo.visible = false
 	else:
-		player_photo.texture = ImageTexture.create_from_image(image)
-		player_photo.visible = true
+		push_error("%s _photo_http_request_completed() unsuccessful result with code %d" % [ self, in_result ] )
+		player_photo.visible = false

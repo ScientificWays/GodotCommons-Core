@@ -15,6 +15,9 @@ class_name SettingsUI
 	"es",
 ]
 
+@export_category("Buttons")
+@export var reset_button: Button
+
 func _ready() -> void:
 	
 	assert(game_volume_slider)
@@ -26,6 +29,7 @@ func _ready() -> void:
 	music_volume_slider.value_changed.connect(on_music_volume_slider_value_changed)
 	default_camera_zoom_slider.value_changed.connect(on_default_camera_zoom_slider_value_changed)
 	translation_option.item_selected.connect(on_translation_option_item_selected)
+	reset_button.pressed.connect(on_reset_button_pressed)
 	
 	AudioGlobals.game_volume_linear_changed.connect(on_game_volume_linear_changed)
 	AudioGlobals.music_volume_linear_changed.connect(on_music_volume_linear_changed)
@@ -35,6 +39,8 @@ func _ready() -> void:
 	on_music_volume_linear_changed()
 	on_default_camera_zoom_changed()
 	on_translation_changed()
+	
+	reset_button.visible = PlatformGlobals_Class.is_debug()
 
 func _notification(in_what: int) -> void:
 	
@@ -81,3 +87,6 @@ func on_translation_changed() -> void:
 	
 	if translation_option.selected == -1:
 		push_error(self, "on_translation_changed() unknown locale %s!" % current_locale)
+
+func on_reset_button_pressed() -> void:
+	SaveGlobals.delete_all_storage_data()

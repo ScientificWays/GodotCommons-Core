@@ -25,6 +25,8 @@ class_name LevelBase2D
 
 var _y_sorted: Node2D
 
+var was_completed: bool = false
+
 #var enter_tree_ticks_ms: int = 0
 #var begin_play_ticks_ms: int = 0
 

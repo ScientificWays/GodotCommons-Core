@@ -109,6 +109,9 @@ func _on_delay_timer_timeout() -> void:
 
 func try_spawn_wave() -> float:
 	
+	if not is_active:
+		return 0.0
+	
 	var out_spawned_size := wave_data.try_spawn_wave(init_wave_pawn, pool_left)
 	pool_left -= out_spawned_size
 	
