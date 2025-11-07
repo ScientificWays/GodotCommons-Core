@@ -11,7 +11,7 @@ class_name ItemData
 @export var max_stack: int = -1
 
 @export_category("Shop")
-@export var shop_cost: int = 100
+@export var shop_cost: int = 25
 @export var shop_cost_item_data: ItemData
 
 func can_pick_up(in_target: Node) -> bool:

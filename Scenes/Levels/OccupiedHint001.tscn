@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://dyc7rgqqsv68d"]
+
+[ext_resource type="Script" uid="uid://bkyrummrept71" path="res://addons/GodotCommons-Core/Scripts/Levels/LevelHint2D.gd" id="1_rhqg7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_eq6sr"]
+
+[node name="OccupiedHint" type="Marker2D" node_paths=PackedStringArray("label")]
+z_index = 5
+scale = Vector2(0.3, 0.5)
+script = ExtResource("1_rhqg7")
+label = NodePath("Label")
+label_text = "Occupied"
+label_settings = SubResource("LabelSettings_eq6sr")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.0
+offset_top = -11.5
+offset_right = 22.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Occupied"
+label_settings = SubResource("LabelSettings_eq6sr")
+horizontal_alignment = 1
+vertical_alignment = 1

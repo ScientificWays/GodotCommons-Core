@@ -119,5 +119,5 @@ func try_spawn_wave() -> float:
 func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	
 	var sample_spawn := spawn_points.pick_random() as Node2D
-	in_pawn.position = sample_spawn.position
-	sample_spawn.add_sibling.call_deferred(in_pawn)
+	in_pawn.position = sample_spawn.global_position
+	WorldGlobals._level._y_sorted.add_child.call_deferred(in_pawn)

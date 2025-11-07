@@ -33,6 +33,9 @@ func _ready() -> void:
 		pass
 	
 	_update_hint()
+	
+	label.resized.connect(_on_label_resized)
+	_on_label_resized()
 
 func _update_hint() -> void:
 	
@@ -42,3 +45,8 @@ func _update_hint() -> void:
 	label.text = label_text
 	label.label_settings = label_settings
 	label.visible = Engine.is_editor_hint()
+	
+	label.rotation = -global_rotation
+
+func _on_label_resized() -> void:
+	label.pivot_offset = label.size * 0.5

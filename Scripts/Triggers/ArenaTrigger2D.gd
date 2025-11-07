@@ -12,6 +12,14 @@ class_name ArenaTrigger2D
 			$Collision.shape = _collision_shape
 
 @export_category("Limits")
+@export var apply_camera_limits: bool = true:
+	set(in_apply):
+		
+		apply_camera_limits = in_apply
+		
+		if is_node_ready():
+			$CameraLimits.visible = apply_camera_limits
+
 @export var camera_limits: Vector2 = Vector2(512.0, 512.0):
 	set(in_limits):
 		
@@ -27,10 +35,11 @@ class_name ArenaTrigger2D
 @export_category("Waves")
 @export var waves: Array[PawnWaveData2D]
 @export var reset_wave_on_pause: bool = false
+@export var endless_waves: bool = false
 
 @export_category("Spawns")
 @export var spawn_points: Array[Node2D]
-@export var shuffle_spawn_points: bool = true
+@export var shuffle_spawn_points_order: bool = true
 
 var is_active: bool = false:
 	set(in_is_active):
@@ -43,6 +52,11 @@ var current_target: Node
 
 var current_wave_index: int = -1
 var current_wave_pawns: Array[Pawn2D]
+
+signal activated()
+signal deactivated()
+signal paused()
+signal finished()
 
 func _ready() -> void:
 	
@@ -59,11 +73,16 @@ func _ready() -> void:
 				if sample_child is Node2D: valid_points.append(sample_child)
 			spawn_points = valid_points
 	else:
+		assert(visible)
 		assert(not waves.is_empty())
 		assert(not spawn_points.is_empty())
+		assert(spawn_points.all(func(in_point): return is_instance_valid(in_point)))
 	
 	$Collision.shape = _collision_shape
+	
+	$CameraLimits.visible = apply_camera_limits
 	$CameraLimits.shape.size = camera_limits
+	
 	_update_block_collision()
 	
 	area_entered.connect(_on_target_entered)
@@ -89,15 +108,16 @@ func activate_for_target(in_target: Node) -> void:
 	assert(not current_target)
 	current_target = in_target
 	
-	if current_target is PlayerController:
+	if current_target is PlayerController and apply_camera_limits:
 		current_target._camera.set_camera_limits(global_position, camera_limits * 0.5)
 		current_target._camera.PendingZoomLerpSpeed *= 0.5
 		current_target._camera.PendingZoom *= camera_zoom_mul
 		current_target.controlled_pawn_changed.connect(_on_target_player_controlled_pawn_changed)
+	activated.emit()
 
 func deactivate_for_target() -> void:
 	
-	if current_target is PlayerController:
+	if current_target is PlayerController and apply_camera_limits:
 		current_target._camera.reset_camera_limits()
 		current_target._camera.PendingZoomLerpSpeed /= 0.5
 		current_target._camera.PendingZoom /= camera_zoom_mul
@@ -107,13 +127,15 @@ func deactivate_for_target() -> void:
 	
 	is_active = false
 	current_target = null
+	deactivated.emit()
 
 func try_spawn_next_wave() -> bool:
 	
-	if GameGlobals_Class.ArrayIsValidIndex(waves, current_wave_index + 1) and current_wave_pawns.is_empty():
-		current_wave_index += 1
-		spawn_wave(current_wave_index)
-		return true
+	if current_wave_pawns.is_empty():
+		if endless_waves or GameGlobals_Class.ArrayIsValidIndex(waves, current_wave_index + 1):
+			current_wave_index = (current_wave_index + 1) % waves.size()
+			spawn_wave(current_wave_index)
+			return true
 	finish_waves()
 	return false
 
@@ -129,12 +151,14 @@ func pause_waves() -> void:
 	current_wave_pawns.clear()
 	
 	deactivate_for_target()
+	paused.emit()
 
 func finish_waves() -> void:
 	
 	was_finished = true
 	
 	deactivate_for_target()
+	finished.emit()
 
 func spawn_wave(in_index: int) -> void:
 	
@@ -149,7 +173,7 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	
 	if spawn_points_queue.is_empty():
 		spawn_points_queue = spawn_points.duplicate()
-		if shuffle_spawn_points:
+		if shuffle_spawn_points_order:
 			spawn_points_queue.shuffle()
 	
 	assert(not spawn_points_queue.is_empty())
@@ -207,7 +231,7 @@ func _update_block_collision() -> void:
 		_block_static_body.queue_free()
 		_block_static_body = null
 	
-	if not is_active or not is_node_ready():
+	if not is_active or not is_node_ready() or not apply_camera_limits:
 		return
 	
 	_block_static_body = StaticBody2D.new()

@@ -16,7 +16,7 @@ static func try_get_from(in_node: Node) -> PlayerController:
 @export_category("Inventory")
 @export var default_item_containers: Array[PackedScene]
 
-var _UniqueName: String = "zana"
+var unique_name: String = "zana"
 
 func _ready() -> void:
 	

@@ -9,7 +9,7 @@ enum Type
 }
 
 @export_category("Common")
-@export var UniqueName: StringName = &"None"
+@export var unique_name: StringName = &"None"
 @export var display_data: ResourceDisplayData
 @export var _Type: Type = Type.Common
 @export var spawn_value: float = 1.0
@@ -98,6 +98,8 @@ func _ready() -> void:
 		
 		if override_level_music and set_override_level_music_on_spawn:
 			WorldGlobals._level.set_override_level_music(override_level_music)
+		
+		PawnGlobals.pawn_spawned.emit(self)
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():

@@ -97,7 +97,7 @@ func InitNewLocalPlayer() -> PlayerController:
 #	return 0
 
 func GetDebugStatsFileNamePostfix() -> String:
-	return _game_mode.UniqueName
+	return _game_mode.unique_name
 
 ##
 ## Game Stats

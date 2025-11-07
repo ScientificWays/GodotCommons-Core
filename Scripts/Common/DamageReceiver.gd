@@ -105,7 +105,10 @@ func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, In
 		return (InDamageType & DamageImmunityMask) == 0
 
 func adjust_received_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> float:
-	return in_damage
+	if owner_attribute_set.has_attribute(AttributeSet.MaxHealth):
+		return minf(in_damage, get_max_health() * 2.0)
+	else:
+		return in_damage
 
 ## Can be called in physics frame in BarrelPawn.HandleImpactWith()
 func try_receive_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> bool:

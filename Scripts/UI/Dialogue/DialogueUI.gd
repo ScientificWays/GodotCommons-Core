@@ -25,13 +25,14 @@ func _ready() -> void:
 
 func _gui_input(in_event: InputEvent) -> void:
 	
-	if in_event is InputEventScreenTouch and in_event.is_pressed():
+	if in_event is InputEventScreenTouch:
 		
-		if animation_player.is_playing() and \
-			animation_player.current_animation == display_animation_name:
-			animation_player.advance(0.25)
-		else:
-			finish_dialogue(current_data, false)
+		if in_event.is_released():
+			if animation_player.is_playing() and \
+				animation_player.current_animation == display_animation_name:
+				animation_player.advance(0.25)
+			else:
+				finish_dialogue(current_data, false)
 		
 		get_viewport().set_input_as_handled()
 
