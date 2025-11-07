@@ -16,7 +16,7 @@ signal yandex_interstitial_finished(in_success: bool)
 
 func _ready() -> void:
 	
-	if IsWeb():
+	if is_web():
 		
 		TranslationServer.set_locale(Bridge.platform.language)
 		
@@ -28,7 +28,7 @@ func _ready() -> void:
 		
 		update_interstitial_ad_next_show_time()
 	
-	elif IsMobile(false):
+	elif is_mobile(false):
 		
 		#vk_ads = VkAds.new()
 		#vk_ads.interstitial_id = 1913782
@@ -74,13 +74,13 @@ static func get_all_file_paths_in(in_path: String) -> Array[String]:
 ##
 ## Environment
 ##
-static func HasAnyFeature(InFeatures: Array[String]) -> bool:
-	return InFeatures.any(func(feature): return OS.has_feature(feature))
+static func has_any_feature(in_features: Array[String]) -> bool:
+	return in_features.any(func(feature: String): return OS.has_feature(feature))
 
-static func HasAllFeatures(InFeatures: Array[String]) -> bool:
-	return InFeatures.all(func(feature): return OS.has_feature(feature))
+static func has_all_features(in_features: Array[String]) -> bool:
+	return in_features.all(func(feature: String): return OS.has_feature(feature))
 
-static func IsMobile(InCheckWeb: bool = true) -> bool:
+static func is_mobile(InCheckWeb: bool = true) -> bool:
 	
 	#if DisplayServer.has_feature(DisplayServer.FEATURE_TOUCHSCREEN):
 	#	return true
@@ -99,14 +99,17 @@ static func IsMobile(InCheckWeb: bool = true) -> bool:
 		return Bridge.device.type == Bridge.DeviceType.MOBILE
 	return OS.has_feature("mobile")
 
-static func IsPC(InCheckWeb: bool = true) -> bool:
+static func is_pc(InCheckWeb: bool = true) -> bool:
 	
 	if InCheckWeb and OS.has_feature("web"):
 		return Bridge.device.type == Bridge.DeviceType.DESKTOP
 	return OS.has_feature("pc")
 
-static func IsWeb() -> bool:
+static func is_web() -> bool:
 	return OS.has_feature("web")
+
+static func is_debug() -> bool:
+	return OS.has_feature("debug")
 
 ##
 ## Render
@@ -185,10 +188,10 @@ var interstitial_ad_next_show_time_tick_ms: int = 0
 
 func can_show_interstitial_ad() -> bool:
 	
-	if IsWeb():
+	if is_web():
 		if not Bridge.advertisement.is_interstitial_supported:
 			return false
-	elif IsMobile(false):
+	elif is_mobile(false):
 		pass
 	else:
 		return false
@@ -204,14 +207,14 @@ func request_show_interstitial_ad() -> void:
 	
 	if can_show_interstitial_ad():
 		
-		if IsWeb():
+		if is_web():
 			
 			print("Bridge.advertisement.show_interstitial()")
 			
 			Bridge.advertisement.show_interstitial()
 			await web_interstitial_finished
 			
-		elif IsMobile(false):
+		elif is_mobile(false):
 			
 			print("yandex_ads.load_interstitial()")
 			
@@ -222,7 +225,7 @@ func request_show_interstitial_ad() -> void:
 
 func get_interstitial_ad_cooldown_ticks_ms() -> int:
 	
-	if IsWeb():
+	if is_web():
 		return ceili(Bridge.advertisement.minimum_delay_between_interstitial * 1000.0)
 	else:
 		return 60000
@@ -274,7 +277,7 @@ func _on_yandex_ads_interstitial_closed() -> void:
 ##
 func send_metrics(in_code: int, in_type: String, in_target_name: String):
 	
-	if not IsWeb():
+	if not is_web():
 		return
 	
 	#print("PlatformGlobals.send_metrics() code = %d, target_name = %s", [ in_code, in_target_name ])

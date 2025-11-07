@@ -24,6 +24,6 @@ func try_spawn_wave(init_pawn_callable: Callable, in_pool_max: float = -1.0) -> 
 		
 		init_pawn_callable.call(sample_pawn)
 		
-		wave_size -= sample_pawn.SpawnValue
-		out_spawned_size += sample_pawn.SpawnValue
+		wave_size -= sample_pawn.spawn_value
+		out_spawned_size += sample_pawn.spawn_value
 	return out_spawned_size

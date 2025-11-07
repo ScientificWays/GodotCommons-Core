@@ -142,7 +142,7 @@ func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 
 func try_spawn_break_particles(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 	
-	var particles_scene_path := break_particles_scene_path_web if PlatformGlobals_Class.IsWeb() else break_particles_scene_path
+	var particles_scene_path := break_particles_scene_path_web if PlatformGlobals_Class.is_web() else break_particles_scene_path
 	if particles_scene_path.is_empty():
 		return false
 	

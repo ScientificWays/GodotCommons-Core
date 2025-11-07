@@ -39,7 +39,7 @@ var display_time_left: float = 0.0:
 func _ready() -> void:
 	
 	if GameGlobals.get_meta(HintFinishedMeta, false) \
-	or not PlatformGlobals_Class.IsPC(true):
+	or not PlatformGlobals_Class.is_pc(true):
 		queue_free()
 		return
 	

@@ -22,5 +22,4 @@ initial_velocity_max = 16.0
 radial_velocity_max = 5.0
 scale_min = 0.5
 scale_curve = SubResource("CurveTexture_m2tem")
-color = Color(0, 0.784314, 1, 1)
 emission_curve = ExtResource("1_k6t74")

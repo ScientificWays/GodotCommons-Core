@@ -105,7 +105,7 @@ func get_stock_max_mul(in_level: int) -> float:
 	return stock_max_mul + stock_max_mul_per_level_gain * in_level
 
 func get_stock_replenish_time(in_level: int) -> float:
-	return PlayerController_BombStock.replenish_base_time_mul * get_stock_replenish_time_mul(in_level)
+	return PlayerController_BombStock.replenish_base_time * get_stock_replenish_time_mul(in_level)
 
 func get_stock_max(in_level: int) -> int:
-	return maxi(roundi(float(PlayerController_BombStock.replenish_base_max) * get_stock_max_mul(in_level)), 1)
+	return maxi(roundi(float(PlayerController_BombStock.stock_num_base_max) * get_stock_max_mul(in_level)), 1)

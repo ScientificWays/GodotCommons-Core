@@ -87,7 +87,7 @@ func Update() -> void:
 			if not is_inside_tree():
 				return
 	
-	var use_mobile_text := (not label_text_mobile.is_empty()) and PlatformGlobals_Class.IsMobile()
+	var use_mobile_text := (not label_text_mobile.is_empty()) and PlatformGlobals_Class.is_mobile()
 	
 	var label_target := target as Label
 	if not label_target:

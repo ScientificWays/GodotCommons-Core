@@ -60,7 +60,7 @@ func load_settings() -> void:
 	AudioGlobals.game_volume_linear = data_array[1]
 	AudioGlobals.ui_volume_linear = data_array[2]
 	
-	if PlatformGlobals.IsWeb():
+	if PlatformGlobals.is_web():
 		pass
 	else:
 		if data_array[3] != TranslationServer.get_locale():

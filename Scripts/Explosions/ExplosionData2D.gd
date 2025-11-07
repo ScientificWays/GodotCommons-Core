@@ -34,7 +34,7 @@ func load_impact_sound_event() -> SoundEventResource:
 @export var smoke_particles_modulate: Color = Color.WHITE
 
 func load_smoke_particles_scene() -> PackedScene:
-	return load(smoke_particles_scene_path_web if PlatformGlobals_Class.IsWeb() else smoke_particles_scene_path)
+	return load(smoke_particles_scene_path_web if PlatformGlobals_Class.is_web() else smoke_particles_scene_path)
 
 @export_category("Burn")
 @export var burn_scene: String = "res://Scenes/Explosions/Burn001.tscn"

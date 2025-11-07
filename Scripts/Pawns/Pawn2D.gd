@@ -12,8 +12,8 @@ enum Type
 @export var UniqueName: StringName = &"None"
 @export var display_data: ResourceDisplayData
 @export var _Type: Type = Type.Common
-@export var SpawnValue: float = 1.0
-@export var DangerValue: float = 1.0
+@export var spawn_value: float = 1.0
+@export var danger_value: float = 1.0
 @export var size_scale: float = 1.0
 @export var size_scale_per_level_gain: float = 0.0
 @export var size_scale_image: float = 1.0

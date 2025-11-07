@@ -55,7 +55,7 @@ func _ready():
 	AudioServer.bus_layout_changed.connect(update_bus_indices)
 	update_bus_indices()
 	
-	if PlatformGlobals_Class.IsWeb():
+	if PlatformGlobals_Class.is_web():
 		
 		MusicManager.queue_free()
 		
@@ -172,14 +172,14 @@ func try_play_sound_on_node_at_global_position(in_bank_label: String, in_sound_e
 
 func IsAnyMusicPlaying() -> bool:
 	
-	if PlatformGlobals.IsWeb():
+	if PlatformGlobals.is_web():
 		return WebMusicPlayer.playing or (web_mute and is_instance_valid(WebMusicPlayer.stream))
 	else:
 		return MusicManager._is_playing_music()
 
 func IsMusicPlaying(in_bank_label: String, InMusicTrack: MusicTrackResource) -> bool:
 	
-	if PlatformGlobals.IsWeb():
+	if PlatformGlobals.is_web():
 		return (WebMusicPlayer.playing or web_mute) and WebMusicPlayer.stream == InMusicTrack.stems[0].stream
 	else:
 		return MusicManager.is_playing(in_bank_label, InMusicTrack.name)
@@ -193,7 +193,7 @@ func TryPlayMusic(in_bank_label: String, InMusicTrack: MusicTrackResource, in_of
 		push_error("AudioGlobals.TryPlayMusic() InMusicTrack is invalid!")
 		return false
 	
-	if PlatformGlobals.IsWeb():
+	if PlatformGlobals.is_web():
 		WebMusicPlayer.stream = InMusicTrack.stems[0].stream
 		WebMusicPlayer.volume_db = InMusicTrack.stems[0].volume
 		WebMusicPlayer.play()
@@ -210,7 +210,7 @@ func TryPlayMusic(in_bank_label: String, InMusicTrack: MusicTrackResource, in_of
 
 func TryStopMusic(InCrossfadeTime: float = 2.0) -> bool:
 	
-	if PlatformGlobals.IsWeb():
+	if PlatformGlobals.is_web():
 		if WebMusicPlayer.playing:
 			WebMusicPlayer.stop()
 			CurrentMusicName = ""

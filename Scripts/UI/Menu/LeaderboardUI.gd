@@ -24,12 +24,12 @@ func _ready():
 		queue_free()
 
 func _enter_tree() -> void:
-	if PlatformGlobals_Class.IsWeb():
+	if PlatformGlobals_Class.is_web():
 		if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
 			Bridge.leaderboards.on_set_score_finished.connect(on_set_score_finished)
 
 func _exit_tree() -> void:
-	if PlatformGlobals_Class.IsWeb():
+	if PlatformGlobals_Class.is_web():
 		if Bridge.leaderboards.type == Bridge.LeaderboardType.IN_GAME:
 			Bridge.leaderboards.on_set_score_finished.disconnect(on_set_score_finished)
 

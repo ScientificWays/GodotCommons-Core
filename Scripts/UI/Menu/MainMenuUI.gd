@@ -43,7 +43,7 @@ func _ready() -> void:
 	
 	tabs.current_tab = -1
 	
-	#if PlatformGlobals_Class.IsWeb():
+	#if PlatformGlobals_Class.is_web():
 	#	quit_option.queue_free()
 	#else:
 	quit_option.pressed.connect(_on_quit_option_pressed)

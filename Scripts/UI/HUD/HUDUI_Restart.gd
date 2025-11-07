@@ -28,7 +28,7 @@ func _input(in_event: InputEvent) -> void:
 	
 	if Time.get_ticks_msec() > RestartEnableTicksMs and not in_event.is_echo():
 		
-		if PlatformGlobals_Class.IsPC():
+		if PlatformGlobals_Class.is_pc():
 			if in_event.is_action_pressed(&"Restart"):
 				pass
 			else:

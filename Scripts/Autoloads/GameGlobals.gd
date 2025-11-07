@@ -297,7 +297,7 @@ func generate_new_status_effect_handle() -> int:
 var ignite_small_scene_path: String = "res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_GPU.tscn"
 var ignite_small_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire001_CPU.tscn"
 
-@onready var ignite_small_scene: PackedScene = load(ignite_small_scene_path_web if PlatformGlobals_Class.IsWeb() else ignite_small_scene_path)
+@onready var ignite_small_scene: PackedScene = load(ignite_small_scene_path_web if PlatformGlobals_Class.is_web() else ignite_small_scene_path)
 
 func ignite_target(in_target: Node2D, in_duration: float) -> void:
 	

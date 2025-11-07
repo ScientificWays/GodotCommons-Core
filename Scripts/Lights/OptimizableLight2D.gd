@@ -8,7 +8,7 @@ class_name OptimizableLight2D
 var _SpriteLight: Sprite2D
 
 func _ready():
-	if optimize_on_mobile_web and (PlatformGlobals.IsMobile() and PlatformGlobals.IsWeb()):
+	if optimize_on_mobile_web and (PlatformGlobals.is_mobile() and PlatformGlobals.is_web()):
 		EnableSpriteLight()
 
 func _set(in_property: StringName, in_value: Variant) -> bool:
