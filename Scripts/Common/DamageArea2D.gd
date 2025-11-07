@@ -23,7 +23,6 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 			if body_entered.is_connected(_handle_damage_initial_delay):
 				body_entered.disconnect(_handle_damage_initial_delay)
 
-@export var damage_to_impulse_mul: float = 5.0
 @export var use_individual_cooldowns: bool = false:
 	set(in_use):
 		use_individual_cooldowns = in_use
@@ -32,6 +31,10 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 		else:
 			process_cooldowns_callable = process_cooldowns_common
 
+@export_category("Impulse")
+@export var damage_to_impulse_mul: float = 5.0
+
+@export_category("Bounce")
 @export var bounce_apply_impact: bool = true
 
 func _ready() -> void:

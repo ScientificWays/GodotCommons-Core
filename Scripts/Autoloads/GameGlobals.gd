@@ -53,6 +53,7 @@ func _ready():
 ##
 ## Physics
 ##
+const collision_layer_none: int = 0
 const collision_layer_player: int = 1
 const collision_layer_creature: int = 2
 const collision_layer_projectile: int = 4

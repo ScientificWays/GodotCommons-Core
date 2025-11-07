@@ -88,6 +88,8 @@ func _init(in_data_array: Array[LevelTileSet_TerrainData] = []) -> void:
 				all_categories[sample_category] = all_categories.size()
 	
 	add_physics_layer()
+	set_physics_layer_collision_layer(0, GameGlobals_Class.collision_layer_world)
+	set_physics_layer_collision_mask(0, GameGlobals_Class.collision_layer_none)
 	
 	for sample_data: LevelTileSet_TerrainData in in_data_array:
 		
