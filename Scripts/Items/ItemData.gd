@@ -11,10 +11,10 @@ class_name ItemData
 @export var max_stack: int = -1
 
 @export_category("Shop")
-@export var shop_cost: int = 25
+@export var shop_cost: int = 100
 @export var shop_cost_item_data: ItemData
 
-func can_pick_up(in_target: Node) -> bool:
+func can_pick_up(in_target: Node, in_add_num: int) -> bool:
 	
 	if not is_instance_valid(in_target):
 		return false
@@ -33,15 +33,15 @@ func can_pick_up(in_target: Node) -> bool:
 		if use_controller_container:
 			in_target = PlayerController.try_get_from(in_target)
 		
-		var target_container := ModularGlobals.try_get_from(in_target, target_container_script)
+		var target_container := ModularGlobals.try_get_from(in_target, target_container_script) as ItemContainer
 		if is_instance_valid(target_container):
-			return target_container.can_add_item(self)
+			return target_container.can_add_item(self, in_add_num)
 		else:
 			return false
 	else:
 		return true
 
-func handle_pick_up(in_target: Node) -> void:
+func handle_pick_up(in_target: Node, in_add_num: int) -> void:
 	
 	assert(target_container_script)
 	
@@ -53,4 +53,4 @@ func handle_pick_up(in_target: Node) -> void:
 	#	var cost_applied := cost_item_container.try_remove_item(shop_cost_item_data, shop_cost)
 	
 	var target_container := ModularGlobals.try_get_from(in_target, target_container_script) as ItemContainer
-	target_container._handle_add_item(self, 1)
+	target_container._handle_add_item(self, in_add_num)

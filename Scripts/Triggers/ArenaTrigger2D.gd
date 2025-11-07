@@ -190,7 +190,7 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 			perception.force_add_sight_target(current_target)
 		elif current_target is PlayerController:
 			perception.force_add_sight_target(current_target.controlled_pawn)
-	)
+	, Object.CONNECT_DEFERRED)
 	
 	sample_spawn.add_sibling.call_deferred(in_pawn)
 	

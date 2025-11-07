@@ -20,6 +20,14 @@ func _exit_tree():
 func get_items_num(in_item_data: ItemData) -> int:
 	return _items_num_dictionary.get(in_item_data, 0)
 
+func set_items_num(in_item_data: ItemData, in_set_num: int) -> void:
+	
+	var delta := in_set_num - get_items_num(in_item_data)
+	if delta > 0:
+		try_add_item(in_item_data, delta)
+	elif delta < 0:
+		try_remove_item(in_item_data, -delta)
+
 func can_add_item(in_item_data: ItemData, in_add_num: int = 1) -> bool:
 	
 	if in_item_data.max_stack > 0:

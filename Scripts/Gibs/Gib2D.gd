@@ -53,7 +53,7 @@ func OnSleepingStateChanged():
 
 func try_ignite(in_duration: float) -> bool:
 	
-	if randf() > ignite_probability:
+	if in_duration <= 0.0 or randf() > ignite_probability:
 		return false
 	
 	GameGlobals.ignite_target(self, in_duration)

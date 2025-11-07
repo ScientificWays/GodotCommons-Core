@@ -5,6 +5,7 @@ class_name ItemPickUp2D
 @export var item_data: ItemData
 
 @export_category("Pick Up")
+@export var pick_up_add_num: int = 1
 @export var remove_on_pick_up: bool = true
 @export var pick_up_animation_player: AnimationPlayer
 @export var pick_up_animation_name: StringName = &"PickUp"
@@ -43,7 +44,9 @@ var can_pick_up_extra_checks: Array[Callable]
 
 func can_pick_up(in_target: Node) -> bool:
 	
-	if (block_pick_up_counter > 0) or not item_data.can_pick_up(in_target):
+	assert(is_node_ready())
+	
+	if (block_pick_up_counter > 0) or not item_data.can_pick_up(in_target, pick_up_add_num):
 		return false
 	
 	for sample_check: Callable in can_pick_up_extra_checks:
@@ -70,7 +73,7 @@ func try_pick_up(in_target: Node) -> bool:
 		pick_up_fail.emit(in_target)
 		return false
 	
-	item_data.handle_pick_up(in_target)
+	item_data.handle_pick_up(in_target, pick_up_add_num)
 	pick_up_success.emit(in_target)
 	
 	if remove_on_pick_up:

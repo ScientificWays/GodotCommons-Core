@@ -6,6 +6,7 @@ const init_pick_up_method_name: StringName = &"ItemPoolSpawner2D_init_pick_up"
 
 @export_category("Pool")
 @export var pool_data: ItemPoolData
+@export var remove_item_from_pool_after_spawn: bool = true
 @export var deferred_spawn: bool = true
 
 signal init_pick_up(in_pick_up: ItemPickUp2D)
@@ -33,6 +34,9 @@ func try_spawn() -> Node:
 	
 	if not new_pick_up:
 		return null
+	
+	if remove_item_from_pool_after_spawn:
+		pool_data.remove_from_pool(sample_scene.resource_path)
 	
 	new_pick_up.position = position
 	

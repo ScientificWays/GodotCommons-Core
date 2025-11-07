@@ -2,22 +2,28 @@ extends Resource
 class_name ItemPoolData
 
 func _init() -> void:
-	WorldGlobals.load_scene_finished.connect(reset_adjusted)
-	reset_adjusted.call_deferred()
+	WorldGlobals.load_scene_finished.connect(reset)
+	reset.call_deferred()
 
 @export_category("Pick Ups")
 @export var scene_paths: Array[String]
 @export var weights: Array[float]
 
+var random_number_generator: RandomNumberGenerator
 var adjusted_weights: Array[float]
 
-func reset_adjusted() -> void:
+func reset() -> void:
+	
+	if not is_instance_valid(random_number_generator):
+		random_number_generator = RandomNumberGenerator.new()
+	random_number_generator.randomize()
+	
 	adjusted_weights = weights.duplicate()
 	assert(adjusted_weights.size() == scene_paths.size())
 
 func get_random_scene() -> PackedScene:
 	
-	var sample_index := GameGlobals_Class.array_get_random_index_weighted(adjusted_weights)
+	var sample_index := GameGlobals_Class.array_get_random_index_weighted(adjusted_weights, )
 	
 	assert(GameGlobals_Class.ArrayIsValidIndex(scene_paths, sample_index))
 	var sample_path := scene_paths[sample_index]

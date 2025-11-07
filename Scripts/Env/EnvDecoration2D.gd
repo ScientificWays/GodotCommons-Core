@@ -7,6 +7,9 @@ class_name Debris2D
 @export var can_flip_h: bool = true
 @export var can_flip_v: bool = true
 
+@export_category("Collision")
+@export var static_body: StaticBody2D
+
 @export_category("Gibs")
 @export var break_gibs: Array[PackedScene] = [
 	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
@@ -16,6 +19,8 @@ class_name Debris2D
 @export_category("Stages")
 @export var break_stages_num: int = 0
 @export var break_stages_animation_name: StringName = &"Break"
+@export var disable_collision_on_last_break_stage: bool = true
+@export var z_index_on_last_break_stage: int = 0
 @export var remove_on_last_break_stage: bool = true
 
 @export_category("Past Break")
@@ -40,9 +45,11 @@ func _ready() -> void:
 		if not sprite:
 			sprite = find_child("*?prite*") as Sprite2D
 		
-		var collision := find_child("*ollision*") as CollisionShape2D
-		if collision and get_parent() is TileMapLayer:
-			collision.visible = false
+		if not static_body:
+			static_body = find_child("*atic*ody*") as StaticBody2D
+		
+		if static_body and (get_parent() is TileMapLayer):
+			static_body.visible = false
 			_update_sprite()
 	else:
 		break_current_stage = -1
@@ -107,10 +114,15 @@ func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 	
 	if break_current_stage == break_stages_num:
 		
+		z_index = z_index_on_last_break_stage
+		
 		if remove_on_last_break_stage:
 			queue_free()
-		#else:
-		#	monitorable = false
+		elif disable_collision_on_last_break_stage:
+			static_body.queue_free()
+		
+		if static_body:
+			WorldGlobals._level.request_nav_update()
 	else:
 		if sprite is AnimatedSprite2D:
 			sprite.animation = break_stages_animation_name

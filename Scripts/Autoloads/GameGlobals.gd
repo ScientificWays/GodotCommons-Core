@@ -108,11 +108,15 @@ func delayed_collision_activate(InRigidBody: RigidBody2D, InBodyEnteredCallable:
 	
 	if in_delay > 0.0:
 		GameGlobals.spawn_one_shot_timer_for(InTimerParent, func():
+			
+			if not is_instance_valid(InRigidBody) or not is_instance_valid(InBodyEnteredCallable.get_object()):
+				return
+			
 			InRigidBody.body_entered.connect(InBodyEnteredCallable)
 			for SampleBody: Node2D in InRigidBody.get_colliding_bodies():
 				#print(SampleBody)
-				InBodyEnteredCallable.call(SampleBody),
-			in_delay)
+				InBodyEnteredCallable.call(SampleBody)
+			, in_delay)
 	else:
 		InRigidBody.body_entered.connect(InBodyEnteredCallable)
 
@@ -299,16 +303,33 @@ var ignite_small_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes
 
 @onready var ignite_small_scene: PackedScene = load(ignite_small_scene_path_web if PlatformGlobals_Class.is_web() else ignite_small_scene_path)
 
-func ignite_target(in_target: Node2D, in_duration: float) -> void:
+const ignite_pivot_meta: StringName = &"ignite_pivot"
+
+func ignite_target(in_target: Node2D, in_duration: float) -> ParticlesPivot:
 	
-	var new_ignite = ignite_small_scene.instantiate()
+	assert(in_duration > 0.0)
 	
-	var pivot := ParticlesPivot.new()
-	pivot.add_child(new_ignite)
-	spawn_one_shot_timer_for(pivot, pivot.detach_and_remove_all, in_duration)
+	var pivot: ParticlesPivot
 	
-	in_target.add_child(pivot)
-	in_target.tree_exited.connect(func():
-		if in_target.is_queued_for_deletion():
-			pivot.detach_and_remove_all()
-	)
+	if in_target.has_meta(ignite_pivot_meta):
+		pivot = in_target.get_meta(ignite_pivot_meta)
+	else:
+		var new_ignite = ignite_small_scene.instantiate()
+		
+		pivot = ParticlesPivot.new()
+		pivot.tree_exited.connect(func():
+			if is_instance_valid(in_target):
+				in_target.remove_meta(ignite_pivot_meta)
+		)
+		pivot.add_child(new_ignite)
+	
+	pivot.set_expire_time(in_duration)
+	
+	in_target.set_meta(ignite_pivot_meta, pivot)
+	in_target.add_child.call_deferred(pivot)
+	return pivot
+
+func extinguish_ignite_target(in_target: Node2D) -> void:
+	if in_target.has_meta(ignite_pivot_meta):
+		var pivot := in_target.get_meta(ignite_pivot_meta) as ParticlesPivot
+		pivot.detach_and_remove_all()

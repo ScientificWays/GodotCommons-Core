@@ -51,7 +51,7 @@ func _ready() -> void:
 		add_collision_exception_with(_instigator)
 		GameGlobals.spawn_one_shot_timer_for(self, func():
 			if is_instance_valid(_instigator):
-				remove_collision_exception_with(_instigator), 1.0)
+				self.remove_collision_exception_with(_instigator), 1.0)
 	
 	if data.spawn_sound_event:
 		AudioGlobals.try_play_sound_varied_at_global_position(data.sound_bank_label, data.spawn_sound_event, global_position, data.get_spawn_sound_pitch_mul(), data.get_spawn_sound_volume_db())

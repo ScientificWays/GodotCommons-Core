@@ -4,12 +4,12 @@ class_name ParticleSystem2D
 func _ready():
 	pass
 
-func InitAsOneShot(in_position: Vector2, InParticlesNum: int, InLifetime: float, in_parent: Node = WorldGlobals._level):
+func InitAsOneShot(in_position: Vector2, in_particlesNum: int, InLifetime: float, in_parent: Node = WorldGlobals._level):
 	
-	if InParticlesNum > 0:
+	if in_particlesNum > 0:
 		emitting = true
 		one_shot = true
-		amount = InParticlesNum
+		amount = in_particlesNum
 		lifetime = InLifetime
 	else:
 		emitting = false
@@ -41,7 +41,7 @@ func OverrideRadius(in_radius: float):
 				#SampleParticles.process_material = SampleBasePPM.duplicate()
 				#SampleParticles.process_material.emission_sphere_radius = in_radius
 
-func EmitParticlesWithVelocity(InParticlesNum: int, in_velocity: Vector2):
+func EmitParticlesWithVelocity(in_particlesNum: int, in_velocity: Vector2):
 	
 	if PlatformGlobals.is_gl_compatibility_rendering_method():
 		print(self, " EmitParticlesWithVelocity() cancelled due to gl_compatibility renderer")
@@ -49,7 +49,7 @@ func EmitParticlesWithVelocity(InParticlesNum: int, in_velocity: Vector2):
 	
 	var Flags := EMIT_FLAG_VELOCITY
 	
-	for SampleIndex: int in range(InParticlesNum):
+	for SampleIndex: int in range(in_particlesNum):
 		emit_particle(global_transform, in_velocity, Color.BLACK, Color.BLACK, Flags)
 
 func OnLifetimeTimerTimeout():

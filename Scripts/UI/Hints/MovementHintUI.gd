@@ -25,9 +25,9 @@ var owner_hud: HUDUI
 signal finished()
 
 var display_time_left: float = 0.0:
-	set(InTime):
+	set(in_time):
 		
-		display_time_left = InTime
+		display_time_left = in_time
 		
 		if is_node_ready() and not Engine.is_editor_hint():
 			

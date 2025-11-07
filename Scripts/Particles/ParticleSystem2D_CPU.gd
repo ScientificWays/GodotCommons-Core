@@ -4,12 +4,12 @@ class_name ParticleSystem2D_CPU
 func _ready():
 	pass
 
-func InitAsOneShot(in_position: Vector2, InParticlesNum: int, InLifetime: float, in_parent: Node = WorldGlobals._level):
+func InitAsOneShot(in_position: Vector2, in_particlesNum: int, InLifetime: float, in_parent: Node = WorldGlobals._level):
 	
-	if InParticlesNum > 0:
+	if in_particlesNum > 0:
 		emitting = true
 		one_shot = true
-		amount = InParticlesNum
+		amount = in_particlesNum
 		lifetime = InLifetime
 	else:
 		emitting = false

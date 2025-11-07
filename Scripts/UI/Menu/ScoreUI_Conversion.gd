@@ -73,8 +73,6 @@ func handle_animated_sequence() -> void:
 		coversion_timer = GameGlobals.spawn_regular_timer_for(self, OnConvertTimerTimeout, 1.0 / conversion_speed)
 		
 		await ConversionFinished
-	
-	_game_state.ResetGameStatValue(stat_type)
 
 func OnConvertTimerTimeout() -> void:
 	

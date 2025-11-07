@@ -264,8 +264,8 @@ func UtilHandleCellIgnite(in_cell: Vector2i):
 	add_child(IgniteParticles)
 	
 	var IgniteParticlesPivot := IgniteParticles.get_node("ParticlesPivot")
-	IgniteParticlesPivot.SetExpireTime(randf_range(5.0, 10.0))
-	IgniteParticlesPivot.Expired.connect(OnCellIgniteExpired.bind(IgniteParticles, in_cell))
+	IgniteParticlesPivot.set_expire_time(randf_range(5.0, 10.0))
+	IgniteParticlesPivot.expired.connect(OnCellIgniteExpired.bind(IgniteParticles, in_cell))
 
 func OnCellIgniteExpired(InIgniteParticles: Node, in_cell: Vector2i) -> void:
 	InIgniteParticles.queue_free()

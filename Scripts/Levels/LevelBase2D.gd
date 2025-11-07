@@ -3,6 +3,7 @@ extends Node2D
 class_name LevelBase2D
 
 @export_category("Game Mode")
+@export var DefaultCampaign: CampaignData
 @export var DefaultGameMode: GameModeData
 @export var DefaultGameModeArgs: Dictionary
 
@@ -50,6 +51,10 @@ func _ready() -> void:
 			await UIGlobals.pause_menu_ui_created
 		UIGlobals.pause_menu_ui.can_be_enabled = true
 		UIGlobals.pause_menu_ui.skip_lerp_visible()
+		
+		if not WorldGlobals._campaign_data:
+			assert(DefaultCampaign)
+			WorldGlobals._campaign_data = DefaultCampaign
 		
 		_init_game_state()
 		WorldGlobals._game_state.handle_level_ready()

@@ -46,6 +46,10 @@ enum Type
 @export var add_override_level_music_delay: float = 0.0
 @export var remove_override_level_music_delay: float = 0.0
 
+@export_category("Drop")
+@export var death_drop_scene: PackedScene# = preload("res://Scenes/Items/Experience001.tscn")
+@export var death_drop_num_min_max: Vector2i = Vector2i.ONE
+
 var _level: int = 0
 
 var last_controller: PlayerController
@@ -158,6 +162,20 @@ func handle_died(in_immediately: bool) -> void:
 	var sound_event := lethal_damage_sound_event if lethal_damage_sound_event else damage_sound_event
 	if sound_event:
 		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, sound_event, global_position)
+	
+	if death_drop_scene:
+		
+		var spawn_num := randi_range(death_drop_num_min_max.x, death_drop_num_min_max.y)
+		for sample_index: int in range(spawn_num):
+			
+			var death_drop := death_drop_scene.instantiate() as Node2D
+			
+			var spawn_direction := Vector2.from_angle(randf_range(0.0, TAU))
+			death_drop.position = position + (spawn_direction * float(sample_index) * 8.0)
+			add_sibling.call_deferred(death_drop)
+			
+			if death_drop is RigidBody2D:
+				death_drop.ready.connect(death_drop.apply_central_impulse.bind(spawn_direction / death_drop.mass * randf_range(0.2, 0.8)))
 	
 	if remove_on_death:
 		queue_free()
