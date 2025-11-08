@@ -172,9 +172,10 @@ func _process_pending_damage_numbers(in_delta: float) -> void:
 
 func _handle_post_damage_receiver_receive_damage(in_damage_receiver: DamageReceiver, in_source: Node, in_damage: float, in_ignored_immunity_time: bool) -> void:
 	
-	var instance_id := in_damage_receiver.get_instance_id()
-	pending_damage_numbers_damage[instance_id] = pending_damage_numbers_damage.get(instance_id, 0.0) + in_damage
-	pending_damage_numbers_positions[instance_id] = in_damage_receiver.owner_body_2d.global_position
+	if in_damage_receiver.show_damage_numbers:
+		var instance_id := in_damage_receiver.get_instance_id()
+		pending_damage_numbers_damage[instance_id] = pending_damage_numbers_damage.get(instance_id, 0.0) + in_damage
+		pending_damage_numbers_positions[instance_id] = in_damage_receiver.owner_body_2d.global_position
 
 func try_create_damage_number_ui(in_damage: float, in_position: Vector2) -> void:
 	

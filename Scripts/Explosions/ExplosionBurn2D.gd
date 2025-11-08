@@ -1,6 +1,8 @@
 extends Sprite2D
 class_name ExplosionBurn2D
 
+const OPTIMIZATION_EXPLOSION_BURN_2D_IDENTIFIER: StringName = &"ExplosionBurn2D"
+
 static func spawn(in_position: Vector2, in_scene: PackedScene, in_radius: float, in_parent: Node = WorldGlobals._level) -> ExplosionBurn2D:
 	
 	assert(in_scene)
@@ -31,6 +33,8 @@ func _ready():
 	scale = Vector2(SpriteScale, SpriteScale)
 	
 	modulate.a = randf_range(_SpriteAlphaMinMax.x, _SpriteAlphaMinMax.y)
+	
+	OptimizationGlobals.register_managed_node(OPTIMIZATION_EXPLOSION_BURN_2D_IDENTIFIER, self)
 
 #func _enter_tree():
 #	WorldGlobals._level._OptimizationManager.RegisterExplosionBurn(self)

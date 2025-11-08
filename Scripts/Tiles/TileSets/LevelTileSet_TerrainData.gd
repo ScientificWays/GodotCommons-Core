@@ -18,6 +18,7 @@ class_name LevelTileSet_TerrainData
 @export var health: float = 30.0
 @export var is_unbreakable: bool = false
 @export var post_break_floor_terrain_name: String = "Dirt"
+@export var post_break_wall_terrain_name: String = ""
 
 @export_category("Ignite")
 @export var can_ignite: bool = false

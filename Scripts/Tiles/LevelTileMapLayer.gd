@@ -18,6 +18,7 @@ const InvalidCell: Vector2i = Vector2i.MAX
 #	Vector2(-6.0, -6.0)
 #]
 
+@export var wall_layer: LevelTileMapLayer
 @export var floor_layer: LevelTileMapLayer
 @export var damage_layer: LevelTileMapLayer_Damage
 
@@ -46,6 +47,8 @@ signal ImpactApplied(in_cell: Vector2i)
 func _ready():
 	
 	if Engine.is_editor_hint():
+		if not wall_layer:
+			wall_layer = get_parent().find_child("*?all*")
 		if not floor_layer:
 			floor_layer = get_parent().find_child("*?loor*")
 		if not damage_layer:
@@ -226,7 +229,10 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_should_ignit
 	
 	damage_layer.ClearCellData(in_cell)
 	
-	if floor_layer:
+	if wall_layer and not cell_terrain_data.post_break_wall_terrain_name.is_empty():
+		BetterTerrain.set_cell(wall_layer, in_cell, wall_layer.level_tile_set.get_terrain_id(cell_terrain_data.post_break_wall_terrain_name))
+	
+	if floor_layer and not cell_terrain_data.post_break_floor_terrain_name.is_empty():
 		BetterTerrain.set_cell(floor_layer, in_cell, floor_layer.level_tile_set.get_terrain_id(cell_terrain_data.post_break_floor_terrain_name))
 	
 	if (not floor_layer) or (self != floor_layer):
@@ -277,7 +283,9 @@ func UtilHandleCellPostIgnite(in_cell: Vector2i) -> void:
 		return
 	
 	var cell_terrain_data := get_cell_terrain_data(in_cell)
-	BetterTerrain.set_cell(self, in_cell, level_tile_set.get_terrain_id(cell_terrain_data.post_ignite_terrain_name))
+	var new_terrain_id := level_tile_set.get_terrain_id(cell_terrain_data.post_ignite_terrain_name)
+	BetterTerrain.set_cell(self, in_cell, new_terrain_id)
+	BetterTerrain.update_terrain_cell(self, in_cell, false)
 
 func AddPendingTilePlace(in_cell: Vector2i, InTerrainName: String, InShouldCheckOcclusionByTile: bool, InShouldCheckOcclusionByPhysicsQuery: bool):
 	

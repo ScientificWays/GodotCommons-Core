@@ -320,10 +320,7 @@ func ignite_target(in_target: Node2D, in_duration: float) -> ParticlesPivot:
 		var new_ignite = ignite_small_scene.instantiate()
 		
 		pivot = ParticlesPivot.new()
-		pivot.tree_exited.connect(func():
-			if is_instance_valid(in_target):
-				in_target.remove_meta(ignite_pivot_meta)
-		)
+		pivot.tree_exited.connect(_on_ignite_pivot_tree_exited.bind(in_target.get_instance_id()))
 		pivot.add_child(new_ignite)
 	
 	pivot.set_expire_time(in_duration)
@@ -331,6 +328,10 @@ func ignite_target(in_target: Node2D, in_duration: float) -> ParticlesPivot:
 	in_target.set_meta(ignite_pivot_meta, pivot)
 	in_target.add_child.call_deferred(pivot)
 	return pivot
+
+func _on_ignite_pivot_tree_exited(in_target_instance_id: int) -> void:
+	if is_instance_id_valid(in_target_instance_id):
+		instance_from_id(in_target_instance_id).remove_meta(ignite_pivot_meta)
 
 func extinguish_ignite_target(in_target: Node2D) -> void:
 	if in_target.has_meta(ignite_pivot_meta):

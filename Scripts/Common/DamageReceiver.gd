@@ -27,6 +27,7 @@ const DamageType_Fall: int = 64
 @export var PostDamageImmunityDuration: float = 0.0
 
 @export var ignore_damage: bool = false
+@export var show_damage_numbers: bool = true
 
 var LastDamage: float
 var LastDamageTime: float
@@ -105,7 +106,7 @@ func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, In
 		return (InDamageType & DamageImmunityMask) == 0
 
 func adjust_received_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> float:
-	if owner_attribute_set.has_attribute(AttributeSet.MaxHealth) and in_damage > get_max_health():
+	if owner_attribute_set and owner_attribute_set.has_attribute(AttributeSet.MaxHealth) and in_damage > get_max_health():
 		return get_max_health() * randf_range(2.0, 8.0)
 	else:
 		return in_damage
@@ -147,8 +148,9 @@ func CalcLastDamageImpulse2D() -> Vector2:
 	return FromSourceDirection * LastDamage * DamageToImpulseMagnitudeMul
 
 func HandleReceivedDamage(in_ignored_immunity_time: bool):
-	received_lethal_damage = IsDamageLethal(LastDamage)
-	set_health(get_health() - LastDamage)
+	if owner_attribute_set:
+		received_lethal_damage = IsDamageLethal(LastDamage)
+		set_health(get_health() - LastDamage)
 
 func AddDamageImmunityTo(InMask: int):
 	DamageImmunityMask |= InMask

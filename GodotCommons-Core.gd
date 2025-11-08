@@ -14,6 +14,7 @@ func _enter_tree():
 	add_autoload_singleton("UIGlobals", "Scripts/Autoloads/UIGlobals.gd")
 	add_autoload_singleton("AudioGlobals", "Scripts/Autoloads/AudioGlobals.gd")
 	add_autoload_singleton("SaveGlobals", "Scripts/Autoloads/SaveGlobals.gd")
+	add_autoload_singleton("OptimizationGlobals", "Scripts/Autoloads/OptimizationGlobals.gd")
 	
 	add_project_setting(
 		GodotCommonsCore_Settings.MAIN_MENU_LEVEL_SETTING_NAME,
@@ -44,6 +45,7 @@ func _exit_tree():
 	remove_autoload_singleton("UIGlobals")
 	remove_autoload_singleton("AudioGlobals")
 	remove_autoload_singleton("SaveGlobals")
+	remove_autoload_singleton("OptimizationGlobals")
 
 func add_project_setting(in_name: String, in_default: Variant, in_type: int, in_hint: int = PROPERTY_HINT_NONE, in_hint_string: String = ""):
 	

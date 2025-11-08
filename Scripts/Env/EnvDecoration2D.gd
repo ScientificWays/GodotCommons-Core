@@ -9,6 +9,9 @@ class_name Debris2D
 
 @export_category("Collision")
 @export var static_body: StaticBody2D
+@export var can_static_body_receive_damage: bool = true
+@export var static_body_damage_to_break_threshold: float = 10.0
+var static_body_damage_receiver: DamageReceiver
 
 @export_category("Gibs")
 @export var break_gibs: Array[PackedScene] = [
@@ -63,6 +66,14 @@ func _ready() -> void:
 		body_entered.connect(_on_target_entered)
 		
 		_update_sprite()
+		
+		if static_body:
+			if can_static_body_receive_damage:
+				static_body_damage_receiver = DamageReceiver.new()
+				static_body_damage_receiver.owner_body_2d = static_body
+				static_body_damage_receiver.show_damage_numbers = false
+				static_body_damage_receiver.receive_damage.connect(_on_static_body_receive_damage)
+				static_body.add_child(static_body_damage_receiver)
 	
 	var procedurals_layer := get_parent() as LevelTileMapLayer_Procedurals
 	if procedurals_layer:
@@ -99,6 +110,11 @@ func _update_sprite() -> void:
 
 func _on_target_entered(in_target: Node2D) -> void:
 	pass
+
+func _on_static_body_receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool) -> void:
+	
+	if in_damage >= static_body_damage_to_break_threshold:
+		handle_break(static_body_damage_receiver.CalcLastDamageImpulse2D(), false)
 
 func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2, in_offset: Vector2) -> bool:
 	handle_break(in_impulse, true)

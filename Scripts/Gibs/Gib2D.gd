@@ -2,6 +2,8 @@
 extends RigidBody2D
 class_name Gib2D
 
+const OPTIMIZATION_GIB_2D_IDENTIFIER: StringName = &"Gib2D"
+
 static func should_spawn(in_gib: Gib2D) -> bool:
 	return not in_gib.is_cosmetic or GameGlobals.GibsSetting > GameGlobals.GraphicsOption.Minimal
 
@@ -30,7 +32,6 @@ func _ready():
 		if not sprite:
 			sprite = find_child("*?prite*")
 	else:
-		
 		if (collision_layer & GameGlobals_Class.collision_layer_gib) == 0:
 			push_warning("%s does not have Gib collision_layer!" % self)
 		
@@ -39,6 +40,8 @@ func _ready():
 		
 		if should_freeze_on_sleep:
 			sleeping_state_changed.connect(OnSleepingStateChanged)
+		
+		OptimizationGlobals.register_managed_node(OPTIMIZATION_GIB_2D_IDENTIFIER, self)
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
