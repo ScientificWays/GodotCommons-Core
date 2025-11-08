@@ -62,6 +62,7 @@ const collision_layer_item: int = 16
 const collision_layer_item_pull: int = 32
 const collision_layer_navigation_block: int = 64
 const collision_layer_player_block: int = 128
+const collision_layer_gib: int = 2048
 const collision_layer_explosion_receiver: int = 4096
 
 ##

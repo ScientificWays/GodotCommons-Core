@@ -163,6 +163,13 @@ func handle_died(in_immediately: bool) -> void:
 	if sound_event:
 		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, sound_event, global_position)
 	
+	handle_death_drop()
+	
+	if remove_on_death:
+		queue_free()
+
+func handle_death_drop() -> void:
+	
 	if death_drop_scene:
 		
 		var spawn_num := randi_range(death_drop_num_min_max.x, death_drop_num_min_max.y)
@@ -176,9 +183,6 @@ func handle_died(in_immediately: bool) -> void:
 			
 			if death_drop is RigidBody2D:
 				death_drop.ready.connect(death_drop.apply_central_impulse.bind(spawn_direction / death_drop.mass * randf_range(0.2, 0.8)))
-	
-	if remove_on_death:
-		queue_free()
 
 func teleport_to(in_position: Vector2, in_rotation: float = global_rotation, in_reset_camera: bool = false) -> bool:
 	

@@ -15,6 +15,7 @@ class_name Debris2D
 	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
 ]
 @export var break_gibs_num_min_max: Vector2i = Vector2i(1, 2)
+@export var break_gibs_direction_spread: Vector2 = Vector2(-0.4, 0.4)
 
 @export_category("Stages")
 @export var break_stages_num: int = 0
@@ -23,10 +24,10 @@ class_name Debris2D
 @export var z_index_on_last_break_stage: int = 0
 @export var remove_on_last_break_stage: bool = true
 
-@export_category("Past Break")
-@export var apply_past_last_break_stage_effects: bool = true
-@export var past_last_break_stage_darkening: float = 0.2
-@export var past_last_break_stage_shrinking_speed: float = 0.1
+@export_category("Post Break")
+@export var apply_post_last_break_stage_effects: bool = true
+@export var post_last_break_stage_darkening: float = 0.2
+@export var post_last_break_stage_shrinking_speed: float = 0.1
 
 @export_category("Particles")
 @export var break_particles_scene_path: String = "res://addons/GodotCommons-Core/Scenes/Particles/Dust/Dust001_GPU.tscn"
@@ -35,6 +36,10 @@ class_name Debris2D
 
 @export_category("Tile Map Layer")
 @export var local_occupation_coords: Array[Vector2i] = [ Vector2i.ZERO ]
+
+@export_category("Drop")
+@export var break_drop_scene: PackedScene# = preload("res://Scenes/Items/Experience001.tscn")
+@export var break_drop_num_min_max: Vector2i = Vector2i.ONE
 
 var break_current_stage: int = 0
 
@@ -102,9 +107,9 @@ func Explosion2D_receive_impulse(in_explosion: Explosion2D, in_impulse: Vector2,
 func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 	
 	if break_current_stage > break_stages_num:
-		if apply_past_last_break_stage_effects:
-			modulate = modulate.darkened(past_last_break_stage_darkening)
-			sprite.scale = sprite.scale.lerp(Vector2(0.5, 0.5), past_last_break_stage_shrinking_speed)
+		if apply_post_last_break_stage_effects:
+			modulate = modulate.darkened(post_last_break_stage_darkening)
+			sprite.scale = sprite.scale.lerp(Vector2(0.5, 0.5), post_last_break_stage_shrinking_speed)
 		return
 	
 	break_current_stage += 1
@@ -122,13 +127,31 @@ func handle_break(in_impulse: Vector2, in_try_ignite: bool) -> void:
 			if is_instance_valid(static_body):
 				static_body.queue_free()
 		
-		if is_instance_valid(static_body):
+		if static_body:
 			WorldGlobals._level.request_nav_update()
+		
+		handle_break_drop()
 	else:
 		if sprite is AnimatedSprite2D:
 			sprite.animation = break_stages_animation_name
 			sprite.frame = break_current_stage
 			sprite.pause()
+
+func handle_break_drop() -> void:
+	
+	if break_drop_scene:
+		
+		var spawn_num := randi_range(break_drop_num_min_max.x, break_drop_num_min_max.y)
+		for sample_index: int in range(spawn_num):
+			
+			var break_drop := break_drop_scene.instantiate() as Node2D
+			
+			var spawn_direction := Vector2.from_angle(randf_range(0.0, TAU))
+			break_drop.position = position + (spawn_direction * float(sample_index) * 8.0)
+			add_sibling.call_deferred(break_drop)
+			
+			if break_drop is RigidBody2D:
+				break_drop.ready.connect(break_drop.apply_central_impulse.bind(spawn_direction / break_drop.mass * randf_range(0.2, 0.8)))
 
 func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 	
@@ -145,7 +168,7 @@ func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 		add_sibling.call_deferred(sample_gib)
 		
 		sample_gib.ready.connect(func():
-			sample_gib.apply_central_impulse(in_impulse.rotated(randf_range(-0.2, 0.2)) * randf_range(0.5, 1.5))
+			sample_gib.apply_central_impulse(in_impulse.rotated(randf_range(break_gibs_direction_spread.x, break_gibs_direction_spread.y)) * randf_range(0.5, 1.5))
 			sample_gib.apply_torque_impulse(randf_range(-PI, PI))
 		, Object.CONNECT_DEFERRED)
 		

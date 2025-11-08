@@ -11,6 +11,10 @@ class_name ArenaTrigger2D
 		if is_node_ready():
 			$Collision.shape = _collision_shape
 
+@export var can_activate_for_player: bool = true
+@export var can_activate_for_pawns: bool = true
+@export var can_activate_for_others: bool = false
+
 @export_category("Limits")
 @export var apply_camera_limits: bool = true:
 	set(in_apply):
@@ -93,10 +97,14 @@ func _on_target_entered(in_target: Node2D) -> void:
 	if not is_active and not was_finished:
 		
 		var target_player := PlayerController.try_get_from(in_target)
-		if target_player:
+		if can_activate_for_player and target_player:
 			activate_for_target(target_player)
-		else:
+		elif can_activate_for_pawns and in_target is Pawn2D:
 			activate_for_target(in_target)
+		elif can_activate_for_others:
+			activate_for_target(in_target)
+		else:
+			return
 		
 		try_spawn_next_wave()
 

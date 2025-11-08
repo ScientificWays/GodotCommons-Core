@@ -28,6 +28,9 @@ static func try_get_from(in_node: Node) -> HUDUI:
 @export_category("Joystick")
 @export var virtual_joystick: VirtualJoystick
 
+@export_category("Mobile")
+@export var mobile_input_block_controls: Array[Control]
+
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
@@ -41,6 +44,9 @@ func _ready() -> void:
 			healthbar_container = find_child("*ealth?ar*") as Container
 		if not virtual_joystick:
 			virtual_joystick = find_child("*irtual*oystick*") as VirtualJoystick
+		if mobile_input_block_controls.is_empty():
+			for sample_child: Node in find_children("*nput*lock*"):
+				if sample_child is Control: mobile_input_block_controls.append(sample_child)
 	else:
 		assert(owner_player_controller)
 		assert(TransitionBackground)
@@ -56,6 +62,12 @@ func _ready() -> void:
 		owner_player_controller.fade_out_trigger.connect(_on_owner_fade_out_triggered)
 		
 		PawnGlobals.init_pawn_healthbar.connect(_handle_init_pawn_healthbar)
+		
+		if PlatformGlobals_Class.is_mobile():
+			pass
+		else:
+			for sample_block: Control in mobile_input_block_controls:
+				sample_block.queue_free()
 
 func _enter_tree():
 	if not Engine.is_editor_hint():

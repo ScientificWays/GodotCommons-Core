@@ -161,7 +161,7 @@ func flush_set_data_in_storage() -> void:
 	
 	save_keys.append(ALL_STORAGE_KEYS)
 	save_values.append(used_keys_dictionary)
-	print("flush_set_data_in_storage() saving %s" % storage_save_queued_data)
+	#print("flush_set_data_in_storage() saving %s" % storage_save_queued_data)
 	Bridge.storage.set(save_keys, save_values, _set_data_in_storage_callback)
 	storage_save_queued_data.clear()
 

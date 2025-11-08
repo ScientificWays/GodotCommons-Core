@@ -40,11 +40,13 @@ var current_state: int = STATE_ACTIVE:
 				STATE_ACTIVE:
 					animation_player.play(to_active_animation_name)
 					particles.speed_scale = 1.0
-					particles.amount = desired_amount
+					if particles.amount != desired_amount:
+						particles.amount = desired_amount
 				STATE_CLEARED:
 					animation_player.play(to_cleared_animation_name, -1.0, to_cleared_speed_mul)
 					particles.speed_scale = 6.0 * to_cleared_speed_mul
-					particles.amount = desired_amount
+					if particles.amount != desired_amount:
+						particles.amount = desired_amount
 				STATE_WEAK:
 					animation_player.play(to_weak_animation_name)
 					particles.speed_scale = 0.6

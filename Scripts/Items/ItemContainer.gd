@@ -2,6 +2,15 @@
 extends Node
 class_name ItemContainer
 
+static func get_all_containers_in_owner(in_owner: Node) -> Array[ItemContainer]:
+	
+	var out_array: Array[ItemContainer] = []
+	
+	for sample_child: Node in in_owner.get_children():
+		if sample_child is ItemContainer:
+			out_array.append(sample_child)
+	return out_array
+
 var _items_num_dictionary: Dictionary[ItemData, int]
 
 signal items_changed()
@@ -17,10 +26,21 @@ func _enter_tree():
 func _exit_tree():
 	ModularGlobals.deinit_modular_node(self)
 
+func get_items_dictionary_string() -> String:
+	var paths_dictionary := {}
+	for sample_item_data: ItemData in _items_num_dictionary.keys():
+		paths_dictionary[sample_item_data.resource_path] = _items_num_dictionary[sample_item_data]
+	return JSON.stringify(paths_dictionary)
+
+func set_items_from_dictionary_string(in_dictionary_string: String) -> void:
+	var parsed_dictionary := JSON.parse_string(in_dictionary_string) as Dictionary
+	for sample_path: String in parsed_dictionary.keys():
+		set_item_num(load(sample_path), parsed_dictionary[sample_path])
+
 func get_items_num(in_item_data: ItemData) -> int:
 	return _items_num_dictionary.get(in_item_data, 0)
 
-func set_items_num(in_item_data: ItemData, in_set_num: int) -> void:
+func set_item_num(in_item_data: ItemData, in_set_num: int) -> void:
 	
 	var delta := in_set_num - get_items_num(in_item_data)
 	if delta > 0:

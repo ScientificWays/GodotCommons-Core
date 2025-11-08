@@ -30,8 +30,11 @@ func _ready():
 		if not sprite:
 			sprite = find_child("*?prite*")
 	else:
-		assert(sprite)
 		
+		if (collision_layer & GameGlobals_Class.collision_layer_gib) == 0:
+			push_warning("%s does not have Gib collision_layer!" % self)
+		
+		assert(sprite)
 		sprite.frame = randi_range(0, sprite.hframes * sprite.vframes - 1)
 		
 		if should_freeze_on_sleep:

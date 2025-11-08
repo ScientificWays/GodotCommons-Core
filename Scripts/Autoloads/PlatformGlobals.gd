@@ -16,6 +16,8 @@ signal yandex_interstitial_finished(in_success: bool)
 
 func _ready() -> void:
 	
+	set_process_input(false)
+	
 	if is_web():
 		
 		TranslationServer.set_locale(Bridge.platform.language)
@@ -47,6 +49,13 @@ func _ready() -> void:
 		yandex_ads.interstitial_closed.connect(_on_yandex_ads_interstitial_closed)
 		
 		update_interstitial_ad_next_show_time()
+
+func _input(in_event: InputEvent) -> void:
+	
+	if is_pending_rate:
+		if in_event is InputEventScreenTouch:
+			_on_rate_game_finished(false)
+			assert(not is_processing_input())
 
 ##
 ## Storage
@@ -171,8 +180,12 @@ func request_rate_game() -> void:
 		Bridge.social.rate(_on_rate_game_finished)
 		
 		if is_pending_rate:
+			
+			set_process_input(true) ## Fallback finish rate
+			
 			print("await rate_finished")
 			await rate_finished
+			
 			print("emitted rate_finished")
 		else:
 			print("immediate rate finish")
@@ -180,6 +193,7 @@ func request_rate_game() -> void:
 func _on_rate_game_finished(in_success: bool) -> void:
 	
 	print("_on_rate_game_finished() in_success == ", in_success)
+	set_process_input(false)
 	
 	is_pending_rate = false
 	rate_finished.emit()
