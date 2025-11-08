@@ -36,6 +36,7 @@ var static_body_damage_receiver: DamageReceiver
 @export var break_particles_scene_path: String = "res://addons/GodotCommons-Core/Scenes/Particles/Dust/Dust001_GPU.tscn"
 @export var break_particles_scene_path_web: String = "res://addons/GodotCommons-Core/Scenes/Particles/Dust/Dust001_CPU.tscn"
 @export var break_particles_min_max: Vector2i = Vector2i(0, 2)
+@export var spawn_break_particles_on_mobile_web: bool = false
 
 @export_category("Tile Map Layer")
 @export var local_occupation_coords: Array[Vector2i] = [ Vector2i.ZERO ]
@@ -193,6 +194,9 @@ func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 	return true
 
 func try_spawn_break_particles(in_impulse: Vector2, in_try_ignite: bool) -> bool:
+	
+	if not spawn_break_particles_on_mobile_web and PlatformGlobals_Class.is_mobile_web():
+		return false
 	
 	var particles_scene_path := break_particles_scene_path_web if PlatformGlobals_Class.is_web() else break_particles_scene_path
 	if particles_scene_path.is_empty():

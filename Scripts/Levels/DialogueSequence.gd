@@ -34,6 +34,9 @@ func begin_sequence() -> void:
 	UIGlobals.request_cancel_dialogue.connect(_on_cancelled)
 	UIGlobals.request_dialogue_sequence.emit(self)
 
+func cancel_sequence() -> void:
+	UIGlobals.request_cancel_dialogue.emit()
+
 func has_started() -> bool:
 	return current_index > -1
 

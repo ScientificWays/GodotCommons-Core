@@ -49,12 +49,14 @@ func HandleImpact():
 		var ShakeMaxRotation := owner_explosion._max_impulse * 0.00015 * owner_explosion.data.shake_strength_scale
 		ShakeSource2D.spawn(GlobalPosition, owner_explosion._radius * owner_explosion.data.shake_radius_scale, ShakeMaxOffset, ShakeMaxRotation, 2.5)
 	
-	var smoke_particles_scene = owner_explosion.data.load_smoke_particles_scene()
-	if smoke_particles_scene:
-		
-		var smoke_particles := smoke_particles_scene.instantiate()
-		smoke_particles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)
-		smoke_particles.modulate = owner_explosion.data.smoke_particles_modulate
+	if PlatformGlobals_Class.is_mobile_web():
+		pass
+	else:
+		var smoke_particles_scene = owner_explosion.data.load_smoke_particles_scene()
+		if smoke_particles_scene:
+			var smoke_particles := smoke_particles_scene.instantiate()
+			smoke_particles.InitAsOneShot(GlobalPosition, randi_range(2, 6), 5.0)
+			smoke_particles.modulate = owner_explosion.data.smoke_particles_modulate
 	
 	var burn_scene := owner_explosion.data.load_burn_scene()
 	if burn_scene:

@@ -106,8 +106,10 @@ func CanReceiveDamage(in_source: Node, in_instigator: Node, in_damage: float, In
 		return (InDamageType & DamageImmunityMask) == 0
 
 func adjust_received_damage(in_source: Node, in_instigator: Node, in_damage: float, InDamageType: int, in_should_ignore_immunity_time: bool) -> float:
-	if owner_attribute_set and owner_attribute_set.has_attribute(AttributeSet.MaxHealth) and in_damage > get_max_health():
-		return get_max_health() * randf_range(2.0, 8.0)
+	
+	var threshold := get_max_health() * randf_range(2.0, 8.0)
+	if owner_attribute_set and owner_attribute_set.has_attribute(AttributeSet.MaxHealth) and in_damage > threshold:
+		return threshold
 	else:
 		return in_damage
 

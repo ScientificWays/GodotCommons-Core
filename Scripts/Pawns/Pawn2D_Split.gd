@@ -23,7 +23,7 @@ static func try_get_from(in_node: Node) -> Pawn2D_Split:
 @export var pawns_scene_path: String
 @export var pawns_num: int = 2
 @export var pawns_size_mul: float = 0.7
-@export var pawns_health_mul: float = 0.6
+@export var pawns_health_mul: float = 0.8
 @export var pawns_spawn_distance: float = 8.0
 @export var pawns_launch_magnitude: float = 128.0
 

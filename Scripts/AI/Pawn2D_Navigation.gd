@@ -20,10 +20,10 @@ func _ready() -> void:
 	target_reached.connect(_on_target_reached)
 	velocity_computed.connect(_on_avoidance_velocity_computed)
 
-func _enter_tree():
+func _enter_tree() -> void:
 	ModularGlobals.init_modular_node(self)
 
-func _exit_tree():
+func _exit_tree() -> void:
 	ModularGlobals.deinit_modular_node(self)
 
 func _physics_process(in_delta: float) -> void:
@@ -47,13 +47,17 @@ func _physics_process(in_delta: float) -> void:
 func _on_target_reached() -> void:
 	pass
 
-func _on_avoidance_velocity_computed(in_safe_velocity: Vector2):
+func _on_avoidance_velocity_computed(in_safe_velocity: Vector2) -> void:
 	owner_movement.set_movement_velocity(in_safe_velocity, true)
 
 var disable_movement_counter: int = 0
 
-func increment_disable_movement():
+func increment_disable_movement(in_for_duration: float = 0.0) -> void:
+	
 	disable_movement_counter += 1
+	
+	if in_for_duration > 0.0:
+		GameGlobals.spawn_one_shot_timer_for(self, decrement_disable_movement, in_for_duration)
 
-func decrement_disable_movement():
+func decrement_disable_movement() -> void:
 	disable_movement_counter -= 1

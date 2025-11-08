@@ -34,6 +34,7 @@ class_name ArenaTrigger2D
 			_update_block_collision()
 
 @export var camera_zoom_mul: float = 0.7
+@export var camera_zoom_mul_mobile: float = 0.85
 @export_flags_2d_physics var limits_collision: int = GameGlobals_Class.collision_layer_player_block
 
 @export_category("Waves")
@@ -116,20 +117,22 @@ func activate_for_target(in_target: Node) -> void:
 	assert(not current_target)
 	current_target = in_target
 	
-	if current_target is PlayerController and apply_camera_limits:
-		current_target._camera.set_camera_limits(global_position, camera_limits * 0.5)
-		current_target._camera.PendingZoomLerpSpeed *= 0.5
-		current_target._camera.PendingZoom *= camera_zoom_mul
-		current_target.controlled_pawn_changed.connect(_on_target_player_controlled_pawn_changed)
+	if current_target is PlayerController:
+		if apply_camera_limits:
+			current_target._camera.set_camera_limits(global_position, camera_limits * 0.5)
+			current_target._camera.PendingZoomLerpSpeed *= 0.5
+			current_target._camera.PendingZoom *= camera_zoom_mul_mobile if PlatformGlobals_Class.is_mobile() else camera_zoom_mul
+			current_target.controlled_pawn_changed.connect(_on_target_player_controlled_pawn_changed)
 	activated.emit()
 
 func deactivate_for_target() -> void:
 	
-	if current_target is PlayerController and apply_camera_limits:
-		current_target._camera.reset_camera_limits()
-		current_target._camera.PendingZoomLerpSpeed /= 0.5
-		current_target._camera.PendingZoom /= camera_zoom_mul
-		current_target.controlled_pawn_changed.disconnect(_on_target_player_controlled_pawn_changed)
+	if current_target is PlayerController:
+		if apply_camera_limits:
+			current_target._camera.reset_camera_limits()
+			current_target._camera.PendingZoomLerpSpeed /= 0.5
+			current_target._camera.PendingZoom /= camera_zoom_mul_mobile if PlatformGlobals_Class.is_mobile() else camera_zoom_mul
+			current_target.controlled_pawn_changed.disconnect(_on_target_player_controlled_pawn_changed)
 	
 	spawn_points_queue.clear()
 	
@@ -192,7 +195,7 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	in_pawn.ready.connect(func():
 		
 		var perception := Pawn2D_Perception.try_get_from(in_pawn)
-		perception.on_sight_shape_size_mul *= 4.0
+		perception.on_sight_shape_size_mul *= 8.0
 		
 		if current_target is Node2D:
 			perception.force_add_sight_target(current_target)

@@ -5,6 +5,9 @@ class NodesManageData:
 	var limit: int = 40
 	var instance_ids: Array[int]
 	
+	func _init() -> void:
+		limit = 20 if PlatformGlobals_Class.is_mobile() else 40
+	
 	func _get_free_index() -> int:
 		for sample_index: int in range(instance_ids.size()):
 			if not is_instance_id_valid(instance_ids[sample_index]):

@@ -89,30 +89,26 @@ static func has_any_feature(in_features: Array[String]) -> bool:
 static func has_all_features(in_features: Array[String]) -> bool:
 	return in_features.all(func(feature: String): return OS.has_feature(feature))
 
-static func is_mobile(InCheckWeb: bool = true) -> bool:
-	
-	#if DisplayServer.has_feature(DisplayServer.FEATURE_TOUCHSCREEN):
-	#	return true
-	
-	if InCheckWeb and OS.has_feature("web"):
-		
-		#var UserAgent := JavaScriptBridge.eval("navigator.userAgent;", true) as String
-		#UserAgent = UserAgent.to_lower()
-		
-		#const MobileKeywords := [
-		#	"android", "iphone", "ipad", "ipod", "blackberry",
-		#	"windows phone", "opera mini", "mobile"
-		#]
-		#if MobileKeywords.any(func(InKeyWord): return UserAgent.find(InKeyWord) != -1):
-		#	return true
+static func is_mobile(in_check_web: bool = true) -> bool:
+	if in_check_web and OS.has_feature("web"):
 		return Bridge.device.type == Bridge.DeviceType.MOBILE
 	return OS.has_feature("mobile")
 
-static func is_pc(InCheckWeb: bool = true) -> bool:
+static func is_mobile_web() -> bool:
+	if OS.has_feature("web"):
+		return Bridge.device.type == Bridge.DeviceType.MOBILE
+	return false
+
+static func is_pc(in_check_web: bool = true) -> bool:
 	
-	if InCheckWeb and OS.has_feature("web"):
+	if in_check_web and OS.has_feature("web"):
 		return Bridge.device.type == Bridge.DeviceType.DESKTOP
 	return OS.has_feature("pc")
+
+static func is_pc_web() -> bool:
+	if OS.has_feature("web"):
+		return Bridge.device.type == Bridge.DeviceType.DESKTOP
+	return false
 
 static func is_web() -> bool:
 	return OS.has_feature("web")
