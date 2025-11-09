@@ -178,7 +178,10 @@ func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 	
 	var impulse_magnitude := in_impulse.length()
 	
-	var gibs_num := roundi(float(randi_range(break_gibs_num_min_max.x, break_gibs_num_min_max.y)) * break_gibs_mobile_web_num_mul)
+	var gibs_num := randi_range(break_gibs_num_min_max.x, break_gibs_num_min_max.y)
+	if PlatformGlobals_Class.is_mobile_web():
+		gibs_num = roundi(float(gibs_num) * break_gibs_mobile_web_num_mul)
+	
 	for sample_index: int in range(gibs_num):
 		
 		var sample_gib := break_gibs.pick_random().instantiate() as Gib2D
