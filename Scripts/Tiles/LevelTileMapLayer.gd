@@ -257,9 +257,14 @@ func UtilHandleCellBreak(in_cell: Vector2i, in_impulse: Vector2, in_should_ignit
 			GibsTemplate2D.spawn(gibs_position, gibs_scene, -in_impulse, in_should_ignite, 0.5)
 		else:
 			var new_gib := Gib2D.spawn(gibs_position, gibs_scene)
-			new_gib.ready.connect(new_gib.apply_central_impulse.bind(-in_impulse.rotated(randf_range(-0.5, 0.5))), CONNECT_DEFERRED)
-			if in_should_ignite and new_gib.ignite_probability > 0.0:
-				GameGlobals.ignite_target(new_gib, randf_range(1.0, 5.0))
+			new_gib.ready.connect(func():
+				
+				new_gib.apply_central_impulse(-in_impulse.rotated(randf_range(-0.5, 0.5)))
+				new_gib.rotate(randf_range(0.0, PI))
+				
+				if in_should_ignite and new_gib.ignite_probability > 0.0:
+					GameGlobals.ignite_target(new_gib, randf_range(1.0, 5.0))
+			, Object.CONNECT_DEFERRED)
 
 func util_handle_cell_fall(in_cell: Vector2i, in_break_impulse: Vector2) -> void:
 	

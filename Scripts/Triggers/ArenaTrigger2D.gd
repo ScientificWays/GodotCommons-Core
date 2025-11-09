@@ -22,7 +22,7 @@ class_name ArenaTrigger2D
 		apply_camera_limits = in_apply
 		
 		if is_node_ready():
-			$CameraLimits.visible = apply_camera_limits
+			_update_collision_shapes()
 
 @export var camera_limits: Vector2 = Vector2(512.0, 512.0):
 	set(in_limits):
@@ -30,8 +30,9 @@ class_name ArenaTrigger2D
 		camera_limits = in_limits
 		
 		if is_node_ready():
-			$CameraLimits.shape.size = camera_limits
-			_update_block_collision()
+			_update_collision_shapes()
+
+@export var camera_limits_collision: CollisionShape2D
 
 @export var camera_zoom_mul: float = 0.7
 @export var camera_zoom_mul_mobile: float = 0.85
@@ -41,6 +42,8 @@ class_name ArenaTrigger2D
 @export var waves: Array[PawnWaveData2D]
 @export var reset_wave_on_pause: bool = false
 @export var endless_waves: bool = false
+@export var pawns_proximity_check: Area2D
+@export var pawns_proximity_check_collision: CollisionShape2D
 
 @export_category("Spawns")
 @export var spawn_points: Array[Node2D]
@@ -49,7 +52,7 @@ class_name ArenaTrigger2D
 var is_active: bool = false:
 	set(in_is_active):
 		is_active = in_is_active
-		_update_block_collision()
+		_update_collision_shapes()
 
 var was_finished: bool = false
 
@@ -72,23 +75,39 @@ func _ready() -> void:
 			_collision_shape.resource_local_to_scene = true
 			_collision_shape.size = Vector2(16.0, 512.0)
 		
+		if not camera_limits_collision:
+			camera_limits_collision = find_child("*amera*imits*")
+		
+		if not pawns_proximity_check:
+			pawns_proximity_check = find_child("*awn*roximit*")
+		
+		if not pawns_proximity_check_collision:
+			pawns_proximity_check_collision = pawns_proximity_check.find_child("*ollision*")
+		
 		if spawn_points.is_empty():
 			var valid_points: Array[Node2D] = []
 			for sample_child: Node in find_children("*pawn*"):
 				if sample_child is Node2D: valid_points.append(sample_child)
 			spawn_points = valid_points
 	else:
+		assert(_collision_shape)
+		assert(not apply_camera_limits or camera_limits_collision)
+		assert(pawns_proximity_check)
+		assert(pawns_proximity_check_collision)
+		
 		assert(visible)
 		assert(not waves.is_empty())
 		assert(not spawn_points.is_empty())
 		assert(spawn_points.all(func(in_point): return is_instance_valid(in_point)))
+		
+		_check_pawns_proximity_timer = GameGlobals.spawn_regular_timer_for(self, check_pawns_proximity, 1.0, false)
 	
 	$Collision.shape = _collision_shape
 	
-	$CameraLimits.visible = apply_camera_limits
-	$CameraLimits.shape.size = camera_limits
+	if pawns_proximity_check_collision:
+		pawns_proximity_check_collision.shape = _collision_shape
 	
-	_update_block_collision()
+	_update_collision_shapes()
 	
 	area_entered.connect(_on_target_entered)
 	body_entered.connect(_on_target_entered)
@@ -117,6 +136,8 @@ func activate_for_target(in_target: Node) -> void:
 	assert(not current_target)
 	current_target = in_target
 	
+	_check_pawns_proximity_timer.start()
+	
 	if current_target is PlayerController:
 		if apply_camera_limits:
 			current_target._camera.set_camera_limits(global_position, camera_limits * 0.5)
@@ -135,6 +156,8 @@ func deactivate_for_target() -> void:
 			current_target.controlled_pawn_changed.disconnect(_on_target_player_controlled_pawn_changed)
 	
 	spawn_points_queue.clear()
+	
+	_check_pawns_proximity_timer.stop()
 	
 	is_active = false
 	current_target = null
@@ -236,11 +259,20 @@ func _on_target_player_controlled_pawn_changed() -> void:
 ##
 var _block_static_body: StaticBody2D
 
-func _update_block_collision() -> void:
+func _update_collision_shapes() -> void:
 	
 	if _block_static_body:
 		_block_static_body.queue_free()
 		_block_static_body = null
+	
+	if camera_limits_collision:
+		
+		camera_limits_collision.visible = apply_camera_limits
+		camera_limits_collision.shape.size = camera_limits
+		
+		if pawns_proximity_check_collision:
+			pawns_proximity_check_collision.shape = camera_limits_collision.shape
+			pawns_proximity_check_collision.visible = false
 	
 	if not is_active or not is_node_ready() or not apply_camera_limits:
 		return
@@ -273,3 +305,23 @@ func _update_block_collision() -> void:
 	bottom_wall.shape.size = Vector2(camera_limits.x + 32.0, 16.0)
 	bottom_wall.position = Vector2(0.0, -camera_limits.y * 0.5 - 8.0)
 	_block_static_body.add_child(bottom_wall)
+
+##
+## Proximity
+##
+const pawns_proximity_check_counter_meta: StringName = &"ArenaTrigger2D_proximity_check_cunter"
+var _check_pawns_proximity_timer: Timer
+
+func check_pawns_proximity() -> void:
+	
+	for sample_pawn: Pawn2D in current_wave_pawns:
+		
+		var current_counter := sample_pawn.get_meta(pawns_proximity_check_counter_meta, 0)
+		
+		if pawns_proximity_check.overlaps_body(sample_pawn):
+			sample_pawn.remove_meta(pawns_proximity_check_counter_meta)
+		else:
+			if current_counter + 1 > 3:
+				sample_pawn.kill()
+			else:
+				sample_pawn.set_meta(pawns_proximity_check_counter_meta, current_counter + 1)

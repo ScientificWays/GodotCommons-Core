@@ -11,6 +11,8 @@ class_name PawnWaveData2D
 
 func try_spawn_wave(init_pawn_callable: Callable, in_pool_max: float = -1.0) -> float:
 	
+	assert(pawns.size() == pawns_weights.size())
+	
 	var out_spawned_size := 0.0
 	
 	var wave_size := randf_range(wave_size_min, wave_size_max)

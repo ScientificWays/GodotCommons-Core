@@ -54,6 +54,7 @@ func _input(in_event: InputEvent) -> void:
 	
 	if is_pending_rate:
 		if in_event is InputEventScreenTouch:
+			print("_on_rate_game_finished() from fallback input")
 			_on_rate_game_finished(false)
 			assert(not is_processing_input())
 
@@ -155,13 +156,16 @@ func update_web_is_paused() -> void:
 ##
 ## Social
 ##
+@onready var was_rate_requested: bool = false
+
 var is_pending_rate: bool = false
 signal rate_finished()
 
 func can_request_rate_game() -> bool:
 	return Bridge.social.is_rate_supported \
-		and (Time.get_ticks_msec() > (60000 * 3)) \
-		and (not is_pending_rate)
+		and (not was_rate_requested) \
+		and (not is_pending_rate) \
+		and (Time.get_ticks_msec() > (60000 * 3))
 
 func request_rate_game() -> void:
 	
@@ -191,6 +195,7 @@ func _on_rate_game_finished(in_success: bool) -> void:
 	set_process_input(false)
 	
 	is_pending_rate = false
+	was_rate_requested = true
 	rate_finished.emit()
 
 ##

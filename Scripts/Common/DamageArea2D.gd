@@ -31,6 +31,8 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 		else:
 			process_cooldowns_callable = process_cooldowns_common
 
+#@export var can_affect_flying_targets: bool = true
+
 @export_category("Impulse")
 @export var damage_to_impulse_mul: float = 5.0
 

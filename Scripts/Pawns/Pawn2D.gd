@@ -17,6 +17,7 @@ enum Type
 @export var size_scale: float = 1.0
 @export var size_scale_per_level_gain: float = 0.0
 @export var size_scale_image: float = 1.0
+#@export var is_flying: bool = false
 
 @export_category("Attributes")
 @export var attribute_set: AttributeSet
@@ -144,7 +145,7 @@ func _on_receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_t
 	if not damage_receiver.received_lethal_damage and damage_sound_event:
 		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, damage_sound_event, global_position)
 
-func kill(in_immediately: bool) -> void:
+func kill(in_immediately: bool = false) -> void:
 	handle_died(in_immediately)
 
 func handle_died(in_immediately: bool) -> void:
