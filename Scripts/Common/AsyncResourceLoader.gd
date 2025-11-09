@@ -36,6 +36,7 @@ func _process(in_delta: float) -> void:
 	var status := ResourceLoader.load_threaded_get_status(path, progress_array)
 	
 	progress.emit(progress_array[0])
+	
 	if status == ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS:
 		pass
 	else:

@@ -56,10 +56,11 @@ func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array):
 	else:
 		tabs.current_tab = 0
 		
-		for sample_entry_data: Dictionary in in_entries:
+		for sample_entry_index: int in range(in_entries.size()):
 			
 			var new_entry := entry_scene.instantiate() as LeaderboardUI_Entry
-			new_entry.data = sample_entry_data
+			new_entry.photo_process_delay = float(sample_entry_index) * 0.2
+			new_entry.data = in_entries[sample_entry_index]
 			entries_container.add_child(new_entry)
 	tabs.visible = true
 

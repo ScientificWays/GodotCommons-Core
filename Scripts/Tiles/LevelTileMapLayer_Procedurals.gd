@@ -43,7 +43,20 @@ func _ready():
 			wall_layer = get_parent().find_child("*?all*")
 	
 	wall_layer.regenerated_tile_set.connect(handle_generate)
-	handle_generate.call_deferred()
+	if wall_layer.is_node_ready():
+		handle_generate.call_deferred()
+
+var queued_callables: Array[Callable]
+
+func _process(in_delta: float) -> void:
+	
+	if queued_callables.is_empty():
+		set_process(false)
+		process_mode = Node.PROCESS_MODE_INHERIT
+	else:
+		var callable := queued_callables.pop_back()
+		callable.call()
+		_process(in_delta) ## Double the speed
 
 func _exit_tree() -> void:
 	clear()
@@ -90,32 +103,45 @@ func handle_generate() -> void:
 		for sample_cell: Vector2i in sample_other_layer.get_used_cells():
 			mark_cell_occupied(sample_cell, sample_other_layer)
 	
+	#print("handle_generate() after mark occupied cells at %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
+	
+	var distance_unmarked_cells := floor_layer.get_used_cells()
 	var distance_to_walls: Dictionary[Vector2i, int]
+	
+	var has_wall_cache: Dictionary[Vector2i, bool]
+	
+	#var floor_no_walls_cells: Array[Vector2i] = []
 	
 	for sample_distance: int in range(max_distance_to_walls):
 		
-		for sample_cell: Vector2i in floor_layer.get_used_cells():
+		var new_distance_unmarked_cells: Array[Vector2i] = []
+		for sample_cell: Vector2i in distance_unmarked_cells:
 			
-			if wall_layer.has_cell(sample_cell):
+			if has_wall_cache.has(sample_cell):
+				if has_wall_cache[sample_cell] == true:
+					continue
+			elif wall_layer.has_cell(sample_cell):
+				has_wall_cache[sample_cell] = true
 				continue
 			
-			if not floor_layer.has_cell(sample_cell):
-				continue
+			#if not floor_layer.has_cell(sample_cell):
+			#	continue
 			
-			if distance_to_walls.has(sample_cell):
-				continue
+			#if distance_to_walls.has(sample_cell):
+			#	continue
 			
 			var has_wall_nearby := false
 			
 			for sample_offset: Vector2i in TileGlobals._OffsetCellArray_RightAngles:
 				
 				var sample_neighbor := sample_cell + sample_offset
-				if wall_layer.has_cell(sample_neighbor) \
+				if (sample_distance == 0 and has_wall_cache.has(sample_neighbor)) \
 				or (distance_to_walls.has(sample_neighbor) and distance_to_walls[sample_neighbor] == (sample_distance - 1)):
 					has_wall_nearby = true
 					break
 			
 			if not has_wall_nearby:
+				new_distance_unmarked_cells.append(sample_cell)
 				continue
 			
 			distance_to_walls[sample_cell] = sample_distance
@@ -133,6 +159,11 @@ func handle_generate() -> void:
 				add_child(new_debug_label)
 				
 				debug_labels.append(new_debug_label)
+		distance_unmarked_cells = new_distance_unmarked_cells
+		#await get_tree().process_frame
+	
+	#print("handle_generate() after wall distances at %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
+	#await get_tree().process_frame
 	
 	var fog_dynamic_grid_size := procedurals_tile_set.get_random_fog_grid_size()
 	
@@ -141,11 +172,11 @@ func handle_generate() -> void:
 		if is_cell_occupied(sample_cell):
 			continue
 		
-		if wall_layer.has_cell(sample_cell):
+		if has_wall_cache.has(sample_cell):
 			continue
 		
-		if not floor_layer.has_cell(sample_cell):
-			continue
+		#if not floor_layer.has_cell(sample_cell):
+		#	continue
 		
 		var terrain_data := floor_layer.get_cell_terrain_data(sample_cell)
 		
@@ -156,7 +187,8 @@ func handle_generate() -> void:
 				var sample_foliage_id := terrain_data.get_random_foliage_id_or_null(procedurals_tile_set)
 				if sample_foliage_id >= 0:
 					if override_foliage_probability.get(sample_foliage_id, 1.0) > randf():
-						set_cell(sample_cell, procedurals_tile_set.foliage_source_id, Vector2i.ZERO, sample_foliage_id)
+						#set_cell(sample_cell, procedurals_tile_set.foliage_source_id, Vector2i.ZERO, sample_foliage_id)
+						queued_callables.append(set_cell.bind(sample_cell, procedurals_tile_set.foliage_source_id, Vector2i.ZERO, sample_foliage_id))
 						continue
 		
 		## Try set fog
@@ -164,7 +196,8 @@ func handle_generate() -> void:
 			
 			var cell_fog_density := terrain_data.fog_density_mul * fog_density
 			if cell_fog_density > randf():
-				set_cell(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 0)
+				#set_cell(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 0)
+				queued_callables.append(set_cell.bind(sample_cell, procedurals_tile_set.fog_source_id, Vector2i.ZERO, 0))
 				fog_dynamic_grid_size = procedurals_tile_set.get_random_fog_grid_size()
 				continue
 		
@@ -172,8 +205,12 @@ func handle_generate() -> void:
 		var sample_debris_id := terrain_data.get_random_debris_id_or_null(procedurals_tile_set)
 		if sample_debris_id >= 0:
 			if override_debris_probability.get(sample_debris_id, 1.0) > randf():
-				set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_debris_id)
+				#set_cell(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_debris_id)
+				queued_callables.append(set_cell.bind(sample_cell, procedurals_tile_set.debris_source_id, Vector2i.ZERO, sample_debris_id))
 				continue
+	
+	#print("handle_generate() after set scenes at %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
+	#await get_tree().process_frame
 	
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
@@ -183,6 +220,10 @@ func handle_generate() -> void:
 		
 		var prev_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.target_terrain_name)
 		var new_id := wall_layer.level_tile_set.get_terrain_id(sample_noise_data.generated_terrain_name)
+		
+		if new_id == BetterTerrain.TileCategory.EMPTY:
+			printerr("Noise data %s has unknown generated_terrain_name %s!" % [ sample_noise_data.resource_path, sample_noise_data.generated_terrain_name ])
+			new_id = prev_id
 		wall_updates.append({ "cells": [], "new_id": new_id, "prev_id": prev_id })
 	
 	for sample_cell: Vector2i in wall_layer.get_used_cells():
@@ -203,13 +244,19 @@ func handle_generate() -> void:
 		BetterTerrain.set_cells(wall_layer, sample_wall_update.cells, sample_wall_update.new_id)
 		BetterTerrain.update_terrain_cells(wall_layer, sample_wall_update.cells, false)
 	
+	#print("handle_generate() after apply noise cells at %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
+	
 	if Engine.is_editor_hint():
 		pass
 	else:
 		var tree_current_scene := get_tree().current_scene
 		if tree_current_scene is LevelBase2D:
-			print("tree_current_scene.request_nav_update()")
+			#print("tree_current_scene.request_nav_update()")
 			tree_current_scene.request_nav_update()
+	
+	queued_callables.reverse()
+	set_process(true)
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	print("handle_generate() took %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
 
@@ -217,6 +264,8 @@ func reset_generate() -> void:
 	
 	if not Engine.is_editor_hint():
 		print(name, " reset_generate()")
+	
+	queued_callables.clear()
 	
 	for sample_debug_label: Label in debug_labels:
 		sample_debug_label.queue_free()

@@ -7,6 +7,9 @@ var _campaign_data: CampaignData
 var _game_state: GameState
 var _level: LevelBase2D
 
+var current_scene_async_loader: AsyncResourceLoader
+
+signal load_scene_async_started()
 signal load_scene_finished()
 
 func _enter_tree() -> void:
@@ -20,8 +23,11 @@ func load_scene_by_path(in_path: String, in_async: bool = true) -> void:
 		var packed_scene: PackedScene = null
 		
 		if in_async:
-			var async_loader := AsyncResourceLoader.new(in_path, true)
-			packed_scene = await async_loader.get_after_finished()
+			current_scene_async_loader = AsyncResourceLoader.new(in_path, true)
+			load_scene_async_started.emit()
+			
+			packed_scene = await current_scene_async_loader.get_after_finished()
+			current_scene_async_loader = null
 		else:
 			packed_scene = ResourceLoader.load(in_path)
 		await load_scene_by_packed(packed_scene)
@@ -35,7 +41,11 @@ func load_scene_by_packed(in_packed: PackedScene) -> void:
 	
 	GameGlobals.RemoveAllPauseSources()
 	
+	#var start := Time.get_ticks_msec()
+	#var inst := in_packed.instantiate()
+	#print("Instantiating scene took %s ms" % (Time.get_ticks_msec() - start))
 	var tree := get_tree()
+	#tree.root.add_child(inst)
 	if tree.change_scene_to_packed(in_packed) == OK:
 		await tree.scene_changed
 	

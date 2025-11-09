@@ -5,12 +5,18 @@ class_name StartPromptUI
 @export var StartLabel: VHSLabel
 @export var MusicLabel: VHSLabel
 
+#@export_category("Loading")
+#@export var loading_progress_ui: LoadingProgressUI
+
 var StartEnableTicksMs: int = 0
 var StartWasTriggered: bool = false
 
 signal StartTrigger()
 
 func _ready() -> void:
+	
+	#assert(loading_progress_ui)
+	#loading_progress_ui.hide_loading(true)
 	
 	StartEnableTicksMs = Time.get_ticks_msec() + 1000
 	

@@ -18,6 +18,7 @@ var static_body_damage_receiver: DamageReceiver
 	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
 ]
 @export var break_gibs_num_min_max: Vector2i = Vector2i(1, 2)
+@export var break_gibs_mobile_web_num_mul: float = 0.5
 @export var break_gibs_direction_spread: Vector2 = Vector2(-0.4, 0.4)
 
 @export_category("Stages")
@@ -177,7 +178,8 @@ func try_spawn_break_gibs(in_impulse: Vector2, in_try_ignite: bool) -> bool:
 	
 	var impulse_magnitude := in_impulse.length()
 	
-	for sample_index: int in range(randi_range(break_gibs_num_min_max.x, break_gibs_num_min_max.y)):
+	var gibs_num := roundi(float(randi_range(break_gibs_num_min_max.x, break_gibs_num_min_max.y)) * break_gibs_mobile_web_num_mul)
+	for sample_index: int in range(gibs_num):
 		
 		var sample_gib := break_gibs.pick_random().instantiate() as Gib2D
 		sample_gib.position = position

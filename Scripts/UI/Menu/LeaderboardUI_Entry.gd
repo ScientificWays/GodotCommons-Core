@@ -7,6 +7,7 @@ class_name LeaderboardUI_Entry
 @export var player_name: VHSLabel
 @export var player_score: VHSLabel
 
+var photo_process_delay: float = 0.0
 var data: Dictionary
 
 func _ready() -> void:
@@ -43,6 +44,9 @@ func _photo_http_request_completed(in_result: int, in_response_code: int, in_hea
 	#print("_photo_http_request_completed() %s %s %s %s" % [ in_result, in_response_code, in_headers, in_body ])
 	
 	if in_result == HTTPRequest.RESULT_SUCCESS and not in_body.is_empty():
+		
+		if photo_process_delay > 0.0:
+			await GameGlobals.spawn_await_timer(self, photo_process_delay).timeout
 		
 		var image = Image.new()
 		var error := FAILED

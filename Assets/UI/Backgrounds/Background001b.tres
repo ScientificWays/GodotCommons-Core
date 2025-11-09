@@ -3,7 +3,7 @@
 [sub_resource type="Gradient" id="Gradient_cchkh"]
 resource_local_to_scene = true
 offsets = PackedFloat32Array(0, 0.5, 1)
-colors = PackedColorArray(0, 0.7, 0.7, 1, 0, 1, 0.4666667, 1, 0, 0.8, 0.8, 1)
+colors = PackedColorArray(0.27999997, 0.7, 0.7, 1, 0.19999999, 1, 0.5733334, 1, 0.32, 0.8, 0.8, 1)
 
 [resource]
 gradient = SubResource("Gradient_cchkh")

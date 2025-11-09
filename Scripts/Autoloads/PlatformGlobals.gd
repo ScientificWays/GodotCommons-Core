@@ -159,7 +159,6 @@ var is_pending_rate: bool = false
 signal rate_finished()
 
 func can_request_rate_game() -> bool:
-	print(Time.get_ticks_msec())
 	return Bridge.social.is_rate_supported \
 		and (Time.get_ticks_msec() > (60000 * 3)) \
 		and (not is_pending_rate)

@@ -8,9 +8,16 @@ class_name TransitionUI
 @export_category("Continue")
 @export var ContinueLabel: VHSLabel
 
+#@export_category("Loading")
+#@export var loading_progress_ui: LoadingProgressUI
+
 signal ContinueRequested()
 
 func _ready() -> void:
+	
+	#assert(loading_progress_ui)
+	#loading_progress_ui.hide_loading(true)
+	
 	set_process_input(false)
 	ContinueLabel.SetInstantLerpVisible(false)
 
