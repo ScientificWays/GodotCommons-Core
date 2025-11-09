@@ -82,10 +82,16 @@ func _notification(in_what: int) -> void:
 	elif in_what == NOTIFICATION_EDITOR_PRE_SAVE:
 		if is_using_generated_tile_set():
 			hidden_generated_tile_set = tile_set
+			for sample_layer: TileMapLayer in other_receiver_layers:
+				assert(sample_layer.tile_set == tile_set or sample_layer.tile_set == null)
+				sample_layer.tile_set = null
 			tile_set = null
 	elif in_what == NOTIFICATION_EDITOR_POST_SAVE:
 		if is_using_generated_tile_set():
 			tile_set = hidden_generated_tile_set
+			for sample_layer: TileMapLayer in other_receiver_layers:
+				assert(sample_layer.tile_set == null)
+				sample_layer.tile_set = tile_set
 			hidden_generated_tile_set = null
 
 func is_using_generated_tile_set() -> bool:

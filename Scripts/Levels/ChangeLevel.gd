@@ -6,8 +6,8 @@ class_name ChangeLevel
 @export var mark_current_level_completed: bool = true
 
 @export_category("Transition")
-@export var transtioin_delay: float = 1.0
-@export var transtioin_override_background_gradient: GradientTexture1D
+@export var transition_delay: float = 1.0
+@export var transition_override_background_gradient: GradientTexture1D
 
 var is_transitioning: bool = false
 
@@ -20,11 +20,11 @@ func trigger_transition():
 	
 	is_transitioning = true
 	
-	if is_instance_valid(transtioin_override_background_gradient):
-		UIGlobals.BackgroundTextureOverride = transtioin_override_background_gradient
+	if is_instance_valid(transition_override_background_gradient):
+		UIGlobals.BackgroundTextureOverride = transition_override_background_gradient
 	
 	WorldGlobals.change_level_transition_begin.emit(self)
-	GameGlobals.spawn_one_shot_timer_for(self, change_level_immediately, transtioin_delay)
+	GameGlobals.spawn_one_shot_timer_for(self, change_level_immediately, transition_delay)
 
 func change_level_immediately() -> void:
 	

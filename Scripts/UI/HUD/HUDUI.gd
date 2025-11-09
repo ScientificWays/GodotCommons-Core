@@ -80,7 +80,7 @@ func _exit_tree():
 		ModularGlobals.deinit_modular_node(self, owner_player_controller)
 
 func _on_change_level_transition_begin(in_change_level: ChangeLevel) -> void:
-	TransitionBackground.FadeIn(in_change_level.transtioin_delay)
+	TransitionBackground.FadeIn(in_change_level.transition_delay)
 
 func _on_pause_button_pressed() -> void:
 	UIGlobals.pause_menu_ui.toggle()
