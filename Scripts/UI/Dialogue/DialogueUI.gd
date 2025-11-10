@@ -25,7 +25,7 @@ func _ready() -> void:
 
 func _gui_input(in_event: InputEvent) -> void:
 	
-	if in_event is InputEventScreenTouch:
+	if visible and in_event is InputEventScreenTouch:
 		
 		if in_event.is_released():
 			if animation_player.is_playing() and \
@@ -83,7 +83,8 @@ func finish_dialogue(in_data: DialogueData, in_force_cancel: bool) -> void:
 			hide_and_reset()
 
 func cancel_dialogue() -> void:
-	hide_and_reset()
+	if visible:
+		hide_and_reset()
 
 func hide_and_reset() -> void:
 	

@@ -41,8 +41,16 @@ func _ready():
 			floor_layer = get_parent().find_child("*?loor*")
 		if not wall_layer:
 			wall_layer = get_parent().find_child("*?all*")
+	else:
+		#if not WorldGlobals._level.is_node_ready():
+		#	await WorldGlobals._level.ready
+		
+		#if WorldGlobals._level._y_sorted:
+		#	reparent(WorldGlobals._level._y_sorted)
+		pass
 	
 	wall_layer.regenerated_tile_set.connect(handle_generate)
+	
 	if wall_layer.is_node_ready():
 		handle_generate.call_deferred()
 
@@ -54,9 +62,11 @@ func _process(in_delta: float) -> void:
 		set_process(false)
 		process_mode = Node.PROCESS_MODE_INHERIT
 	else:
-		var callable := queued_callables.pop_back()
-		callable.call()
-		_process(in_delta) ## Double the speed
+		var sample_index = 0
+		while not queued_callables.is_empty() and sample_index < 4:
+			var callable := queued_callables.pop_back()
+			callable.call()
+			sample_index += 1
 
 func _exit_tree() -> void:
 	clear()

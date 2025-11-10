@@ -1,3 +1,4 @@
+@tool
 extends RigidBody2D
 class_name ItemPickUp2D
 
@@ -12,7 +13,9 @@ class_name ItemPickUp2D
 @export var optional_pick_up_area: Area2D
 
 @export_category("Sprite")
+@export var sprite: Sprite2D
 @export var sprite_texture_per_skin_overrides: Dictionary = {}
+@export var allow_different_sprite_z_index: bool = false
 
 @export_category("Explosions")
 @export var explosion_impulse_mul: float = 0.12
@@ -29,13 +32,21 @@ signal pick_up_success(in_target: Node)
 
 func _ready() -> void:
 	
-	assert(pick_up_animation_player)
-	
-	if optional_pick_up_area:
-		optional_pick_up_area.area_entered.connect(_on_target_entered)
-		optional_pick_up_area.body_entered.connect(_on_target_entered)
+	if Engine.is_editor_hint():
+		if not sprite:
+			sprite = find_child("*?prite*")
+		if sprite and not allow_different_sprite_z_index:
+			sprite.z_index = GameGlobals_Class.ITEM_PICK_UP_2D_SPRITE_DEFAULT_Z_INDEX
+			sprite.z_as_relative = false
 	else:
-		body_entered.connect(_on_target_entered)
+		
+		assert(pick_up_animation_player)
+		
+		if optional_pick_up_area:
+			optional_pick_up_area.area_entered.connect(_on_target_entered)
+			optional_pick_up_area.body_entered.connect(_on_target_entered)
+		else:
+			body_entered.connect(_on_target_entered)
 
 func _on_target_entered(in_target: Node2D) -> void:
 	try_pick_up(in_target)

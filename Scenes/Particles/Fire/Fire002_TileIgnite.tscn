@@ -72,7 +72,6 @@ _data = {
 }
 
 [node name="Fire002_TileIgnite" type="AnimatedSprite2D" node_paths=PackedStringArray("fire_pivot")]
-z_index = 1
 z_as_relative = false
 material = SubResource("CanvasItemMaterial_qsep8")
 scale = Vector2(0.75, 0.75)

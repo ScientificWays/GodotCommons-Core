@@ -67,6 +67,9 @@ var linear_velocity: Vector2 = Vector2.ZERO:
 var ShouldUpdateVelocityBasedAnimations: bool = true
 @export var move_animation_base_speed: float = 25.0
 
+@export var z_index_offset: int = 0
+@export var allow_different_z_index: bool = false
+
 signal LookAtTargetChanged()
 
 var LookAtTarget: Node2D:
@@ -88,6 +91,9 @@ func _ready():
 	if Engine.is_editor_hint():
 		if not owner_pawn:
 			owner_pawn = get_parent() as Pawn2D
+		if not allow_different_z_index:
+			z_index = GameGlobals_Class.PAWN_2D_SPRITE_DEFAULT_Z_INDEX + z_index_offset
+			z_as_relative = false
 	else:
 		assert(owner_pawn)
 		

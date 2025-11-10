@@ -48,6 +48,7 @@ class_name ArenaTrigger2D
 @export_category("Spawns")
 @export var spawn_points: Array[Node2D]
 @export var shuffle_spawn_points_order: bool = true
+@export var spawn_delay_min_max: Vector2 = Vector2(0.0, 2.0)
 
 var is_active: bool = false:
 	set(in_is_active):
@@ -213,7 +214,6 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 	assert(not spawn_points_queue.is_empty())
 	
 	var sample_spawn := spawn_points_queue.pop_back()
-	in_pawn.position = sample_spawn.position
 	
 	in_pawn.ready.connect(func():
 		
@@ -226,11 +226,22 @@ func init_wave_pawn(in_pawn: Pawn2D) -> void:
 			perception.force_add_sight_target(current_target.controlled_pawn)
 	, Object.CONNECT_DEFERRED)
 	
-	sample_spawn.add_sibling.call_deferred(in_pawn)
-	
 	in_pawn.damage_receiver.receive_damage_lethal.connect(_on_pawn_receive_lethal_damage.bind(in_pawn))
 	in_pawn.tree_exited.connect(_on_pawn_exited_tree.bind(in_pawn))
 	current_wave_pawns.append(in_pawn)
+	
+	var spawn_delay := randf_range(spawn_delay_min_max.x, spawn_delay_min_max.y)
+	if spawn_delay > 0.0:
+		GameGlobals.spawn_one_shot_timer_for(self, spawn_wave_pawn.bind(in_pawn, sample_spawn.global_position), spawn_delay)
+	else:
+		spawn_wave_pawn(in_pawn, sample_spawn.global_position)
+
+func spawn_wave_pawn(in_pawn: Pawn2D, in_global_position: Vector2) -> void:
+	
+	assert(not in_pawn.is_inside_tree() and not in_pawn.is_node_ready())
+	
+	in_pawn.position = in_global_position
+	WorldGlobals._level._y_sorted.add_child.call_deferred(in_pawn)
 
 func _on_pawn_receive_lethal_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool, in_pawn: Pawn2D) -> void:
 	

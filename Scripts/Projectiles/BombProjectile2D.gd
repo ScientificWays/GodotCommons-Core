@@ -1,10 +1,11 @@
+@tool
 extends Projectile2D
 class_name BombProjectile2D
 
 const explosion_data_override_meta: StringName = &"explosion_data_override"
 const disable_beep_sound_meta: StringName = &"disable_beep_sound"
 
-@export_category("Owner")
+@export_category("Beep")
 @export var beep_light: PointLight2D
 @export var beep_animation_player: AnimationPlayer
 
@@ -19,37 +20,40 @@ var _beep_timer: Timer
 
 func _ready() -> void:
 	
-	if await_for_throw_impulse:
-		await throw_impulse_applied
-		await_for_throw_impulse = false
-	
-	super()
-	
-	if detonate_delay > 0.0:
+	if Engine.is_editor_hint():
+		super()
+	else:
+		if await_for_throw_impulse:
+			await throw_impulse_applied
+			await_for_throw_impulse = false
 		
-		_detonate_timer = GameGlobals.spawn_one_shot_timer_for(self, _on_detonate_timer_timeout, detonate_delay)
-		beep_light.visible = false
+		super()
 		
-		if detonate_delay > data.detonate_beep_time:
-			_beep_timer = GameGlobals.spawn_regular_timer_for(self, _on_beep_timer_timeout, detonate_delay - data.detonate_beep_time)
-		else:
-			_on_beep_timer_timeout()
-			#var BeepPassedTime := _DetonateBeepTime - detonate_delay
-			#beep_animation_player.advance(BeepPassedTime / _DetonateBeepTime)
-	
-	if data.should_detonate_on_hit:
-		assert(contact_monitor and max_contacts_reported > 0)
-		body_entered.connect(_handle_detonate_on_hit)
-	
-	if data.should_detonate_on_receive_damage:
+		if detonate_delay > 0.0:
+			
+			_detonate_timer = GameGlobals.spawn_one_shot_timer_for(self, _on_detonate_timer_timeout, detonate_delay)
+			beep_light.visible = false
+			
+			if detonate_delay > data.detonate_beep_time:
+				_beep_timer = GameGlobals.spawn_regular_timer_for(self, _on_beep_timer_timeout, detonate_delay - data.detonate_beep_time)
+			else:
+				_on_beep_timer_timeout()
+				#var BeepPassedTime := _DetonateBeepTime - detonate_delay
+				#beep_animation_player.advance(BeepPassedTime / _DetonateBeepTime)
 		
-		var damage_receiver := DamageReceiver.try_get_from(self)
-		assert(damage_receiver)
-		assert(damage_receiver.owner_attribute_set)
+		if data.should_detonate_on_hit:
+			assert(contact_monitor and max_contacts_reported > 0)
+			body_entered.connect(_handle_detonate_on_hit)
 		
-		damage_receiver.receive_damage.connect(_handle_detonate_on_receive_damage)
-	
-	data.handle_post_init(self)
+		if data.should_detonate_on_receive_damage:
+			
+			var damage_receiver := DamageReceiver.try_get_from(self)
+			assert(damage_receiver)
+			assert(damage_receiver.owner_attribute_set)
+			
+			damage_receiver.receive_damage.connect(_handle_detonate_on_receive_damage)
+		
+		data.handle_post_init(self)
 
 ##
 ## Detonate

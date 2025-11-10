@@ -66,6 +66,15 @@ const collision_layer_gib: int = 2048
 const collision_layer_explosion_receiver: int = 4096
 
 ##
+## Visibility
+##
+const GIB_2D_SPRITE_DEFAULT_Z_INDEX: int = 0
+const ENV_DECORATION_2D_SPRITE_DEFAULT_Z_INDEX: int = 1
+const ITEM_PICK_UP_2D_SPRITE_DEFAULT_Z_INDEX: int = 1
+const PAWN_2D_SPRITE_DEFAULT_Z_INDEX: int = 2
+const PROJECTILE_2D_SPRITE_DEFAULT_Z_INDEX: int = 3
+
+##
 ## Timers
 ##
 func spawn_one_shot_timer_for(in_owner: Node, in_callable: Callable, in_delay: float, in_auto_remove: bool = true, in_autostart: bool = true) -> Timer:

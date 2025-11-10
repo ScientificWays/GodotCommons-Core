@@ -18,7 +18,11 @@ static func spawn(in_position: Vector2, in_scene: PackedScene, in_parent: Node =
 		return out_gib
 	return null
 
+@export_category("Sprite")
 @export var sprite: Sprite2D
+@export var allow_different_sprite_z_index: bool = false
+
+@export_category("Ignite")
 @export var ignite_probability: float = 0.0
 
 @export_category("Optimization")
@@ -31,6 +35,9 @@ func _ready():
 	if Engine.is_editor_hint():
 		if not sprite:
 			sprite = find_child("*?prite*")
+		if sprite and not allow_different_sprite_z_index:
+			sprite.z_index = GameGlobals_Class.GIB_2D_SPRITE_DEFAULT_Z_INDEX
+			sprite.z_as_relative = false
 	else:
 		if (collision_layer & GameGlobals_Class.collision_layer_gib) == 0:
 			push_warning("%s does not have Gib collision_layer!" % self)

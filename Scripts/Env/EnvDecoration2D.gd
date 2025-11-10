@@ -6,6 +6,8 @@ class_name Debris2D
 @export var sprite: Node2D
 @export var can_flip_h: bool = true
 @export var can_flip_v: bool = true
+@export var sprite_z_index_offset: int = 0
+@export var allow_different_sprite_z_index: bool = false
 
 @export_category("Collision")
 @export var static_body: StaticBody2D
@@ -54,6 +56,10 @@ func _ready() -> void:
 		
 		if not sprite:
 			sprite = find_child("*?prite*") as Sprite2D
+		
+		if sprite and not allow_different_sprite_z_index:
+			sprite.z_index = GameGlobals_Class.ENV_DECORATION_2D_SPRITE_DEFAULT_Z_INDEX + sprite_z_index_offset
+			sprite.z_as_relative = false
 		
 		if not static_body:
 			static_body = find_child("*atic*ody*") as StaticBody2D
