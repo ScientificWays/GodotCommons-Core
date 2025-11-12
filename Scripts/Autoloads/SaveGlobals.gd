@@ -57,7 +57,7 @@ func load_settings() -> void:
 		locale_key: TranslationServer.get_locale(),
 		default_camera_zoom_key: PlayerGlobals.default_camera_zoom
 	})
-	used_keys_dictionary = data_array[0]
+	used_keys_dictionary = data_array[0] if data_array[0] else {}
 	
 	AudioGlobals.music_volume_linear = data_array[1]
 	AudioGlobals.game_volume_linear = data_array[2]

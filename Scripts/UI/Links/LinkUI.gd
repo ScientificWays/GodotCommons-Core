@@ -9,9 +9,18 @@ class_name LinkUI
 func _ready() -> void:
 	
 	if is_external:
-		if PlatformGlobals.is_web() and not Bridge.social.is_external_links_allowed:
-			queue_free()
-			return
+		
+		if PlatformGlobals_Class.is_web():
+			
+			var external_allowed := Bridge.social.is_external_links_allowed as bool
+			
+			match Bridge.platform.id:
+				"qa_tool":
+					external_allowed = false
+			
+			if not external_allowed:
+				queue_free()
+				return
 	
 	pressed.connect(_on_pressed)
 
