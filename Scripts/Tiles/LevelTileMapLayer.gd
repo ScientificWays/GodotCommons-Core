@@ -59,12 +59,12 @@ func _ready():
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
 		GameGlobals.pre_explosion_impact.connect(HandleExplosionImpact)
-		GameGlobals.post_barrel_ram_impact.connect(HandleBarrelRamImpact)
+		GameGlobals.request_apply_impact.connect(HandlePhysicsImpact)
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
 		GameGlobals.pre_explosion_impact.disconnect(HandleExplosionImpact)
-		GameGlobals.post_barrel_ram_impact.disconnect(HandleBarrelRamImpact)
+		GameGlobals.request_apply_impact.disconnect(HandlePhysicsImpact)
 
 func _physics_process(in_delta: float):
 	if PendingTilePlaceArray.is_empty():
@@ -143,16 +143,14 @@ func HandleExplosionImpact(InImpact: Explosion2D_Impact):
 		BetterTerrain.update_terrain_cells(self, ImpactedCells)
 		WorldGlobals._level.request_nav_update()
 
-func HandleBarrelRamImpact(InBarrelRoll: BarrelPawn2D_Roll):
+func HandlePhysicsImpact(in_impact_data: GameGlobals_Class.ImpactData):
 	
-	var ImpactData := InBarrelRoll.LastRamImpactData
-	
-	if ImpactData.Target != self:
+	if in_impact_data.Target != self:
 		return
 	
-	if ImpactData.ImpulseMul > 0.0 and ImpactData.RamDamage > 5.0:
-		var TargetCell := local_to_map(to_local(ImpactData.LocalPosition - ImpactData.LocalNormal))
-		TryImpactCell(TargetCell, ImpactData.RamDamage * ImpactData.ImpulseMul, ImpactData.linear_velocity * InBarrelRoll.OwnerBody.mass)
+	if in_impact_data.ImpulseMul > 0.0 and in_impact_data.Damage > 5.0:
+		var TargetCell := local_to_map(to_local(in_impact_data.LocalPosition - in_impact_data.LocalNormal))
+		TryImpactCell(TargetCell, in_impact_data.Damage * in_impact_data.ImpulseMul, in_impact_data.linear_velocity * in_impact_data.ImpulseMul)
 
 func has_cell(in_cell: Vector2i) -> bool:
 	return BetterTerrain.get_cell(self, in_cell) >= 0
