@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dcwkf1qp0lodv"]
 
 [ext_resource type="SpriteFrames" uid="uid://cxb70ep3v0x11" path="res://addons/GodotCommons-Core/Assets/Particles/Fire/Fire002a_Frames.tres" id="1_ll881"]
-[ext_resource type="Script" uid="uid://4shwga20ir6b" path="res://Scripts/Particles/Fire/TileIgniteFX.gd" id="2_cfugi"]
+[ext_resource type="Script" uid="uid://bsxau3nx6c68e" path="res://addons/GodotCommons-Core/Scripts/Common/WebSwitch2D.gd" id="2_2iiae"]
 [ext_resource type="Script" uid="uid://blsbjpjvrhw7c" path="res://addons/GodotCommons-Core/Scripts/Particles/ParticlesPivot.gd" id="2_wljdn"]
 [ext_resource type="Texture2D" uid="uid://nm65nh6a5o2s" path="res://addons/GodotCommons-Core/Assets/Lights/Light002b.png" id="4_3d6w6"]
 
@@ -71,14 +71,16 @@ _data = {
 &"RESET": SubResource("Animation_cfugi")
 }
 
-[node name="Fire002_TileIgnite" type="AnimatedSprite2D" node_paths=PackedStringArray("fire_pivot")]
+[node name="Fire002_TileIgnite" type="AnimatedSprite2D" node_paths=PackedStringArray("parent_override")]
 z_as_relative = false
 material = SubResource("CanvasItemMaterial_qsep8")
 scale = Vector2(0.75, 0.75)
 sprite_frames = ExtResource("1_ll881")
 autoplay = "default"
-script = ExtResource("2_cfugi")
-fire_pivot = NodePath("ParticlesPivot")
+script = ExtResource("2_2iiae")
+default_scene_path = "res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire002_GPU.tscn"
+web_scene_path = "res://addons/GodotCommons-Core/Scenes/Particles/Fire/Fire002_CPU.tscn"
+parent_override = NodePath("ParticlesPivot")
 
 [node name="ParticlesPivot" type="Marker2D" parent="."]
 script = ExtResource("2_wljdn")

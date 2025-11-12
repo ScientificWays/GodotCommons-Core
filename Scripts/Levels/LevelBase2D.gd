@@ -104,7 +104,7 @@ func _handle_begin_play() -> void:
 	if start_default_level_music_on_begin_play:
 		start_default_level_music()
 	
-	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STARTED)
+	PlatformGlobals.send_gameplay_started_message()
 	post_begin_play.emit()
 	
 	#begin_play_ticks_ms = Time.get_ticks_msec()
@@ -115,7 +115,7 @@ func _handle_end_play() -> void:
 	if stop_level_music_on_end_play and MusicManager._is_playing_music():
 		MusicManager.stop(1.0)
 	
-	Bridge.platform.send_message(Bridge.PlatformMessage.GAMEPLAY_STOPPED)
+	PlatformGlobals.send_gameplay_stopped_message()
 	post_end_play.emit()
 
 func get_player_spawn_position(in_player: PlayerController) -> Vector2:

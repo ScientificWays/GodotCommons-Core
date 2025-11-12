@@ -97,14 +97,14 @@ func get_data_from_storage(in_keys_with_defaults: Dictionary[String, Variant]) -
 	#print(loading_data_from_storage_array)
 	
 	is_loading_data_from_storage = true
-	Bridge.storage.get(in_keys_with_defaults.keys(), _get_data_from_storage_callback.bind(out_array))
+	PlatformGlobals.request_get_data_from_platform_storage(in_keys_with_defaults.keys(), _get_data_from_storage_callback.bind(out_array))
 	
 	if is_loading_data_from_storage:
 		await loaded_data_from_storage
 	return out_array
 
 func _get_data_from_storage_callback(in_success: bool, in_data: Array, out_array: Array[Variant]) -> void:
-		
+	
 	if not in_success:
 		push_error("get_data_from_storage() failed!")
 	
@@ -162,7 +162,7 @@ func flush_set_data_in_storage() -> void:
 	save_keys.append(ALL_STORAGE_KEYS)
 	save_values.append(used_keys_dictionary)
 	#print("flush_set_data_in_storage() saving %s" % storage_save_queued_data)
-	Bridge.storage.set(save_keys, save_values, _set_data_in_storage_callback)
+	PlatformGlobals.request_set_data_in_platform_storage(save_keys, save_values, _set_data_in_storage_callback)
 	storage_save_queued_data.clear()
 
 func _set_data_in_storage_callback(in_success: bool) -> void:
@@ -178,7 +178,7 @@ func delete_all_storage_data() -> void:
 	var keys_to_delete := used_keys_dictionary.keys()
 	keys_to_delete.append(ALL_STORAGE_KEYS)
 	
-	Bridge.storage.delete(keys_to_delete, _delete_all_storage_data_callback.bind(keys_to_delete))
+	PlatformGlobals.request_delete_data_in_platform_storage(keys_to_delete, _delete_all_storage_data_callback.bind(keys_to_delete))
 
 func _delete_all_storage_data_callback(in_success: bool, in_deleted_keys: Array) -> void:
 	

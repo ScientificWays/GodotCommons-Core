@@ -37,7 +37,7 @@ func load_scene_by_packed(in_packed: PackedScene) -> void:
 	if _game_state and _game_state._state == GameState.STATE_BEGAN_PLAYING:
 		_game_state.end_play()
 	
-	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STARTED)
+	PlatformGlobals.send_game_loading_started_message()
 	
 	GameGlobals.RemoveAllPauseSources()
 	
@@ -49,7 +49,7 @@ func load_scene_by_packed(in_packed: PackedScene) -> void:
 	if tree.change_scene_to_packed(in_packed) == OK:
 		await tree.scene_changed
 	
-	Bridge.platform.send_message(Bridge.PlatformMessage.IN_GAME_LOADING_STOPPED)
+	PlatformGlobals.send_game_loading_stopped_message()
 	load_scene_finished.emit()
 
 var pending_scene_path: StringName:

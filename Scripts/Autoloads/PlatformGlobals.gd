@@ -9,7 +9,11 @@ signal web_interstitial_finished(in_success: bool)
 #signal vk_interstitial_started()
 #signal vk_interstitial_finished(in_success: bool)
 
-var yandex_ads: YandexAds
+var yandex_ads_script_path: String = "res://addons/GodotAndroidYandexAds/yandex_ads.gd"
+var yandex_ads: Node
+
+static var bridge_singleton_name: StringName = &"Bridge"
+static var bridge_singleton: Node
 
 signal yandex_interstitial_started()
 signal yandex_interstitial_finished(in_success: bool)
@@ -20,13 +24,22 @@ func _ready() -> void:
 	
 	if is_web():
 		
-		TranslationServer.set_locale(Bridge.platform.language)
+		assert(not bridge_singleton)
+		bridge_singleton = Engine.get_singleton(bridge_singleton_name)
 		
-		Bridge.platform.pause_state_changed.connect(_on_web_pause_state_changed)
-		Bridge.advertisement.interstitial_state_changed.connect(_on_web_interstitial_ad_state_changed)
-		Bridge.advertisement.rewarded_state_changed.connect(_on_web_rewarded_ad_state_changed)
+		TranslationServer.set_locale(bridge_singleton.platform.language)
 		
-		update_web_is_paused()
+		bridge_singleton.game.visibility_state_changed.connect(_on_web_visibility_state_changed)
+		bridge_singleton.platform.pause_state_changed.connect(_on_web_pause_state_changed)
+		bridge_singleton.platform.audio_state_changed.connect(_on_web_audio_state_changed)
+		
+		bridge_singleton.advertisement.interstitial_state_changed.connect(_on_web_interstitial_ad_state_changed)
+		bridge_singleton.advertisement.rewarded_state_changed.connect(_on_web_rewarded_ad_state_changed)
+		
+		bridge_singleton.leaderboards.on_set_score_finished.connect(_on_web_leaderboards_set_score_finished)
+		
+		update_platform_wants_to_pause_game()
+		update_platform_wants_to_mute_game()
 		
 		update_interstitial_ad_next_show_time()
 	
@@ -40,7 +53,7 @@ func _ready() -> void:
 		#vk_ads.interstitial_failed_to_load.connect(on_vk_ads_interstitial_failed_to_load)
 		#vk_ads.interstitial_closed.connect(on_vk_ads_interstitial_closed)
 		
-		yandex_ads = YandexAds.new()
+		yandex_ads = load(yandex_ads_script_path).new()
 		yandex_ads.interstitial_id = "R-M-17344604-2"
 		add_child(yandex_ads)
 		
@@ -57,6 +70,71 @@ func _input(in_event: InputEvent) -> void:
 			print("_on_rate_game_finished() from fallback input")
 			_on_rate_game_finished(false)
 			assert(not is_processing_input())
+
+##
+## Game
+##
+func _on_web_visibility_state_changed(in_state: String) -> void:
+	update_platform_wants_to_pause_game()
+	update_platform_wants_to_mute_game()
+
+##
+## Messages
+##
+func send_gameplay_started_message() -> void:
+	if is_web():
+		bridge_singleton.platform.send_message(bridge_singleton.PlatformMessage.GAMEPLAY_STARTED)
+
+func send_gameplay_stopped_message() -> void:
+	if is_web():
+		bridge_singleton.platform.send_message(bridge_singleton.PlatformMessage.GAMEPLAY_STOPPED)
+
+func send_game_loading_started_message() -> void:
+	if is_web():
+		bridge_singleton.platform.send_message(bridge_singleton.PlatformMessage.IN_GAME_LOADING_STARTED)
+
+func send_game_loading_stopped_message() -> void:
+	if is_web():
+		bridge_singleton.platform.send_message(bridge_singleton.PlatformMessage.IN_GAME_LOADING_STOPPED)
+
+##
+## Environment
+##
+static func has_any_feature(in_features: Array[String]) -> bool:
+	return in_features.any(func(feature: String): return OS.has_feature(feature))
+
+static func has_all_features(in_features: Array[String]) -> bool:
+	return in_features.all(func(feature: String): return OS.has_feature(feature))
+
+static func is_mobile(in_check_web: bool = true) -> bool:
+	if in_check_web and OS.has_feature("web"):
+		return bridge_singleton.device.type == bridge_singleton.DeviceType.MOBILE
+	return OS.has_feature("mobile")
+
+static func is_mobile_web() -> bool:
+	if OS.has_feature("web"):
+		return bridge_singleton.device.type == bridge_singleton.DeviceType.MOBILE
+	return false
+
+static func is_pc(in_check_web: bool = true) -> bool:
+	
+	if in_check_web and OS.has_feature("web"):
+		return bridge_singleton.device.type == bridge_singleton.DeviceType.DESKTOP
+	return OS.has_feature("pc")
+
+static func is_pc_web() -> bool:
+	if OS.has_feature("web"):
+		return bridge_singleton.device.type == bridge_singleton.DeviceType.DESKTOP
+	return false
+
+static func is_web() -> bool:
+	return OS.has_feature("web")
+
+static func is_release() -> bool:
+	return OS.has_feature("release")
+
+static func is_debug() -> bool:
+	return OS.has_feature("debug")
 
 ##
 ## Storage
@@ -81,44 +159,14 @@ static func get_all_file_paths_in(in_path: String) -> Array[String]:
 		next_dir = dir_access.get_next()
 	return out_paths
 
-##
-## Environment
-##
-static func has_any_feature(in_features: Array[String]) -> bool:
-	return in_features.any(func(feature: String): return OS.has_feature(feature))
+func request_get_data_from_platform_storage(in_keys: Array[String], in_callback: Callable) -> void:
+	bridge_singleton.storage.get(in_keys, in_callback)
 
-static func has_all_features(in_features: Array[String]) -> bool:
-	return in_features.all(func(feature: String): return OS.has_feature(feature))
+func request_set_data_in_platform_storage(in_keys: Array[String], in_values: Array[Variant], in_callback: Callable) -> void:
+	bridge_singleton.storage.set(in_keys, in_values, in_callback)
 
-static func is_mobile(in_check_web: bool = true) -> bool:
-	if in_check_web and OS.has_feature("web"):
-		return Bridge.device.type == Bridge.DeviceType.MOBILE
-	return OS.has_feature("mobile")
-
-static func is_mobile_web() -> bool:
-	if OS.has_feature("web"):
-		return Bridge.device.type == Bridge.DeviceType.MOBILE
-	return false
-
-static func is_pc(in_check_web: bool = true) -> bool:
-	
-	if in_check_web and OS.has_feature("web"):
-		return Bridge.device.type == Bridge.DeviceType.DESKTOP
-	return OS.has_feature("pc")
-
-static func is_pc_web() -> bool:
-	if OS.has_feature("web"):
-		return Bridge.device.type == Bridge.DeviceType.DESKTOP
-	return false
-
-static func is_web() -> bool:
-	return OS.has_feature("web")
-
-static func is_release() -> bool:
-	return OS.has_feature("release")
-
-static func is_debug() -> bool:
-	return OS.has_feature("debug")
+func request_delete_data_in_platform_storage(in_keys: Array[String], in_callback: Callable) -> void:
+	bridge_singleton.storage.delete(in_keys, in_callback)
 
 ##
 ## Render
@@ -132,26 +180,70 @@ func is_gl_compatibility_rendering_method() -> bool:
 ##
 ## Pause
 ##
-var web_is_paused: bool = false:
-	set(in_is_paused):
+var platform_wants_to_pause_game: bool = false:
+	set(in_pause):
 		
-		web_is_paused = in_is_paused
+		platform_wants_to_pause_game = in_pause
 		
-		if web_is_paused:
+		if platform_wants_to_pause_game:
 			GameGlobals.AddPauseSource(self)
 		else:
 			GameGlobals.RemovePauseSource(self)
-		web_is_paused_changed.emit()
-signal web_is_paused_changed()
+		platform_wants_to_pause_game_changed.emit()
+signal platform_wants_to_pause_game_changed()
 
 func _on_web_pause_state_changed(in_is_paused: bool) -> void:
-	update_web_is_paused()
+	update_platform_wants_to_pause_game()
+	update_platform_wants_to_mute_game()
 
-func update_web_is_paused() -> void:
-	web_is_paused = Bridge.game.visibility_state == Bridge.VisibilityState.HIDDEN \
-		#or not get_window().has_focus() \
-		or Bridge.advertisement.interstitial_state == Bridge.InterstitialState.OPENED \
-		or Bridge.advertisement.rewarded_state == Bridge.RewardedState.OPENED
+func update_platform_wants_to_pause_game() -> void:
+	if is_web():
+		platform_wants_to_pause_game = (bridge_singleton.game.visibility_state == bridge_singleton.VisibilityState.HIDDEN) \
+			or (bridge_singleton.advertisement.interstitial_state == bridge_singleton.InterstitialState.OPENED) \
+			or (bridge_singleton.advertisement.rewarded_state == bridge_singleton.RewardedState.OPENED)
+
+##
+## Audio
+##
+func _on_web_audio_state_changed(in_is_enabled: bool) -> void:
+	print("_on_web_audio_state_changed() in_is_enabled == ", in_is_enabled)
+	update_platform_wants_to_mute_game()
+
+var platform_wants_to_mute_game: bool = false:
+	set(in_mute):
+		if in_mute != platform_wants_to_mute_game:
+			platform_wants_to_mute_game = in_mute
+			platform_wants_to_mute_game_changed.emit()
+signal platform_wants_to_mute_game_changed()
+
+func update_platform_wants_to_mute_game() -> void:
+	if is_web():
+		platform_wants_to_mute_game = (bridge_singleton.game.visibility_state == bridge_singleton.VisibilityState.HIDDEN) \
+			or (bridge_singleton.advertisement.interstitial_state == bridge_singleton.InterstitialState.OPENED) \
+			or (bridge_singleton.advertisement.rewarded_state == bridge_singleton.RewardedState.OPENED) \
+			or not bridge_singleton.platform.is_audio_enabled
+
+##
+## Leaderboards
+##
+signal leaderboard_set_score_finished(in_success: bool)
+
+func is_in_game_leaderboards_type() -> bool:
+	if is_web():
+		return bridge_singleton.leaderboards.type == bridge_singleton.LeaderboardType.IN_GAME
+	else:
+		return false
+
+func request_get_leaderboard_entries(in_leaderboard_id: String, in_get_callback: Callable) -> void:
+	if is_web():
+		bridge_singleton.leaderboards.get_entries(in_leaderboard_id, in_get_callback)
+
+func request_set_leaderboard_score(in_leaderboard_id: String, in_new_score: int) -> void:
+	if is_web():
+		bridge_singleton.leaderboards.set_score(in_leaderboard_id, in_new_score)
+
+func _on_web_leaderboards_set_score_finished(in_success: bool) -> void:
+	leaderboard_set_score_finished.emit(in_success)
 
 ##
 ## Social
@@ -162,7 +254,7 @@ var is_pending_rate: bool = false
 signal rate_finished()
 
 func can_request_rate_game() -> bool:
-	return Bridge.social.is_rate_supported \
+	return bridge_singleton.social.is_rate_supported \
 		and (not was_rate_requested) \
 		and (not is_pending_rate) \
 		and (Time.get_ticks_msec() > (60000 * 3))
@@ -176,7 +268,7 @@ func request_rate_game() -> void:
 		print("is_pending_rate = true")
 		is_pending_rate = true
 		
-		Bridge.social.rate(_on_rate_game_finished)
+		bridge_singleton.social.rate(_on_rate_game_finished)
 		
 		if is_pending_rate:
 			
@@ -206,7 +298,7 @@ var interstitial_ad_next_show_time_tick_ms: int = 0
 func can_show_interstitial_ad() -> bool:
 	
 	if is_web():
-		if not Bridge.advertisement.is_interstitial_supported:
+		if not bridge_singleton.advertisement.is_interstitial_supported:
 			return false
 	elif is_mobile(false):
 		pass
@@ -228,7 +320,7 @@ func request_show_interstitial_ad() -> void:
 			
 			print("Bridge.advertisement.show_interstitial()")
 			
-			Bridge.advertisement.show_interstitial()
+			bridge_singleton.advertisement.show_interstitial()
 			await web_interstitial_finished
 			
 		elif is_mobile(false):
@@ -243,7 +335,7 @@ func request_show_interstitial_ad() -> void:
 func get_interstitial_ad_cooldown_ticks_ms() -> int:
 	
 	if is_web():
-		return ceili(Bridge.advertisement.minimum_delay_between_interstitial * 1000.0)
+		return ceili(bridge_singleton.advertisement.minimum_delay_between_interstitial * 1000.0)
 	else:
 		return 60000
 
@@ -252,18 +344,20 @@ func update_interstitial_ad_next_show_time() -> void:
 
 func _on_web_interstitial_ad_state_changed(in_state: String) -> void:
 	
-	update_web_is_paused()
+	update_platform_wants_to_pause_game()
+	update_platform_wants_to_mute_game()
 	
 	match in_state:
-		Bridge.InterstitialState.OPENED:
+		bridge_singleton.InterstitialState.OPENED:
 			web_interstitial_started.emit()
-		Bridge.InterstitialState.CLOSED:
+		bridge_singleton.InterstitialState.CLOSED:
 			web_interstitial_finished.emit(true)
-		Bridge.InterstitialState.FAILED:
+		bridge_singleton.InterstitialState.FAILED:
 			web_interstitial_finished.emit(false)
 
 func _on_web_rewarded_ad_state_changed(in_state: String) -> void:
-	update_web_is_paused()
+	update_platform_wants_to_pause_game()
+	update_platform_wants_to_mute_game()
 
 #func _on_vk_ads_interstitial_loaded() -> void:
 #	print("vk ads interstitial loaded")

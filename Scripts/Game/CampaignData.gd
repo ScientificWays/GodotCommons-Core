@@ -14,7 +14,7 @@ const challenge_time_desc: StringName = "CHALLENGE_TIME_DESC"
 @export var unique_identifier: String = "tutorial"
 
 @export_category("Game Mode")
-@export var game_mode_data: GameModeData = preload("res://Assets/Game/MainGameMode.tres")
+@export var game_mode_data: GameModeData
 @export var game_mode_args: Dictionary
 
 @export_category("Levels")
@@ -217,7 +217,7 @@ func _handle_current_score_changed() -> void:
 	if current_score > best_score:
 		
 		best_score = current_score
-		Bridge.leaderboards.set_score(get_leaderboard_best_score(), best_score)
+		PlatformGlobals.request_set_leaderboard_score(get_leaderboard_best_score(), best_score)
 
 func _handle_pending_scene_path_changed() -> void:
 	

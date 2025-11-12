@@ -7,8 +7,8 @@ func _init() -> void:
 signal error_caught(in_message: String)
 signal message_caught(in_message: String, in_error: bool)
 
+static var _output_target: Node
 static var _mutex := Mutex.new()
-
 static var _error_type_name := ClassDB.class_get_enum_constants("Logger", "ErrorType")
 
 func _log_error(
@@ -22,7 +22,7 @@ func _log_error(
 	in_script_backtraces: Array[ScriptBacktrace]
 ) -> void:
 	
-	if not Output.config.debug_enabled:
+	if not _output_target.config.debug_enabled:
 		return
 	
 	_mutex.lock()
@@ -49,18 +49,18 @@ func _log_error(
 	#filestream.store_string(error_message)
 	#filestream.close()
 	
-	Output.print(error_message)
+	_output_target.print(error_message)
 	
 	_mutex.unlock()
 
 func _log_message(in_message: String, in_error: bool) -> void:
 	
-	if not Output.config.debug_enabled:
+	if not _output_target.config.debug_enabled:
 		return
 	
 	_mutex.lock()
 	
 	if in_error:
-		Output.print(in_message)
+		_output_target.print(in_message)
 	
 	_mutex.unlock()
