@@ -37,10 +37,15 @@ var procedurals_tile_set: LevelTileSet_Procedurals:
 func _ready():
 	
 	if Engine.is_editor_hint():
+		
 		if not floor_layer:
 			floor_layer = get_parent().find_child("*?loor*")
 		if not wall_layer:
 			wall_layer = get_parent().find_child("*?all*")
+		
+		z_index = 0
+		z_as_relative = true
+		y_sort_enabled = true
 	else:
 		#if not WorldGlobals._level.is_node_ready():
 		#	await WorldGlobals._level.ready

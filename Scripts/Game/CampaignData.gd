@@ -130,10 +130,10 @@ func get_saved_last_level_path() -> String:
 		#push_error("%s get_saved_last_level_path() invalid index '%d'!" % [ self, last_level_index ])
 		return levels_path_array[0]
 
-func get_leaderboard_best_score() -> String:
+func get_best_score_leaderboard_id() -> String:
 	return ("campaign%sbestscore" % unique_identifier).remove_chars("_-")
 
-func get_leaderboard_best_time() -> String:
+func get_best_time_leaderboard_id() -> String:
 	return ("campaign%sbesttime" % unique_identifier).remove_chars("_-")
 
 signal init_game_finished()
@@ -217,7 +217,7 @@ func _handle_current_score_changed() -> void:
 	if current_score > best_score:
 		
 		best_score = current_score
-		PlatformGlobals.request_set_leaderboard_score(get_leaderboard_best_score(), best_score)
+		PlatformGlobals.request_set_leaderboard_score(get_best_score_leaderboard_id(), best_score)
 
 func _handle_pending_scene_path_changed() -> void:
 	

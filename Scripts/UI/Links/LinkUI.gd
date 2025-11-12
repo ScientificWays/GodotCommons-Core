@@ -17,6 +17,8 @@ func _ready() -> void:
 			match Bridge.platform.id:
 				"qa_tool":
 					external_allowed = false
+				"playgama":
+					external_allowed = false
 			
 			if not external_allowed:
 				queue_free()

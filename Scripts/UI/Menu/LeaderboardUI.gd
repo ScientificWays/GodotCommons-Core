@@ -9,10 +9,9 @@ class_name LeaderboardUI
 var entry_scene: PackedScene
 var last_campaign_data: CampaignData
 
-func _ready():
+func _ready() -> void:
 	
 	assert(entries_container)
-	
 	assert(tabs)
 	
 	tabs.current_tab = 1
@@ -44,14 +43,14 @@ func handle_animated_sequence() -> void:
 func update_for_campaign_data(in_data: CampaignData) -> void:
 	
 	last_campaign_data = in_data
-	PlatformGlobals.request_get_leaderboard_entries(in_data.get_leaderboard_best_score(), _on_leaderboard_get_entries_completed)
+	PlatformGlobals.request_get_leaderboard_entries(in_data.get_best_score_leaderboard_id(), _on_leaderboard_get_entries_completed)
 
-func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array):
+func _on_leaderboard_get_entries_completed(in_success: bool, in_entries: Array) -> void:
 	
 	for sample_child: Node in entries_container.get_children():
 		sample_child.queue_free()
 	
-	print("%s _on_leaderboard_get_entries_completed() in_success == %s" % [ self, in_success ])
+	print("%s _on_leaderboard_get_entries_completed() in_success == %s, in_entries.size() == %s" % [ self, in_success, in_entries.size() ])
 	
 	if in_entries.is_empty():
 		tabs.current_tab = 1
