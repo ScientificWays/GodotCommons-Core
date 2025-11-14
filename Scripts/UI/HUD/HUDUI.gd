@@ -49,14 +49,14 @@ func _ready() -> void:
 				if sample_child is Control: mobile_input_block_controls.append(sample_child)
 	else:
 		assert(owner_player_controller)
-		assert(TransitionBackground)
-		assert(pause_button)
 		assert(fade_animation_player)
 		
 		WorldGlobals.change_level_transition_begin.connect(_on_change_level_transition_begin)
-		TransitionBackground.FadeOut()
+		if TransitionBackground:
+			TransitionBackground.FadeOut()
 		
-		pause_button.pressed.connect(_on_pause_button_pressed)
+		if pause_button:
+			pause_button.pressed.connect(_on_pause_button_pressed)
 		
 		owner_player_controller.fade_in_trigger.connect(_on_owner_fade_in_triggered)
 		owner_player_controller.fade_out_trigger.connect(_on_owner_fade_out_triggered)
@@ -80,7 +80,8 @@ func _exit_tree():
 		ModularGlobals.deinit_modular_node(self, owner_player_controller)
 
 func _on_change_level_transition_begin(in_change_level: ChangeLevel) -> void:
-	TransitionBackground.FadeIn(in_change_level.transition_delay)
+	if TransitionBackground:
+		TransitionBackground.FadeIn(in_change_level.transition_delay)
 
 func _on_pause_button_pressed() -> void:
 	UIGlobals.pause_menu_ui.toggle()

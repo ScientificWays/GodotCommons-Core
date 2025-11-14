@@ -116,6 +116,14 @@ func _exit_tree() -> void:
 		if override_level_music:
 			WorldGlobals._level.remove_override_level_music_source(self, remove_override_level_music_delay)
 
+func handle_controller_movement_input(in_input: Vector2) -> void:
+	if character_movement:
+		character_movement.apply_movement_input(in_input)
+
+func handle_controller_jump_input() -> void:
+	if character_movement:
+		character_movement.apply_jump_input()
+
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level
 

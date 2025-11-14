@@ -67,7 +67,7 @@ func try_create_pause_menu_ui() -> bool:
 		add_child(pause_menu_ui)
 		pause_menu_ui_created.emit()
 		return is_instance_valid(pause_menu_ui)
-	push_error("UIGlobals.try_create_pause_menu_ui(): Failed to create PauseMenuUI!")
+	assert(false, "UIGlobals.try_create_pause_menu_ui(): Failed to create PauseMenuUI!")
 	return false
 
 ##

@@ -14,7 +14,7 @@ func _ready() -> void:
 	assert(ChallengeLabel)
 	assert(TimeLabel)
 	
-	var _game_state := WorldGlobals._game_state as MainGameState
+	var _game_state := WorldGlobals._game_state
 	
 	if not _game_state._global_timer and _game_state.ShouldCreateGlobalTimer:
 		

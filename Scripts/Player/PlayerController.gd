@@ -94,6 +94,9 @@ func ProcessMovementInputs(in_delta: float) -> void:
 		movement_input = Vector2.ZERO
 	else:
 		movement_input = Input.get_vector(&"Left", &"Right", &"Up", &"Down")
+	
+	if controlled_pawn:
+		controlled_pawn.handle_controller_movement_input(movement_input)
 
 func _unhandled_input(in_event: InputEvent) -> void:
 	
@@ -103,6 +106,10 @@ func _unhandled_input(in_event: InputEvent) -> void:
 			pass
 		else:
 			handle_tap_input(in_event.position, in_event.is_released())
+		get_viewport().set_input_as_handled()
+		
+	elif in_event.is_action_pressed(&"Jump"):
+		HandleJumpInput()
 		get_viewport().set_input_as_handled()
 		
 	elif in_event.is_action_pressed(&"1"):
@@ -120,7 +127,6 @@ func _unhandled_input(in_event: InputEvent) -> void:
 	elif in_event.is_action_pressed(&"LeaveBarrel"):
 		HandleLeaveBarrelInput()
 		get_viewport().set_input_as_handled()
-		
 
 var TapInputCallableArray: Array[Callable] = []
 
@@ -139,6 +145,10 @@ func handle_tap_input(InScreenPosition: Vector2, InReleased: bool) -> void:
 		ConsumedByPawn = true
 	
 	TapInputHandled.emit(InScreenPosition, GlobalPosition, InReleased, ConsumedByPawn)
+
+func HandleJumpInput() -> void:
+	if controlled_pawn:
+		controlled_pawn.handle_controller_jump_input()
 
 func HandleNumberInput(InNumber: int) -> void:
 	#_Inventory.TryUseActiveArtifactByIndex(InNumber - 1)

@@ -12,14 +12,21 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 @export var owner_attribute_set: AttributeSet
 
 @export_category("Physics")
+@export var apply_gravity: bool = true
 @export var mass: float = 1.0
 @export var should_bounce: bool = false
 @export var launch_velocity_reset_threshold: float = 10.0
 
+var cached_gravity_velocity: Vector2
+
 @export_category("Velocity")
 @export var move_speed: float = 32.0
 @export var sync_with_sprite_move_animation_base_speed: bool = true
+@export var jump_impulse_magnitude: float = 320.0
 @export var launch_velocity_damp: float = 4.0
+
+@export_category("Input")
+@export var input_velocity_mul: Vector2 = Vector2.ONE
 
 func _ready() -> void:
 	
@@ -37,6 +44,10 @@ func _ready() -> void:
 			if not owner_sprite:
 				owner_attribute_set = owner_pawn.find_child("*ttribute*et*") as AttributeSet
 	else:
+		
+		if apply_gravity:
+			cached_gravity_velocity = -owner_body.up_direction * ProjectSettings.get_setting("physics/2d/default_gravity")
+		
 		mass *= owner_pawn.get_size_scale()
 		
 		if sync_with_sprite_move_animation_base_speed:
@@ -65,6 +76,12 @@ func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul:
 	else:
 		movement_velocity = in_velocity
 
+func apply_movement_input(in_input: Vector2) -> void:
+	set_movement_velocity(move_speed * in_input * input_velocity_mul, true)
+
+func apply_jump_input() -> void:
+	launch(jump_impulse_magnitude * owner_body.up_direction)
+
 signal bounce(in_bounce_collision: KinematicCollision2D)
 
 func launch(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool = false) -> bool:
@@ -82,6 +99,12 @@ func _physics_process(in_delta: float):
 	
 	prev_velocity = owner_body.get_real_velocity()
 	var external_velocity := Vector2.ZERO
+	
+	if apply_gravity and not owner_body.is_on_floor():
+		if prev_velocity.y > 0.0:
+			external_velocity += cached_gravity_velocity * mass * 1.5
+		else:
+			external_velocity += cached_gravity_velocity * mass
 	
 	assert(pending_launch_velocity.is_finite())
 	if pending_launch_velocity.is_zero_approx():

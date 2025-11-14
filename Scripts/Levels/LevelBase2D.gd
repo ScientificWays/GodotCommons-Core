@@ -144,7 +144,8 @@ func update_level_music() -> void:
 		if not AudioGlobals.IsMusicPlaying(LevelMusicBankLabel, current_music):
 			AudioGlobals.TryPlayMusic(LevelMusicBankLabel, current_music)
 	else:
-		AudioGlobals.TryStopMusic()
+		if AudioGlobals.IsAnyMusicPlaying():
+			AudioGlobals.TryStopMusic()
 
 var override_level_music: MusicTrackResource
 var override_level_music_source_ids: Array[int]

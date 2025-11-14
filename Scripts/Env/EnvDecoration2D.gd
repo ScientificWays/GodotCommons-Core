@@ -16,9 +16,7 @@ class_name Debris2D
 var static_body_damage_receiver: DamageReceiver
 
 @export_category("Gibs")
-@export var break_gibs: Array[PackedScene] = [
-	preload("res://Scenes/Env/Gibs/Stone/StoneGib001.tscn")
-]
+@export var break_gibs: Array[PackedScene] = []
 @export var break_gibs_num_min_max: Vector2i = Vector2i(1, 2)
 @export var break_gibs_mobile_web_num_mul: float = 0.5
 @export var break_gibs_direction_spread: Vector2 = Vector2(-0.4, 0.4)
