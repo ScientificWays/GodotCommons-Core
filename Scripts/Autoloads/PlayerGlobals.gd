@@ -8,9 +8,9 @@ func _ready() -> void:
 ##
 ## Respawn
 ##
-func RespawnAllPlayers() -> void:
-	for SampelPlayer: PlayerController in PlayerArray:
-		SampelPlayer.restart()
+func restart_all_players(in_initial_restart: bool) -> void:
+	for sample_player: PlayerController in PlayerArray:
+		sample_player.restart(in_initial_restart)
 
 ##
 ## Camera
@@ -28,8 +28,8 @@ func GetLevelPlayerCurrentCameraRect() -> Rect2:
 	return PlayerArray[0].GetCurrentCameraRect() ## TODO: Add this method
 
 func ResetAllPlayersZoom() -> void:
-	for SampelPlayer: PlayerController in PlayerArray:
-		SampelPlayer._camera.ResetZoom()
+	for sample_player: PlayerController in PlayerArray:
+		sample_player._camera.ResetZoom()
 
 ##
 ## Fade

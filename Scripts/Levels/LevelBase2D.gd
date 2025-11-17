@@ -99,7 +99,7 @@ func _init_game_state() -> void:
 func _handle_begin_play() -> void:
 	
 	if RespawnAllPlayersOnBeginPlay:
-		PlayerGlobals.RespawnAllPlayers()
+		PlayerGlobals.restart_all_players(true)
 	
 	if start_default_level_music_on_begin_play:
 		start_default_level_music()

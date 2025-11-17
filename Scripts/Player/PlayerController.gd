@@ -47,12 +47,14 @@ var controlled_pawn: Pawn2D:
 		
 		if is_instance_valid(controlled_pawn):
 			controlled_pawn.tree_exited.disconnect(_on_controlled_pawn_tree_exited)
+			controlled_pawn.died.disconnect(_on_controlled_pawn_died)
 			controlled_pawn.remove_meta(PlayerControllerMeta)
 		
 		controlled_pawn = InPawn
 		
 		if is_instance_valid(controlled_pawn):
 			controlled_pawn.tree_exited.connect(_on_controlled_pawn_tree_exited)
+			controlled_pawn.died.connect(_on_controlled_pawn_died)
 			controlled_pawn.set_meta(PlayerControllerMeta, self)
 		
 		controlled_pawn_changed.emit()
@@ -60,10 +62,34 @@ var controlled_pawn: Pawn2D:
 signal controlled_pawn_changed()
 signal ControlledPawnTeleport(in_reset_camera: bool)
 
+func _on_controlled_pawn_died(in_immediately: bool) -> void:
+	
+	if PlatformGlobals.is_metrics_enabled():
+		
+		var death_level := WorldGlobals._level.scene_file_path.get_basename()
+		var death_position := Vector2i(controlled_pawn.global_position)
+		var death_source := "other"
+		
+		if controlled_pawn.damage_receiver:
+			
+			var last_damage_source := controlled_pawn.damage_receiver.LastDamageSource
+			var last_damage_instigator := controlled_pawn.damage_receiver.LastDamageInstigator
+			
+			if last_damage_source is Pawn2D:
+				death_source = String(last_damage_source.unique_name)
+			elif last_damage_instigator is Pawn2D:
+				death_source = String(last_damage_instigator.unique_name)
+			elif not last_damage_source.scene_file_path.is_empty():
+				death_source = last_damage_source.scene_file_path.get_file().get_slice(".", 0)
+			elif not last_damage_instigator.scene_file_path.is_empty():
+				death_source = last_damage_instigator.scene_file_path.get_file().get_slice(".", 0)
+		
+		PlatformGlobals.send_reach_goal_metrics("player_death", { "level": death_level, "position": death_position, "source": death_source }, false)
+
 func _on_controlled_pawn_tree_exited() -> void:
 	controlled_pawn = null
 
-func restart() -> void:
+func restart(in_initial_restart: bool = false) -> void:
 	
 	var _level := WorldGlobals._level as LevelBase2D
 	var RestartPosition := _level.get_player_spawn_position(self)
@@ -73,6 +99,9 @@ func restart() -> void:
 	controlled_pawn.controller = self
 	
 	_level._y_sorted.add_child.call_deferred(controlled_pawn)
+	
+	if not in_initial_restart:
+		WorldGlobals._game_state.current_restarts_num += 1
 
 func GetControlledPawnLinearVelocity() -> Vector2:
 	
@@ -106,10 +135,6 @@ func _unhandled_input(in_event: InputEvent) -> void:
 			pass
 		else:
 			handle_tap_input(in_event.position, in_event.is_released())
-		get_viewport().set_input_as_handled()
-		
-	elif in_event.is_action_pressed(&"Jump"):
-		HandleJumpInput()
 		get_viewport().set_input_as_handled()
 		
 	elif in_event.is_action_pressed(&"1"):

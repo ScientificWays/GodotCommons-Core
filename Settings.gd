@@ -9,3 +9,6 @@ const PAUSE_MENU_UI_SETTING_DEFAULT = "res://Scenes/UI/Menu/PauseMenuUI.tscn"
 
 const CONFIRM_UI_SETTING_NAME = "godot_commons-core/ui/confirm_ui_path"
 const CONFIRM_UI_SETTING_DEFAULT = "res://Scenes/UI/Menu/ConfirmUI.tscn"
+
+const YANDEX_METRICS_COUNTER_SETTING_NAME = "godot_commons-core/metrics/yandex_metrics"
+const YANDEX_METRICS_COUNTER_SETTING_DEFAULT = -1

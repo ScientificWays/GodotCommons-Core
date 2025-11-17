@@ -110,6 +110,7 @@ func handle_generate() -> void:
 	reset_generate()
 	
 	var generate_start_ticks_ms := Time.get_ticks_msec()
+	var generate_await_ticks_ms := 0
 	
 	if not Engine.is_editor_hint():
 		print(name, " handle_generate()")
@@ -175,10 +176,16 @@ func handle_generate() -> void:
 				
 				debug_labels.append(new_debug_label)
 		distance_unmarked_cells = new_distance_unmarked_cells
-		#await get_tree().process_frame
+		if not Engine.is_editor_hint():
+			var pre_await_ticks_ms := Time.get_ticks_msec()
+			await get_tree().process_frame
+			generate_await_ticks_ms += (Time.get_ticks_msec() - pre_await_ticks_ms)
 	
 	#print("handle_generate() after wall distances at %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
-	#await get_tree().process_frame
+	if not Engine.is_editor_hint():
+		var pre_await_ticks_ms := Time.get_ticks_msec()
+		await get_tree().process_frame
+		generate_await_ticks_ms += (Time.get_ticks_msec() - pre_await_ticks_ms)
 	
 	var fog_dynamic_grid_size := procedurals_tile_set.get_random_fog_grid_size()
 	
@@ -225,7 +232,10 @@ func handle_generate() -> void:
 				continue
 	
 	#print("handle_generate() after set scenes at %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
-	#await get_tree().process_frame
+	if not Engine.is_editor_hint():
+		var pre_await_ticks_ms := Time.get_ticks_msec()
+		await get_tree().process_frame
+		generate_await_ticks_ms += (Time.get_ticks_msec() - pre_await_ticks_ms)
 	
 	var wall_updates: Array[Dictionary] = []
 	for sample_noise_data: LevelTileSet_ProceduralData in noise_data:
@@ -273,7 +283,7 @@ func handle_generate() -> void:
 	set_process(true)
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
-	print("handle_generate() took %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms))
+	print("handle_generate() took %d ms" % (Time.get_ticks_msec() - generate_start_ticks_ms - generate_await_ticks_ms))
 
 func reset_generate() -> void:
 	

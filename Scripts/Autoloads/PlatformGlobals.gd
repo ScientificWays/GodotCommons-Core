@@ -381,19 +381,31 @@ func _on_yandex_ads_interstitial_closed() -> void:
 ##
 ## Metrics
 ##
-func send_metrics(in_code: int, in_type: String, in_target_name: String, in_release_only: bool = true):
+@onready var yandex_metrics_counter: int = ProjectSettings.get_setting_with_override(GodotCommonsCore_Settings.YANDEX_METRICS_COUNTER_SETTING_NAME) as int
+
+func is_metrics_enabled() -> bool:
+	return is_web()
+
+func send_reach_goal_metrics(in_target_name: String, in_params: Dictionary = {}, in_release_only: bool = true) -> bool:
+	return _send_metrics(yandex_metrics_counter, "reachGoal", in_target_name, in_params, in_release_only)
+
+func _send_metrics(in_code: int, in_type: String, in_target_name: String, in_params: Dictionary, in_release_only: bool) -> bool:
 	
-	if not is_web():
-		return
+	assert(is_metrics_enabled())
+	
+	if yandex_metrics_counter < 0:
+		push_error("PlatformGlobals._send_metrics() invalid yandex_metrics_counter %s!" % yandex_metrics_counter)
+		return false
 	
 	if in_release_only and not is_release():
-		return
+		return false
 	
 	#print("PlatformGlobals.send_metrics() code = %d, target_name = %s", [ in_code, in_target_name ])
 	
 	#var js_window := JavaScriptBridge.get_interface("window")
 	#js_window.ym(in_code, in_type, in_target_name)
 	
-	var eval_js_code := "ym(%d, \"%s\", \"%s\")" % [ in_code, in_type, in_target_name ]
+	var eval_js_code := "ym(%d, \"%s\", \"%s\", %s)" % [ in_code, in_type, in_target_name, JSON.stringify(in_params) ]
 	print("PlatformGlobals.send_metrics() eval_js_code = ", eval_js_code)
 	JavaScriptBridge.eval(eval_js_code)
+	return true

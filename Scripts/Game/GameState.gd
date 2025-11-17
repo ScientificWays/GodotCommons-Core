@@ -27,6 +27,8 @@ const GlobalTimer_OverrideTimeMeta: StringName = &"GlobalTimer_OverrideTime"
 signal GlobalTimerCreated()
 signal GlobalTimerDestroyed()
 
+var current_restarts_num: int = 0
+
 var BeginPlayOnLevelReady: bool = true
 
 var OwnedArtifactDictionary: Dictionary = {}
@@ -39,6 +41,8 @@ func OnNewSceneLoaded():
 	SpawnedArtifactDictionary = {}
 
 func handle_level_ready():
+	
+	current_restarts_num = 0
 	
 	InitNewLocalPlayer()
 	
