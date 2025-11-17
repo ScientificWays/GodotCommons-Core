@@ -123,10 +123,6 @@ func _unhandled_input(in_event: InputEvent) -> void:
 	elif in_event.is_action_pressed(&"3"):
 		HandleNumberInput(3)
 		get_viewport().set_input_as_handled()
-		
-	elif in_event.is_action_pressed(&"LeaveBarrel"):
-		HandleLeaveBarrelInput()
-		get_viewport().set_input_as_handled()
 
 var TapInputCallableArray: Array[Callable] = []
 
@@ -152,9 +148,6 @@ func HandleJumpInput() -> void:
 
 func HandleNumberInput(InNumber: int) -> void:
 	#_Inventory.TryUseActiveArtifactByIndex(InNumber - 1)
-	pass
-
-func HandleLeaveBarrelInput() -> void:
 	pass
 
 ##
