@@ -46,7 +46,7 @@ func _ready() -> void:
 	else:
 		
 		if apply_gravity:
-			cached_gravity_velocity = -owner_body.up_direction * ProjectSettings.get_setting("physics/2d/default_gravity")
+			cached_gravity_velocity = ProjectSettings.get_setting("physics/2d/default_gravity_vector") * ProjectSettings.get_setting("physics/2d/default_gravity")
 		
 		mass *= owner_pawn.get_size_scale()
 		

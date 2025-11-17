@@ -14,6 +14,10 @@ func _init(in_data_array: Array[LevelTileSet_TerrainData]) -> void:
 				BetterTerrain.add_terrain(self, sample_category, sample_data.ui_color, BetterTerrain.TerrainType.CATEGORY, [], { "path": sample_data.icon_path })
 				all_categories[sample_category] = all_categories.size()
 	
+	add_physics_layer()
+	set_physics_layer_collision_layer(0, GameGlobals_Class.collision_layer_none)
+	set_physics_layer_collision_mask(0, GameGlobals_Class.collision_layer_none)
+	
 	for sample_data: LevelTileSet_TerrainData in in_data_array:
 		
 		var new_source := TileSetAtlasSource.new()

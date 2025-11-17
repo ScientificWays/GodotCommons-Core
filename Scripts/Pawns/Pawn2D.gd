@@ -21,7 +21,7 @@ enum Type
 
 @export_category("Attributes")
 @export var attribute_set: AttributeSet
-@export var max_health: float = 50.0
+@export var max_health: float = 100.0
 @export var init_health_bar: bool = false
 @export var health_bar_size_mul: float = 1.0
 
