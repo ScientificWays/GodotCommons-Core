@@ -11,7 +11,7 @@ static func try_get_from(in_node: Node) -> PlayerController:
 @export var _camera: PlayerCamera2D
 
 @export_category("Pawn")
-@export var default_pawn_scene: PackedScene
+@export var default_pawn_scene_path: String
 
 @export_category("Inventory")
 @export var default_item_containers: Array[PackedScene]
@@ -26,7 +26,7 @@ func _ready() -> void:
 		set_process(false)
 	else:
 		assert(_camera)
-		assert(default_pawn_scene)
+		assert(not get_new_pawn_scene_path().is_empty())
 
 func _process(in_delta: float) -> void:
 	ProcessMovementInputs(in_delta)
@@ -89,12 +89,15 @@ func _on_controlled_pawn_died(in_immediately: bool) -> void:
 func _on_controlled_pawn_tree_exited() -> void:
 	controlled_pawn = null
 
+func get_new_pawn_scene_path() -> String:
+	return default_pawn_scene_path
+
 func restart(in_initial_restart: bool = false) -> void:
 	
 	var _level := WorldGlobals._level as LevelBase2D
 	var RestartPosition := _level.get_player_spawn_position(self)
 	
-	controlled_pawn = default_pawn_scene.instantiate()
+	controlled_pawn = (load(get_new_pawn_scene_path()) as PackedScene).instantiate()
 	controlled_pawn.position = RestartPosition
 	controlled_pawn.controller = self
 	
