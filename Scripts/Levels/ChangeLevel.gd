@@ -38,5 +38,7 @@ func change_level_immediately() -> void:
 	WorldGlobals.pending_scene_path = level_scene_path
 	
 	var _game_mode := WorldGlobals._game_state._game_mode
-	assert(not _game_mode.TransitionScenePath.is_empty())
-	WorldGlobals.load_scene_by_path(_game_mode.TransitionScenePath)
+	if _game_mode.TransitionScenePath.is_empty():
+		WorldGlobals.load_pending_scene()
+	else:
+		WorldGlobals.load_scene_by_path(_game_mode.TransitionScenePath)
