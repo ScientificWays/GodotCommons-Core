@@ -33,6 +33,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		if not owner_player_controller:
 			owner_player_controller = find_parent("*layer*")
+		set_physics_process(false)
 	else:
 		process_mode = Node.PROCESS_MODE_ALWAYS
 		
