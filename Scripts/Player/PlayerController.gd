@@ -33,11 +33,11 @@ func _process(in_delta: float) -> void:
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
-		PlayerGlobals.PlayerArray.append(self)
+		PlayerGlobals.player_array.append(self)
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
-		PlayerGlobals.PlayerArray.erase(self)
+		PlayerGlobals.player_array.erase(self)
 
 ##
 ## Pawn
@@ -64,7 +64,7 @@ signal ControlledPawnTeleport(in_reset_camera: bool)
 
 func _on_controlled_pawn_died(in_immediately: bool) -> void:
 	
-	if PlatformGlobals.is_metrics_enabled():
+	if PlatformGlobals.is_telemetry_enabled():
 		
 		var death_level := WorldGlobals._level.scene_file_path.get_basename()
 		var death_position := Vector2i(controlled_pawn.global_position)
@@ -84,7 +84,7 @@ func _on_controlled_pawn_died(in_immediately: bool) -> void:
 			elif not last_damage_instigator.scene_file_path.is_empty():
 				death_source = last_damage_instigator.scene_file_path.get_file().get_slice(".", 0)
 		
-		PlatformGlobals.send_reach_goal_metrics("player_death", { "level": death_level, "position": death_position, "source": death_source }, false)
+		PlatformGlobals.send_telemetry("player_death", { "level": death_level, "position": death_position, "source": death_source }, false)
 
 func _on_controlled_pawn_tree_exited() -> void:
 	controlled_pawn = null

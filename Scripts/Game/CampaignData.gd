@@ -203,12 +203,12 @@ func _handle_end_play() -> void:
 	
 	if WorldGlobals._level.was_completed:
 		
-		if PlatformGlobals.is_metrics_enabled():
+		if PlatformGlobals.is_telemetry_enabled():
 			
 			var level_time := WorldGlobals._game_state._global_timer.time_seconds
 			var level_restarts := WorldGlobals._game_state.current_restarts_num
 			
-			PlatformGlobals.send_reach_goal_metrics(_get_goal_level_key(current_level), { "time": level_time, "restarts": level_restarts })
+			PlatformGlobals.send_telemetry(_get_goal_level_key(current_level), { "time": level_time, "restarts": level_restarts })
 		
 		if current_level == levels_path_array.size() - 1:
 			completions += 1

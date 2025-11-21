@@ -31,10 +31,9 @@ func _enter_tree():
 		GodotCommonsCore_Settings.CONFIRM_UI_SETTING_DEFAULT,
 		TYPE_STRING)
 	
-	
 	add_project_setting(
 		GodotCommonsCore_Settings.YANDEX_METRICS_COUNTER_SETTING_NAME,
-		GodotCommonsCore_Settings.YANDEX_METRICS_COUNTER_SETTING_DEFAULT,
+		GodotCommonsCore_Settings.YANDEX_METRICS_COUNTER_SETTING_DISABLED,
 		TYPE_INT)
 
 func _exit_tree():

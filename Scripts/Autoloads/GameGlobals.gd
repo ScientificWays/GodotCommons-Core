@@ -47,7 +47,7 @@ var _custom_logger: CustomLogger
 
 func _ready():
 	
-	#_custom_logger = CustomLogger.new()
+	_custom_logger = CustomLogger.new()
 	
 	#DebugMenu.style = DebugMenu.Style.VISIBLE_DETAILED
 	#if OS.get_name() == &"Windows":
@@ -58,7 +58,6 @@ func _ready():
 		#Engine.max_fps = 120
 	
 	#SaveGlobals.SettingsProfile_PhysicsTickRateChanged_ConnectAndTryEmit(OnPhysicsTickRateSettingChanged)
-	pass
 
 ##
 ## Physics
