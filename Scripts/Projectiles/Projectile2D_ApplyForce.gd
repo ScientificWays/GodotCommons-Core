@@ -55,7 +55,7 @@ func _physics_process(in_delta: float) -> void:
 	
 	var ProjectileRotation := global_rotation
 	var ConstantDirection := Vector2.from_angle(ProjectileRotation)
-	var ConstantValue = ConstantDirection * calc_magnitude()
+	var ConstantValue := ConstantDirection * calc_magnitude()
 	
 	if ApplyConstantAsVelocity:
 		NewVelocity += ConstantValue

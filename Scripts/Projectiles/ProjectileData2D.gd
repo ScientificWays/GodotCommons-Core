@@ -58,4 +58,4 @@ func get_hit_damage_mul(in_level: int) -> float:
 	return hit_damage_mul + hit_damage_mul_per_level_gain * in_level
 
 @export_category("Lifetime")
-@export var max_lifetime: float = -1.0
+@export var max_lifetime: float = 10.0
