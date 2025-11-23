@@ -20,6 +20,9 @@ var unique_name: String = "zana"
 
 func _ready() -> void:
 	
+	if not ProjectSettings.get_setting_with_override("input_devices/pointing/emulate_touch_from_mouse"):
+		push_warning("emulate_touch_from_mouse is not set, handle_tap_input() will not work with mouse!")
+	
 	if Engine.is_editor_hint():
 		if not _camera:
 			_camera = find_child("*?amera*")
@@ -154,21 +157,21 @@ func _unhandled_input(in_event: InputEvent) -> void:
 
 var TapInputCallableArray: Array[Callable] = []
 
-signal TapInputHandled(InScreenPosition: Vector2, InGlobalPosition: Vector2, InReleased: bool, InConsumedByPawn: bool)
+signal TapInputHandled(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool, InConsumedByPawn: bool)
 
-func handle_tap_input(InScreenPosition: Vector2, InReleased: bool) -> void:
+func handle_tap_input(in_screen_position: Vector2, in_released: bool) -> void:
 	
-	var GlobalPosition := get_viewport().get_canvas_transform().affine_inverse() * InScreenPosition
+	var GlobalPosition := get_viewport().get_canvas_transform().affine_inverse() * in_screen_position
 	#DamageNumberUI.spawn(GlobalPosition + Vector2(randf_range(-10.0, 10.0), 0.0), 1)
 	
 	var ConsumedByPawn := false
-	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, InReleased ]):
+	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, in_released ]):
 		pass
 	elif is_instance_valid(controlled_pawn):
-		controlled_pawn.controller_tap_input.emit(InScreenPosition, GlobalPosition, InReleased)
+		controlled_pawn.handle_controller_tap_input(in_screen_position, GlobalPosition, in_released)
 		ConsumedByPawn = true
 	
-	TapInputHandled.emit(InScreenPosition, GlobalPosition, InReleased, ConsumedByPawn)
+	TapInputHandled.emit(in_screen_position, GlobalPosition, in_released, ConsumedByPawn)
 
 func HandleJumpInput() -> void:
 	if controlled_pawn:

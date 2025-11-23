@@ -116,6 +116,9 @@ func _exit_tree() -> void:
 		if override_level_music:
 			WorldGlobals._level.remove_override_level_music_source(self, remove_override_level_music_delay)
 
+func handle_controller_tap_input(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool) -> void:
+	controller_tap_input.emit(in_screen_position, in_global_position, in_released)
+
 func handle_controller_movement_input(in_input: Vector2) -> void:
 	if character_movement:
 		character_movement.apply_movement_input(in_input)
