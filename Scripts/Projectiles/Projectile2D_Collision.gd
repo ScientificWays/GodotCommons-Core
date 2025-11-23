@@ -49,7 +49,7 @@ func _on_target_entered(in_target: Node):
 			var instigator_receiver := DamageReceiver.try_get_from(_owner._instigator)
 			if target_receiver != instigator_receiver:
 				
-				var target_damage := 10.0 * _owner.data.get_hit_damage_mul(_owner._level)
+				var target_damage := _owner.data.get_hit_damage(_owner._level)
 				target_receiver.try_receive_damage(self, _owner._instigator, target_damage, DamageReceiver.DamageType_RangedHit, false)
 	
 	if _owner.data.should_remove_on_hit:

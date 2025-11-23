@@ -49,13 +49,13 @@ func get_hit_sound_volume_db(in_hit_speed: float) -> float:
 @export_category("Hits")
 @export var hit_speed_threshold: float = 0.0
 @export var should_damage_on_hit: bool = false
-@export var hit_damage_mul: float = 1.0
-@export var hit_damage_mul_per_level_gain: float = 0.0
+@export var hit_damage: float = 1.0
+@export var hit_damage_per_level_gain: float = 1.0
 @export var should_remove_on_hit: bool = false
 @export var monitor_hits_start_delay: float = 0.0
 
-func get_hit_damage_mul(in_level: int) -> float:
-	return hit_damage_mul + hit_damage_mul_per_level_gain * in_level
+func get_hit_damage(in_level: int) -> float:
+	return hit_damage + hit_damage_per_level_gain * in_level
 
 @export_category("Lifetime")
 @export var max_lifetime: float = 10.0
