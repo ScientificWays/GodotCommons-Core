@@ -199,6 +199,8 @@ func handle_death_drop() -> void:
 func teleport_to(in_position: Vector2, in_rotation: float = global_rotation, in_reset_camera: bool = false) -> bool:
 	
 	var new_transform := Transform2D(in_rotation, in_position)
+	
+	transform = new_transform ## For CharacterBody2D pawns
 	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, new_transform)
 	
 	if controller:

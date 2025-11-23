@@ -80,7 +80,17 @@ func apply_movement_input(in_input: Vector2) -> void:
 	set_movement_velocity(move_speed * in_input * input_velocity_mul, true)
 
 func apply_jump_input() -> void:
-	launch(jump_impulse_magnitude * owner_body.up_direction)
+	try_jump()
+
+func can_jump() -> bool:
+	return owner_body.is_on_floor()
+
+func try_jump() -> bool:
+	
+	if can_jump():
+		launch(jump_impulse_magnitude * owner_body.up_direction)
+		return true
+	return false
 
 signal bounce(in_bounce_collision: KinematicCollision2D)
 

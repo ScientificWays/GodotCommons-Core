@@ -5,16 +5,23 @@ static func try_get_from(in_node: Node) -> Pawn2D_Navigation:
 	return ModularGlobals.try_get_from(in_node, Pawn2D_Navigation)
 
 @export_category("Owner")
+@export var owner_pawn: Pawn2D
 @export var owner_movement: Pawn2D_CharacterMovement
+
+@export_category("Jump")
+@export var jump_on_vertical_path: bool = false
+@export var jump_vertical_y_threshold: float = -0.8
 
 var target_node: Node2D:
 	set(in_node):
 		target_node = in_node
 		if target_node:
+			assert(target_node != owner_pawn)
 			target_position = target_node.global_position
 
 func _ready() -> void:
 	
+	assert(owner_pawn)
 	assert(owner_movement)
 	
 	target_reached.connect(_on_target_reached)
@@ -38,6 +45,10 @@ func _physics_process(in_delta: float) -> void:
 	else:
 		var next_path_position := get_next_path_position()
 		var move_direction := owner_movement.owner_body.global_position.direction_to(next_path_position)
+		
+		if jump_on_vertical_path:
+			if move_direction.y < jump_vertical_y_threshold:
+				owner_movement.apply_jump_input()
 		
 		velocity = move_direction * owner_movement.move_speed
 	
