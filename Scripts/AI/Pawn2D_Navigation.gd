@@ -18,6 +18,8 @@ var target_node: Node2D:
 		if target_node:
 			assert(target_node != owner_pawn)
 			target_position = target_node.global_position
+		else:
+			target_position = owner_pawn.global_position
 
 func _ready() -> void:
 	
