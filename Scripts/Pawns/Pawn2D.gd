@@ -28,6 +28,8 @@ enum Type
 @export_category("Damage")
 @export var damage_receiver: DamageReceiver
 @export var damage_sound_event: SoundEventResource
+@export var damage_animation_player: AnimationPlayer
+@export var damage_animation_name: StringName = &"hurt"
 @export var lethal_damage_sound_event: SoundEventResource
 @export var die_on_lethal_damage: bool = true
 @export var remove_on_death: bool = true
@@ -153,8 +155,15 @@ func _on_receive_damage_lethal(in_source: Node, in_damage: float, in_ignored_imm
 	handle_died(false)
 
 func _on_receive_damage(in_source: Node, in_damage: float, in_ignored_immunity_time: bool):
-	if not damage_receiver.received_lethal_damage and damage_sound_event:
-		AudioGlobals.try_play_sound_at_global_position(sound_bank_label, damage_sound_event, global_position)
+	
+	if not damage_receiver.received_lethal_damage:
+		
+		if damage_sound_event:
+			AudioGlobals.try_play_sound_at_global_position(sound_bank_label, damage_sound_event, global_position)
+		
+		if damage_animation_player:
+			damage_animation_player.stop()
+			damage_animation_player.play(damage_animation_name)
 
 func kill(in_immediately: bool = false) -> void:
 	handle_died(in_immediately)
