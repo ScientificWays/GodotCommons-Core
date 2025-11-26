@@ -145,7 +145,6 @@ func _unhandled_input(in_event: InputEvent) -> void:
 		
 	elif in_event is InputEventKey and (in_event.unicode > 0):
 		var event_char := char(in_event.unicode)
-		# unicode = 0 у служебных клавиш, поэтому проверяем
 		if "0" <= event_char and event_char <= "9": 
 			handle_number_input(int(event_char), in_event.is_pressed())
 			get_viewport().set_input_as_handled()

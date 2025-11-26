@@ -8,8 +8,14 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 @export var owner_movement: Pawn2D_CharacterMovement
 @export var owner_perception: Pawn2D_Perception
 
+@export_category("State")
+@export var is_enabled: bool = true:
+	set(in_is_enabled):
+		is_enabled = in_is_enabled
+		set_deferred("monitoring", is_enabled)
+		set_physics_process(is_enabled)
+
 @export_category("Damage")
-@export var start_disabled: bool = false
 @export var damage: float = 10.0
 @export_flags("MeleeHit", "RangedHit", "Explosion", "Fire", "Poison", "Impact", "Fall") var damage_type: int = DamageReceiver.DamageType_MeleeHit
 @export var damage_cooldown_time: float = 1.0
@@ -46,23 +52,12 @@ func _ready() -> void:
 	if owner_movement:
 		owner_movement.bounce.connect(_on_owner_movement_bounce)
 	
-	if start_disabled:
-		disable()
-	else:
-		enable()
+	is_enabled = is_enabled
 
 var process_cooldowns_callable: Callable = process_cooldowns_common
 
 func _physics_process(in_delta: float) -> void:
 	process_cooldowns_callable.call(in_delta)
-
-func enable() -> void:
-	set_deferred("monitoring", true)
-	set_physics_process(true)
-
-func disable() -> void:
-	set_deferred("monitoring", false)
-	set_physics_process(false)
 
 func is_valid_target(in_target: Node2D) -> bool:
 	return not owner_perception or owner_perception.is_valid_target(in_target)
