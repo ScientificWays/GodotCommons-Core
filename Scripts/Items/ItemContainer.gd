@@ -12,6 +12,7 @@ static func get_all_containers_in_owner(in_owner: Node) -> Array[ItemContainer]:
 	return out_array
 
 var _items_num_dictionary: Dictionary[ItemData, int]
+@export var _slots_num_max: int = 100
 
 signal items_changed()
 signal item_added(in_item_data: ItemData, in_added_num: int)
@@ -40,6 +41,15 @@ func set_items_from_dictionary_string(in_dictionary_string: String) -> void:
 func get_items_num(in_item_data: ItemData) -> int:
 	return _items_num_dictionary.get(in_item_data, 0)
 
+func get_slots_num_occupied() -> int:
+	return _items_num_dictionary.size()
+
+func get_slots_num_max() -> int:
+	return _slots_num_max
+
+func get_items_array() -> Array[ItemData]:
+	return _items_num_dictionary.keys()
+
 func set_item_num(in_item_data: ItemData, in_set_num: int) -> void:
 	
 	var delta := in_set_num - get_items_num(in_item_data)
@@ -50,10 +60,15 @@ func set_item_num(in_item_data: ItemData, in_set_num: int) -> void:
 
 func can_add_item(in_item_data: ItemData, in_add_num: int = 1) -> bool:
 	
-	if in_item_data.max_stack > 0:
-		return get_items_num(in_item_data) + in_add_num <= in_item_data.max_stack
+	var items_num := get_items_num(in_item_data)
+	
+	if items_num == 0:
+		return get_slots_num_occupied() < get_slots_num_max()
 	else:
-		return true
+		if in_item_data.max_stack > 0:
+			return (items_num + in_add_num) <= in_item_data.max_stack
+		else:
+			return true
 
 func try_add_item(in_item_data: ItemData, in_add_num: int = 1) -> bool:
 	

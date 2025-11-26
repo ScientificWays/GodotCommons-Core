@@ -144,15 +144,15 @@ func _unhandled_input(in_event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		
 	elif in_event.is_action_pressed(&"1"):
-		HandleNumberInput(1)
+		handle_number_input(1)
 		get_viewport().set_input_as_handled()
 		
 	elif in_event.is_action_pressed(&"2"):
-		HandleNumberInput(2)
+		handle_number_input(2)
 		get_viewport().set_input_as_handled()
 		
 	elif in_event.is_action_pressed(&"3"):
-		HandleNumberInput(3)
+		handle_number_input(3)
 		get_viewport().set_input_as_handled()
 
 var TapInputCallableArray: Array[Callable] = []
@@ -173,12 +173,12 @@ func handle_tap_input(in_screen_position: Vector2, in_released: bool) -> void:
 	
 	TapInputHandled.emit(in_screen_position, GlobalPosition, in_released, ConsumedByPawn)
 
-func HandleJumpInput() -> void:
+func handle_jump_input() -> void:
 	if controlled_pawn:
 		controlled_pawn.handle_controller_jump_input()
 
-func HandleNumberInput(InNumber: int) -> void:
-	#_Inventory.TryUseActiveArtifactByIndex(InNumber - 1)
+func handle_number_input(in_number: int) -> void:
+	#_Inventory.TryUseActiveArtifactByIndex(in_number - 1)
 	pass
 
 ##
