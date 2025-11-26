@@ -31,7 +31,18 @@ var _Direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
 			_Direction = InDirection
 			
 			if animation_data.UseHorizontalDirectionFlip:
-				flip_h = _Direction == AnimationData2D.Direction.Left
+				flip_h = (_Direction == AnimationData2D.Direction.Left)
+			
+			for sample_flip_target: Node2D in direction_flip_targets:
+				
+				if flip_h:
+					sample_flip_target.position.x = -absf(sample_flip_target.position.x)
+					sample_flip_target.scale.x = -absf(sample_flip_target.scale.x)
+				else:
+					sample_flip_target.position.x = absf(sample_flip_target.position.x)
+					sample_flip_target.scale.x = absf(sample_flip_target.scale.x)
+
+@export var direction_flip_targets: Array[Node2D]
 
 func IsIdleAnimationType() -> bool:
 	return _AnimationType == AnimationData2D.Type.Idle

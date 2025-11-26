@@ -14,6 +14,7 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 		is_enabled = in_is_enabled
 		set_deferred("monitoring", is_enabled)
 		set_physics_process(is_enabled)
+		visible = is_enabled
 
 @export_category("Damage")
 @export var damage: float = 10.0
@@ -57,6 +58,10 @@ func _ready() -> void:
 var process_cooldowns_callable: Callable = process_cooldowns_common
 
 func _physics_process(in_delta: float) -> void:
+	
+	if monitoring == false:
+		return
+	
 	process_cooldowns_callable.call(in_delta)
 
 func is_valid_target(in_target: Node2D) -> bool:
