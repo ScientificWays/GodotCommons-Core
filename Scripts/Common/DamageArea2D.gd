@@ -24,9 +24,13 @@ const ReceiveImpulseMethodName: StringName = &"DamageArea2D_receive_impulse"
 	set(in_time):
 		damage_initial_delay = in_time
 		if damage_initial_delay > 0.0:
+			if not area_entered.is_connected(_handle_damage_initial_delay):
+				area_entered.connect(_handle_damage_initial_delay)
 			if not body_entered.is_connected(_handle_damage_initial_delay):
 				body_entered.connect(_handle_damage_initial_delay)
 		else:
+			if area_entered.is_connected(_handle_damage_initial_delay):
+				area_entered.disconnect(_handle_damage_initial_delay)
 			if body_entered.is_connected(_handle_damage_initial_delay):
 				body_entered.disconnect(_handle_damage_initial_delay)
 
@@ -114,6 +118,7 @@ func process_cooldowns_individual(in_delta: float) -> void:
 			continue
 		
 		apply_impact_to(sample_target)
+		individual_cooldown_time_dictionary[sample_target] = damage_cooldown_time
 	
 	for sample_target: Node2D in individual_cooldown_time_dictionary.keys():
 		
@@ -122,6 +127,8 @@ func process_cooldowns_individual(in_delta: float) -> void:
 			individual_cooldown_time_dictionary[sample_target] -= in_delta
 			
 			if individual_cooldown_time_dictionary[sample_target] > 0.0:
+				pass
+			else:
 				individual_cooldown_time_dictionary.erase(sample_target)
 		else:
 			individual_cooldown_time_dictionary.erase(sample_target)
