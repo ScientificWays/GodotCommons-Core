@@ -108,3 +108,7 @@ func _handle_remove_item(in_item_data: ItemData, in_remove_num: int) -> void:
 	
 	item_removed.emit(in_item_data, in_remove_num)
 	items_changed.emit()
+
+func remove_all_items() -> void:
+	for sample_data: ItemData in _items_num_dictionary.keys():
+		try_remove_item(sample_data, _items_num_dictionary[sample_data])

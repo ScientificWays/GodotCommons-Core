@@ -48,11 +48,11 @@ func _ready():
 	
 	if Engine.is_editor_hint():
 		if not wall_layer:
-			wall_layer = get_parent().find_child("*?all*")
+			wall_layer = get_parent().find_child("*?all*") as LevelTileMapLayer
 		if not floor_layer:
-			floor_layer = get_parent().find_child("*?loor*")
+			floor_layer = get_parent().find_child("*?loor*") as LevelTileMapLayer
 		if not damage_layer:
-			damage_layer = find_child("*?amage*")
+			damage_layer = find_child("*?amage*") as LevelTileMapLayer_Damage
 	
 	try_regenerate_tile_set()
 
