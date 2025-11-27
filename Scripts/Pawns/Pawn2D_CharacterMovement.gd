@@ -45,6 +45,9 @@ func _ready() -> void:
 				owner_attribute_set = owner_pawn.find_child("*ttribute*et*") as AttributeSet
 	else:
 		
+		if apply_gravity == (owner_body.motion_mode == CharacterBody2D.MotionMode.MOTION_MODE_FLOATING):
+			push_warning("Applying gravity to floating body! (%s)" % owner_body)
+		
 		if apply_gravity:
 			cached_gravity_velocity = ProjectSettings.get_setting("physics/2d/default_gravity_vector") * ProjectSettings.get_setting("physics/2d/default_gravity")
 		
@@ -76,6 +79,11 @@ func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul:
 	else:
 		movement_velocity = in_velocity
 
+var pending_force: Vector2 = Vector2.ZERO
+
+func apply_force(in_force: Vector2) -> void:
+	pending_force += in_force
+
 func apply_movement_input(in_input: Vector2) -> void:
 	set_movement_velocity(move_speed * in_input * input_velocity_mul, true)
 
@@ -103,12 +111,18 @@ func launch(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool = false) 
 	pending_launch_velocity += in_velocity
 	return true
 
+func launch_forward(in_magnitude: float, in_scale_by_movement_speed_mul: bool = false) -> bool:
+	var velocity := owner_sprite.get_forward_direction() * in_magnitude
+	return launch(velocity, in_scale_by_movement_speed_mul)
+
 var prev_velocity: Vector2 = Vector2.ZERO
 
 func _physics_process(in_delta: float):
 	
 	prev_velocity = owner_body.get_real_velocity()
-	var external_velocity := Vector2.ZERO
+	
+	var external_velocity := pending_force
+	pending_force = Vector2.ZERO
 	
 	if apply_gravity and not owner_body.is_on_floor():
 		if prev_velocity.y > 0.0:

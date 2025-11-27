@@ -44,6 +44,9 @@ var _Direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
 
 @export var direction_flip_targets: Array[Node2D]
 
+func get_forward_direction() -> Vector2:
+	return Vector2.LEFT if flip_h else Vector2.RIGHT
+
 func IsIdleAnimationType() -> bool:
 	return _AnimationType == AnimationData2D.Type.Idle
 
