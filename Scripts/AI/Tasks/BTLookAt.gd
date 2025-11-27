@@ -9,8 +9,9 @@ func _enter() -> void:
 	owner_sprite = Pawn2D_Sprite.try_get_from(agent)
 
 func _exit() -> void:
-	owner_sprite.LookAtTarget = null
-	owner_sprite = null
+	if is_instance_valid(owner_sprite):
+		owner_sprite.LookAtTarget = null
+		owner_sprite = null
 
 func _tick(in_delta: float) -> Status:
 	
