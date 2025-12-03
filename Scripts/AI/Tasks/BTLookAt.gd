@@ -10,7 +10,7 @@ func _enter() -> void:
 
 func _exit() -> void:
 	if is_instance_valid(owner_sprite):
-		owner_sprite.LookAtTarget = null
+		owner_sprite.look_at_target = null
 		owner_sprite = null
 
 func _tick(in_delta: float) -> Status:
@@ -20,7 +20,7 @@ func _tick(in_delta: float) -> Status:
 	
 	var look_at_target = blackboard.get_var(target_var)
 	if is_instance_valid(look_at_target) and look_at_target is Node2D:
-		owner_sprite.LookAtTarget = look_at_target
+		owner_sprite.look_at_target = look_at_target
 		return Status.RUNNING
 	else:
 		return Status.FAILURE

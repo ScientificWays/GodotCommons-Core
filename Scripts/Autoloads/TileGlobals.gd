@@ -24,9 +24,9 @@ func GetTileDirection(in_layer: TileMapLayer, InCoords: Vector2) -> int:
 	assert(false, "GetTileDirection() Bad AlternativeTile ID!")
 	return TileDirection.Invalid
 
-func ApplyTileDirection(in_cell: Vector2i, InDirection: TileDirection) -> Vector2i:
+func ApplyTileDirection(in_cell: Vector2i, in_direction: TileDirection) -> Vector2i:
 	
-	match InDirection:
+	match in_direction:
 		TileDirection.Right: in_cell.x += 1
 		TileDirection.Down: in_cell.y -= 1
 		TileDirection.Left: in_cell.x -= 1

@@ -5,33 +5,24 @@ class_name Pawn2D_Sprite
 static func try_get_from(in_node: Node) -> Pawn2D_Sprite:
 	return ModularGlobals.try_get_from(in_node, Pawn2D_Sprite)
 
-var _ParticlesPivot: ParticlesPivot
-
 @export_category("Owner")
 @export var owner_pawn: Pawn2D
+@export var status_effect_particles_radius: float = 16.0
+@export var direction_flip_targets: Array[Node2D]
+@export var animation_data: AnimationData2D
 
-@export var animation_data: AnimationData2D = null:
-	set(InData):
-		
-		animation_data = InData
-		
-		if animation_data and not Engine.is_editor_hint():
-			if not is_node_ready():
-				await ready
-			animation_data.init_sprite(self)
+var particles_pivot: ParticlesPivot
 
-@export var StatusEffectParticlesRadius: float = 16.0
-
-var _AnimationType: AnimationData2D.Type = AnimationData2D.Type.Idle
-var _Direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
-	set(InDirection):
+var current_animation_type: AnimationData2D.Type = AnimationData2D.Type.Idle
+var current_look_direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
+	set(in_direction):
 		
-		if _Direction != InDirection:
+		if current_look_direction != in_direction:
 			
-			_Direction = InDirection
+			current_look_direction = in_direction
 			
-			if animation_data.UseHorizontalDirectionFlip:
-				flip_h = (_Direction == AnimationData2D.Direction.Left)
+			if animation_data.use_horizontal_direction_flip:
+				flip_h = (current_look_direction == AnimationData2D.Direction.Left)
 			
 			for sample_flip_target: Node2D in direction_flip_targets:
 				
@@ -42,69 +33,62 @@ var _Direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
 					sample_flip_target.position.x = absf(sample_flip_target.position.x)
 					sample_flip_target.scale.x = absf(sample_flip_target.scale.x)
 
-@export var direction_flip_targets: Array[Node2D]
+func get_current_forward_direction() -> Vector2: return Vector2.LEFT if flip_h else Vector2.RIGHT
+func get_current_back_direction() -> Vector2: return Vector2.RIGHT if flip_h else Vector2.LEFT
 
-func get_forward_direction() -> Vector2:
-	return Vector2.LEFT if flip_h else Vector2.RIGHT
+func is_idle_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.Idle
+func is_idle_to_move_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.IdleToMove
+func is_move_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.Move
+func is_move_to_idle_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.MoveToIdle
+func is_override_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.Override
 
-func IsIdleAnimationType() -> bool:
-	return _AnimationType == AnimationData2D.Type.Idle
-
-func IsIdleToMoveAnimationType() -> bool:
-	return _AnimationType == AnimationData2D.Type.IdleToMove
-
-func IsMoveAnimationType() -> bool:
-	return _AnimationType == AnimationData2D.Type.Move
-
-func IsMoveToIdleAnimationType() -> bool:
-	return _AnimationType == AnimationData2D.Type.MoveToIdle
-
-func IsOverrideAnimationType() -> bool:
-	return _AnimationType == AnimationData2D.Type.Override
-
-var LinearSpeed: float = 0.0
+var linear_speed: float = 0.0
 var linear_velocity: Vector2 = Vector2.ZERO:
 	set(in_velocity):
 		
 		if not linear_velocity.is_equal_approx(in_velocity):
 			
 			linear_velocity = in_velocity
-			LinearSpeed = linear_velocity.length()
-			assert(not is_nan(LinearSpeed))
+			linear_speed = linear_velocity.length()
+			assert(not is_nan(linear_speed))
 			
-			if not is_instance_valid(LookAtTarget):
-				_Direction = animation_data.GetNewDirectionForVelocity(self)
+			if not is_instance_valid(look_at_target):
+				current_look_direction = animation_data.calc_look_direction(self)
 			
-			if ShouldUpdateVelocityBasedAnimations:
-				UpdateVelocityBasedAnimations()
+			if is_updating_velocity_based_animations:
+				update_velocity_based_animations()
 
-var ShouldUpdateVelocityBasedAnimations: bool = true
+@export var can_update_velocity_based_animations: bool = true
+var is_updating_velocity_based_animations: bool = true
+
 @export var move_animation_base_speed: float = 25.0
 
 @export var z_index_offset: int = 0
 @export var allow_different_z_index: bool = false
 
-signal LookAtTargetChanged()
+signal look_at_target_changed()
 
-var LookAtTarget: Node2D:
+var look_at_target: Node2D:
 	set(in_target):
-		if LookAtTarget:
-			LookAtTarget.tree_exited.disconnect(OnLookAtTargetTreeExited)
-		LookAtTarget = in_target
-		if LookAtTarget:
-			LookAtTarget.tree_exited.connect(OnLookAtTargetTreeExited)
-		LookAtTargetChanged.emit()
+		if look_at_target:
+			look_at_target.tree_exited.disconnect(_on_look_at_target_tree_exited)
+		look_at_target = in_target
+		if look_at_target:
+			look_at_target.tree_exited.connect(_on_look_at_target_tree_exited)
+		look_at_target_changed.emit()
 
-func OnLookAtTargetTreeExited():
-	LookAtTarget = null
+func _on_look_at_target_tree_exited():
+	look_at_target = null
 
-var StatusEffectModulateArray: Array[Color] = []
+var status_effect_modulate_array: Array[Color] = []
 
 func _ready():
 	
 	if Engine.is_editor_hint():
 		if not owner_pawn:
 			owner_pawn = get_parent() as Pawn2D
+		if not animation_data:
+			animation_data = AnimationData2D.new()
 		if not allow_different_z_index:
 			z_index = GameGlobals_Class.PAWN_2D_SPRITE_DEFAULT_Z_INDEX + z_index_offset
 			z_as_relative = false
@@ -113,8 +97,8 @@ func _ready():
 		
 		owner_pawn.died.connect(_on_owner_pawn_died)
 		
-		_ParticlesPivot = ParticlesPivot.new()
-		add_child(_ParticlesPivot)
+		particles_pivot = ParticlesPivot.new()
+		add_child(particles_pivot)
 		
 		scale *= owner_pawn.get_size_scale()
 
@@ -134,29 +118,29 @@ func _exit_tree():
 
 func _process(in_delta: float):
 	
-	if is_instance_valid(LookAtTarget):
-		_Direction = animation_data.GetNewDirectionForLookAtTarget(self)
+	if is_instance_valid(look_at_target):
+		current_look_direction = animation_data.GetNewDirectionForLookAtTarget(self)
 
-func UpdateVelocityBasedAnimations():
+func update_velocity_based_animations():
 	
-	if LinearSpeed > 2.0:
+	if linear_speed > 2.0:
 		
-		if IsMoveAnimationType():
+		if is_move_animation_type():
 			UpdateMoveAnimationSpeed()
 		else:
 			HandleSwitchToMoveAnimation()
-	elif LinearSpeed < 1.0:
-		if not IsIdleAnimationType():
+	elif linear_speed < 1.0:
+		if not is_idle_animation_type():
 			HandleSwitchToIdleAnimation()
 
 func HandleSwitchToMoveAnimation():
 	
 	if animation_data.UseIdleToMoveTransition:
 		
-		if IsIdleAnimationType():
+		if is_idle_animation_type():
 			PlayIdleToMoveAnimation()
 			
-		elif IsMoveToIdleAnimationType():
+		elif is_move_to_idle_animation_type():
 			
 			var MoveToIdleFrame = frame
 			var MoveToIdleFrameNum = sprite_frames.get_frame_count(animation_data.GetMoveToIdleAnimationName(self))
@@ -169,16 +153,16 @@ func HandleSwitchToMoveAnimation():
 		UpdateMoveAnimationSpeed()
 
 func UpdateMoveAnimationSpeed():
-	PlayMoveAnimation(LinearSpeed / move_animation_base_speed)
+	PlayMoveAnimation(linear_speed / move_animation_base_speed)
 
 func HandleSwitchToIdleAnimation():
 	
 	if animation_data.UseMoveToIdleTransition:
 		
-		if IsMoveAnimationType():
+		if is_move_animation_type():
 			PlayMoveToIdleAnimation()
 		
-		elif IsIdleToMoveAnimationType():
+		elif is_idle_to_move_animation_type():
 			
 			var IdleToMoveFrame = frame
 			var IdleToMoveFrameNum = sprite_frames.get_frame_count(animation_data.GetIdleToMoveAnimationName(self))
@@ -191,14 +175,14 @@ func HandleSwitchToIdleAnimation():
 		PlayIdleAnimation()
 
 func PlayIdleAnimation():
-	_AnimationType = AnimationData2D.Type.Idle
+	current_animation_type = AnimationData2D.Type.Idle
 	play(animation_data.GetIdleAnimationName(self))
 
 func PlayIdleToMoveAnimation():
 	play_override_animation(animation_data.GetIdleToMoveAnimationName(self), 1.0, false, true, true, AnimationData2D.Type.IdleToMove)
 
 func PlayMoveAnimation(InSpeed: float):
-	_AnimationType = AnimationData2D.Type.Move
+	current_animation_type = AnimationData2D.Type.Move
 	play(animation_data.GetMoveAnimationName(self), InSpeed)
 
 func PlayMoveToIdleAnimation():
@@ -210,13 +194,13 @@ func try_play_death_animation() -> bool:
 		return true
 	return false
 
-func play_override_animation(in_name: StringName, InCustomSpeed: float = 1.0, InFromEnd: bool = false, InShouldResetOnFinish: bool = true, InKeepUpdateVelocityBasedAnimations: bool = false, InType: AnimationData2D.Type = AnimationData2D.Type.Override):
+func play_override_animation(in_name: StringName, InCustomSpeed: float = 1.0, InFromEnd: bool = false, InShouldResetOnFinish: bool = true, in_keep_update_velocity_based_animations: bool = false, in_type: AnimationData2D.Type = AnimationData2D.Type.Override):
 	
 	assert(sprite_frames.has_animation(in_name))
 	
-	ShouldUpdateVelocityBasedAnimations = animation_data.CanUpdateVelocityBasedAnimations and InKeepUpdateVelocityBasedAnimations
+	is_updating_velocity_based_animations = can_update_velocity_based_animations and in_keep_update_velocity_based_animations
 	
-	_AnimationType = InType
+	current_animation_type = in_type
 	play(in_name, InCustomSpeed, InFromEnd)
 	
 	if InShouldResetOnFinish:
@@ -230,15 +214,15 @@ func CancelOverrideAnimation(in_name: StringName = &""):
 	
 	assert(sprite_frames.has_animation(in_name))
 	
-	if animation == in_name or IsOverrideAnimationType():
+	if animation == in_name or is_override_animation_type():
 		stop()
 
 func _HandleOverrideAnimationReset():
 	
-	ShouldUpdateVelocityBasedAnimations = animation_data.CanUpdateVelocityBasedAnimations
+	is_updating_velocity_based_animations = can_update_velocity_based_animations
 	
-	if ShouldUpdateVelocityBasedAnimations:
-		UpdateVelocityBasedAnimations()
+	if is_updating_velocity_based_animations:
+		update_velocity_based_animations()
 	else:
 		PlayIdleAnimation()
 
@@ -259,5 +243,5 @@ func try_remove_with_animation(in_custom_animation_name: StringName = StringName
 	return true
 
 func handle_remove():
-	_ParticlesPivot.detach_and_remove_all()
+	particles_pivot.detach_and_remove_all()
 	queue_free()

@@ -121,7 +121,12 @@ func _exit_tree() -> void:
 func handle_controller_tap_input(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool) -> void:
 	controller_tap_input.emit(in_screen_position, in_global_position, in_released)
 
+var last_movement_input: Vector2 = Vector2.ZERO
+
 func handle_controller_movement_input(in_input: Vector2) -> void:
+	
+	last_movement_input = in_input
+	
 	if character_movement:
 		character_movement.apply_movement_input(in_input)
 

@@ -112,7 +112,7 @@ func launch(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool = false) 
 	return true
 
 func launch_forward(in_magnitude: float, in_scale_by_movement_speed_mul: bool = false) -> bool:
-	var velocity := owner_sprite.get_forward_direction() * in_magnitude
+	var velocity := owner_sprite.get_current_forward_direction() * in_magnitude
 	return launch(velocity, in_scale_by_movement_speed_mul)
 
 var prev_velocity: Vector2 = Vector2.ZERO
