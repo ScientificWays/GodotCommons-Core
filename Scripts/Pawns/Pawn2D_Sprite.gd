@@ -14,15 +14,21 @@ static func try_get_from(in_node: Node) -> Pawn2D_Sprite:
 var particles_pivot: ParticlesPivot
 
 var current_animation_type: AnimationData2D.Type = AnimationData2D.Type.Idle
-var current_look_direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
+var current_look_direction: AnimationData2D.LookDirection = AnimationData2D.LookDirection.Forward
+
+var current_move_direction: AnimationData2D.Direction = AnimationData2D.Direction.None:
 	set(in_direction):
 		
-		if current_look_direction != in_direction:
+		if current_move_direction != in_direction:
 			
-			current_look_direction = in_direction
+			current_move_direction = in_direction
 			
 			if animation_data.use_horizontal_direction_flip:
-				flip_h = (current_look_direction == AnimationData2D.Direction.Left)
+				
+				if current_move_direction == AnimationData2D.Direction.Left:
+					flip_h = true
+				elif current_move_direction == AnimationData2D.Direction.Right:
+					flip_h = false
 			
 			for sample_flip_target: Node2D in direction_flip_targets:
 				
@@ -33,8 +39,8 @@ var current_look_direction: AnimationData2D.Direction = AnimationData2D.Directio
 					sample_flip_target.position.x = absf(sample_flip_target.position.x)
 					sample_flip_target.scale.x = absf(sample_flip_target.scale.x)
 
-func get_current_forward_direction() -> Vector2: return Vector2.LEFT if flip_h else Vector2.RIGHT
-func get_current_back_direction() -> Vector2: return Vector2.RIGHT if flip_h else Vector2.LEFT
+func get_current_forward_direction() -> Vector2: return animation_data.calc_look_direction_vector(self)
+func get_current_back_direction() -> Vector2: return -animation_data.calc_look_direction_vector(self)
 
 func is_idle_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.Idle
 func is_idle_to_move_animation_type() -> bool: return current_animation_type == AnimationData2D.Type.IdleToMove
@@ -53,7 +59,7 @@ var linear_velocity: Vector2 = Vector2.ZERO:
 			assert(not is_nan(linear_speed))
 			
 			if not is_instance_valid(look_at_target):
-				current_look_direction = animation_data.calc_look_direction(self)
+				current_move_direction = animation_data.calc_move_direction(self)
 			
 			if is_updating_velocity_based_animations:
 				update_velocity_based_animations()
@@ -119,7 +125,7 @@ func _exit_tree():
 func _process(in_delta: float):
 	
 	if is_instance_valid(look_at_target):
-		current_look_direction = animation_data.GetNewDirectionForLookAtTarget(self)
+		current_move_direction = animation_data.GetNewDirectionForLookAtTarget(self)
 
 func update_velocity_based_animations():
 	

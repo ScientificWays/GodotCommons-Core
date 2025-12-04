@@ -9,7 +9,7 @@ enum Type
 	MoveToIdle = 3,
 	Death = 4,
 	Override = 5,
-	MAX = 5
+	MAX = 5,
 }
 
 enum Direction
@@ -18,7 +18,22 @@ enum Direction
 	Right = 0,
 	Left = 1,
 	Up = 2,
-	Down = 3
+	Down = 3,
+}
+
+var direction_to_vector: Dictionary[Direction, Vector2] = {
+	Direction.None: Vector2.ZERO,
+	Direction.Right: Vector2.RIGHT,
+	Direction.Left: Vector2.LEFT,
+	Direction.Up: Vector2.UP,
+	Direction.Down: Vector2.DOWN,
+}
+
+enum LookDirection
+{
+	Forward = 0,
+	Up = 2,
+	Down = 3,
 }
 
 enum DirectionUpdateSource
@@ -35,19 +50,31 @@ enum DirectionUpdateSource
 @export var direction_update_abs_threshold: float = 0.1
 @export var direction_update_axis_difference_threshold: float = 0.1
 
-func calc_look_direction(in_sprite: Pawn2D_Sprite) -> Direction:
+func calc_move_direction(in_sprite: Pawn2D_Sprite) -> Direction:
 	
 	match direction_update_source:
 		DirectionUpdateSource.MovementInput:
-			return UtilGetNewDirectionForVector(in_sprite.owner_pawn.last_movement_input, in_sprite.current_look_direction)
+			return UtilGetNewDirectionForVector(in_sprite.owner_pawn.last_movement_input, in_sprite.current_move_direction)
 		DirectionUpdateSource.LinearVelocity:
-			return UtilGetNewDirectionForVector(in_sprite.linear_velocity, in_sprite.current_look_direction)
+			return UtilGetNewDirectionForVector(in_sprite.linear_velocity, in_sprite.current_move_direction)
 	assert(false)
 	return Direction.None
 
+func calc_look_direction_vector(in_sprite: Pawn2D_Sprite) -> Vector2:
+	
+	match in_sprite.current_look_direction:
+		LookDirection.Forward:
+			return direction_to_vector[in_sprite.current_move_direction]
+		LookDirection.Up:
+			return Vector2.UP
+		LookDirection.Down:
+			return Vector2.DOWN
+	assert(false)
+	return Vector2.ZERO
+
 func GetNewDirectionForLookAtTarget(in_sprite: Pawn2D_Sprite) -> Direction:
 	var TargetVector := in_sprite.look_at_target.global_position - in_sprite.global_position
-	return UtilGetNewDirectionForVector(TargetVector, in_sprite.current_look_direction)
+	return UtilGetNewDirectionForVector(TargetVector, in_sprite.current_move_direction)
 
 func UtilGetNewDirectionForVector(InVector: Vector2, InDefault: Direction) -> Direction:
 	
@@ -83,7 +110,7 @@ func UtilGetNewDirectionForVector(InVector: Vector2, InDefault: Direction) -> Di
 }
 
 func GetIdleAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return IdleAnimationDirectionDictionary.get(in_sprite.current_look_direction, IdleAnimationDefault)
+	return IdleAnimationDirectionDictionary.get(in_sprite.current_move_direction, IdleAnimationDefault)
 
 @export_category("Move")
 @export var MoveAnimationDefault: StringName = &"Move"
@@ -97,7 +124,7 @@ func GetIdleAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
 }
 
 func GetMoveAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return MoveAnimationDirectionDictionary.get(in_sprite.current_look_direction, MoveAnimationDefault)
+	return MoveAnimationDirectionDictionary.get(in_sprite.current_move_direction, MoveAnimationDefault)
 
 @export_category("IdleToMove")
 @export var UseIdleToMoveTransition: bool = false
@@ -112,7 +139,7 @@ func GetMoveAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
 }
 
 func GetIdleToMoveAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return IdleToMoveAnimationDirectionDictionary.get(in_sprite.current_look_direction, IdleToMoveAnimationDefault)
+	return IdleToMoveAnimationDirectionDictionary.get(in_sprite.current_move_direction, IdleToMoveAnimationDefault)
 
 @export_category("MoveToIdle")
 @export var UseMoveToIdleTransition: bool = false
@@ -127,7 +154,7 @@ func GetIdleToMoveAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
 }
 
 func GetMoveToIdleAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return MoveToIdleAnimationDirectionDictionary.get(in_sprite.current_look_direction, MoveToIdleAnimationDefault)
+	return MoveToIdleAnimationDirectionDictionary.get(in_sprite.current_move_direction, MoveToIdleAnimationDefault)
 
 @export_category("Death")
 
@@ -147,6 +174,6 @@ const DeathAnimationPostfixMeta: StringName = &"DeathAnimationPostfix"
 func GetDeathAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
 	
 	if in_sprite.has_meta(DeathAnimationPostfixMeta):
-		return DeathAnimationDirectionDictionary.get(in_sprite.current_look_direction, DeathAnimationDefault) + in_sprite.get_meta(DeathAnimationPostfixMeta)
+		return DeathAnimationDirectionDictionary.get(in_sprite.current_move_direction, DeathAnimationDefault) + in_sprite.get_meta(DeathAnimationPostfixMeta)
 	else:
-		return DeathAnimationDirectionDictionary.get(in_sprite.current_look_direction, DeathAnimationDefault)
+		return DeathAnimationDirectionDictionary.get(in_sprite.current_move_direction, DeathAnimationDefault)

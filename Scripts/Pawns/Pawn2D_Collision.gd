@@ -15,7 +15,11 @@ func _ready() -> void:
 	var size_scale := OwnerPawn.get_size_scale()
 	#var size_scale := 1.0
 	
-	shape = ResourceGlobals.get_or_create_scaled_shape(shape, size_scale, 0.0)
+	if shape.resource_local_to_scene:
+		ResourceGlobals.util_scale_shape(shape, size_scale, 0.0)
+	else:
+		shape = ResourceGlobals.get_or_create_scaled_shape(shape, size_scale, 0.0)
+	
 	position *= size_scale
 	
 	var OwnerDamageReceiver := DamageReceiver.try_get_from(OwnerPawn)

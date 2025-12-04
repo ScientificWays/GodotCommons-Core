@@ -43,29 +43,32 @@ func util_get_or_create(InKeyArray: Array, InInitCallable: Callable) -> Variant:
 #	return ResourceLoader.load_threaded_get(in_path)
 
 ## Shapes
-func get_or_create_scaled_shape(in_shape: Shape2D, in_mul: float, in_additive: float) -> Shape2D:
-	assert(in_shape)
-	return util_get_or_create([ in_shape, in_mul, in_additive ], util_init_scaled_shape)
+func get_or_create_scaled_shape(in_out_shape: Shape2D, in_mul: float, in_additive: float) -> Shape2D:
+	assert(in_out_shape)
+	return util_get_or_create([ in_out_shape, in_mul, in_additive ], util_init_scaled_shape)
 
 func util_init_scaled_shape(in_current_key_array: Array) -> Shape2D:
 	
-	var OutShape := in_current_key_array[0] as Shape2D
-	var Mul := in_current_key_array[1] as float
-	var Additive := in_current_key_array[2] as float
+	var out_shape := in_current_key_array[0] as Shape2D
+	var mul := in_current_key_array[1] as float
+	var additive := in_current_key_array[2] as float
 	
-	if Mul != 1.0 or Additive != 0.0:
-		
-		OutShape = OutShape.duplicate()
-		if OutShape is CapsuleShape2D:
-			OutShape.height = OutShape.height * Mul + Additive
-			OutShape.radius = OutShape.radius * Mul + Additive
-		elif OutShape is CircleShape2D:
-			OutShape.radius = OutShape.radius * Mul + Additive
-		elif OutShape is RectangleShape2D:
-			OutShape.size = OutShape.size * Mul + Vector2(Additive, Additive)
-		else:
-			assert(false)
-	return OutShape
+	if mul != 1.0 or additive != 0.0:
+		out_shape = out_shape.duplicate()
+		util_scale_shape(out_shape, mul, additive)
+	return out_shape
+
+func util_scale_shape(in_out_shape: Shape2D, in_mul: float, in_additive: float) -> void:
+	
+	if in_out_shape is CapsuleShape2D:
+		in_out_shape.height = in_out_shape.height * in_mul + in_additive
+		in_out_shape.radius = in_out_shape.radius * in_mul + in_additive
+	elif in_out_shape is CircleShape2D:
+		in_out_shape.radius = in_out_shape.radius * in_mul + in_additive
+	elif in_out_shape is RectangleShape2D:
+		in_out_shape.size = in_out_shape.size * in_mul + Vector2(in_additive, in_additive)
+	else:
+		assert(false)
 
 ## Particles
 func GetOrCreatePPMWithRadius(InBasePPM: ParticleProcessMaterial, in_radius: float) -> ParticleProcessMaterial:

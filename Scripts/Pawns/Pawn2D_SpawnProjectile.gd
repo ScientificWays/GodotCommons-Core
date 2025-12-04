@@ -33,7 +33,7 @@ func spawn_projectile() -> Projectile2D:
 	if target_position == Vector2.INF:
 		return null
 	
-	if owner_sprite.current_look_direction == AnimationData2D.Direction.Left:
+	if owner_sprite.current_move_direction == AnimationData2D.Direction.Left:
 		position.x = absf(position.x)
 	else:
 		position.x = -absf(position.x)
