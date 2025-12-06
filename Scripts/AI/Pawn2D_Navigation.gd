@@ -40,28 +40,30 @@ func _physics_process(in_delta: float) -> void:
 	if target_node:
 		target_position = target_node.global_position
 	
+	var movement_input := Vector2.ZERO
+	
 	if owner_movement.move_speed == 0.0 or disable_movement_counter > 0:
-		velocity = Vector2.ZERO
+		pass
 	elif is_navigation_finished():
-		velocity = Vector2.ZERO
+		pass
 	else:
 		var next_path_position := get_next_path_position()
 		var move_direction := owner_movement.owner_body.global_position.direction_to(next_path_position)
 		
 		if jump_on_vertical_path:
 			if move_direction.y < jump_vertical_y_threshold:
-				owner_movement.apply_jump_input()
+				owner_pawn.handle_controller_jump_input()
 		
-		velocity = move_direction * owner_movement.move_speed
+		movement_input = move_direction
 	
-	if not avoidance_enabled:
-		owner_movement.set_movement_velocity(velocity, true)
+	velocity = owner_movement.movement_velocity ## Last frame velocity
+	owner_pawn.handle_controller_movement_input(movement_input)
 
 func _on_target_reached() -> void:
 	pass
 
 func _on_avoidance_velocity_computed(in_safe_velocity: Vector2) -> void:
-	owner_movement.set_movement_velocity(in_safe_velocity, true)
+	owner_pawn.handle_controller_movement_input(in_safe_velocity) ## Will be normalized
 
 var disable_movement_counter: int = 0
 

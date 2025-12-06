@@ -84,8 +84,10 @@ var pending_force: Vector2 = Vector2.ZERO
 func apply_force(in_force: Vector2) -> void:
 	pending_force += in_force
 
+var pending_input: Vector2 = Vector2.ZERO
+
 func apply_movement_input(in_input: Vector2) -> void:
-	set_movement_velocity(move_speed * in_input * input_velocity_mul, true)
+	pending_input = in_input
 
 func apply_jump_input() -> void:
 	try_jump()
@@ -120,6 +122,9 @@ var prev_velocity: Vector2 = Vector2.ZERO
 func _physics_process(in_delta: float):
 	
 	prev_velocity = owner_body.get_real_velocity()
+	
+	movement_velocity = move_speed * pending_input.normalized() * input_velocity_mul
+	pending_input = Vector2.ZERO
 	
 	var external_velocity := pending_force
 	pending_force = Vector2.ZERO
