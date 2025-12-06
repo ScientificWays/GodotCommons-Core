@@ -16,10 +16,9 @@ var initial_scale: Vector2
 
 func _ready() -> void:
 	
-	var size_mul := owner_projectile.data.get_size_mul(owner_projectile._level)
-	var scaled_size_mul := size_mul * owner_projectile._power
+	var size_mul := owner_projectile.data.get_size_mul(owner_projectile)
 	
-	scale *= scaled_size_mul
+	scale *= size_mul
 	initial_scale = scale
 	
 	play(animation)

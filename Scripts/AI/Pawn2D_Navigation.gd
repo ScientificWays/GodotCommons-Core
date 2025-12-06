@@ -52,7 +52,7 @@ func _physics_process(in_delta: float) -> void:
 		
 		if jump_on_vertical_path:
 			if move_direction.y < jump_vertical_y_threshold:
-				owner_pawn.handle_controller_jump_input()
+				owner_pawn.handle_controller_jump_input(true)
 		
 		movement_input = move_direction
 	

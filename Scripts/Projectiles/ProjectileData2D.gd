@@ -24,9 +24,10 @@ func get_mass_mul(in_level: int) -> float:
 @export var size_mul: float = 1.0
 @export var size_mul_per_level_gain: float = 0.0
 @export var size_mul_mass_scale_factor: float = 2.0
+@export var size_mul_power_factor: float = 0.5
 
-func get_size_mul(in_level: int) -> float:
-	return size_mul + size_mul_per_level_gain * in_level
+func get_size_mul(in_projectile: Projectile2D) -> float:
+	return (size_mul + size_mul_per_level_gain * in_projectile._level) * pow(in_projectile._power, size_mul_power_factor)
 
 @export_category("Audio")
 @export var sound_bank_label: String = "Projectile"
@@ -51,11 +52,12 @@ func get_hit_sound_volume_db(in_hit_speed: float) -> float:
 @export var should_damage_on_hit: bool = false
 @export var hit_damage: float = 1.0
 @export var hit_damage_per_level_gain: float = 1.0
+@export var hit_damage_power_factor: float = 2.0
 @export var should_remove_on_hit: bool = false
 @export var monitor_hits_start_delay: float = 0.0
 
-func get_hit_damage(in_level: int) -> float:
-	return hit_damage + hit_damage_per_level_gain * in_level
+func get_hit_damage(in_projectile: Projectile2D) -> float:
+	return (hit_damage + hit_damage_per_level_gain * float(in_projectile._level)) * pow(in_projectile._power, hit_damage_power_factor)
 
 @export_category("Lifetime")
 @export var max_lifetime: float = 10.0

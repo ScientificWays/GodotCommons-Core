@@ -25,10 +25,10 @@ func try_get_from(in_owner: Node, InModularNodeScript: Script) -> Node:
 	var Data := get_or_create_modular_node_data(InModularNodeScript)
 	return in_owner.get_meta(Data.try_get_from_meta) if is_instance_valid(in_owner) and in_owner.has_meta(Data.try_get_from_meta) else null
 
-func init_modular_node(in_node: Node, in_owner: Node = in_node.get_parent()) -> void:
+func init_modular_node(in_node: Node, in_owner = in_node.get_parent()) -> void:
 	var Data := get_or_create_modular_node_data(in_node.get_script())
-	in_owner.set_meta(Data.try_get_from_meta, in_node)
+	if is_instance_valid(in_owner): in_owner.set_meta(Data.try_get_from_meta, in_node)
 
-func deinit_modular_node(in_node: Node, in_owner: Node = in_node.get_parent()) -> void:
+func deinit_modular_node(in_node: Node, in_owner = in_node.get_parent()) -> void:
 	var Data := get_or_create_modular_node_data(in_node.get_script())
-	in_owner.remove_meta(Data.try_get_from_meta)
+	if is_instance_valid(in_owner): in_owner.remove_meta(Data.try_get_from_meta)

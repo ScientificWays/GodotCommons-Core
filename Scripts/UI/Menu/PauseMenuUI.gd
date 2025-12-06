@@ -2,6 +2,9 @@
 extends CanvasLayer
 class_name PauseMenuUI
 
+@export_category("Input")
+@export var back_input_action: StringName = &"common_back"
+
 @export_category("Visiblity")
 @export var visibility_control: Control
 
@@ -80,7 +83,7 @@ func _notification(in_what: int) -> void:
 
 func _unhandled_input(in_event: InputEvent) -> void:
 	
-	if in_event.is_action_pressed(&"Back"):
+	if in_event.is_action_pressed(back_input_action):
 		if not is_enabled:
 			toggle()
 			get_viewport().set_input_as_handled()

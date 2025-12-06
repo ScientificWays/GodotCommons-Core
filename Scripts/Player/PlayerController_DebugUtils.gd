@@ -18,7 +18,7 @@ func _ready() -> void:
 
 func _unhandled_input(in_event: InputEvent) -> void:
 	
-	if in_event.is_action_pressed(&"DebugAction"):
+	if in_event.is_action_pressed(&"debug_action"):
 		#DebugSpawnCreature()
 		#DebugSpawnExplosion()
 		debug_teleport()
@@ -30,12 +30,12 @@ func _unhandled_input(in_event: InputEvent) -> void:
 		#debug_fade()
 		get_viewport().set_input_as_handled()
 		
-	elif in_event.is_action_pressed(&"DebugScrollUp"):
+	elif in_event.is_action_pressed(&"debug_scroll_up"):
 		owner_player_controller._camera.PendingZoom *= 1.25
 		print("Set camera zoom to ", owner_player_controller._camera.PendingZoom)
 		get_viewport().set_input_as_handled()
 		
-	elif in_event.is_action_pressed(&"DebugScrollDown"):
+	elif in_event.is_action_pressed(&"debug_scroll_down"):
 		owner_player_controller._camera.PendingZoom *= 0.8
 		print("Set camera zoom to ", owner_player_controller._camera.PendingZoom)
 		get_viewport().set_input_as_handled()

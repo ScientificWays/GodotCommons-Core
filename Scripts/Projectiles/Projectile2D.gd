@@ -54,9 +54,7 @@ func _ready() -> void:
 			sprite.z_index = GameGlobals_Class.PROJECTILE_2D_SPRITE_DEFAULT_Z_INDEX
 			sprite.z_as_relative = false
 	else:
-		var size_mul := data.get_size_mul(_level)
-		size_mul *= _power
-		
+		var size_mul := data.get_size_mul(self)
 		mass *= data.get_mass_mul(_level) * pow(size_mul, data.size_mul_mass_scale_factor)
 		
 		if _instigator is PhysicsBody2D:

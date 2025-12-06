@@ -89,8 +89,9 @@ var pending_input: Vector2 = Vector2.ZERO
 func apply_movement_input(in_input: Vector2) -> void:
 	pending_input = in_input
 
-func apply_jump_input() -> void:
-	try_jump()
+func apply_jump_input(in_value: float) -> void:
+	if in_value > 0.0:
+		try_jump()
 
 func can_jump() -> bool:
 	return owner_body.is_on_floor()

@@ -130,9 +130,9 @@ func handle_controller_movement_input(in_input: Vector2) -> void:
 	if character_movement:
 		character_movement.apply_movement_input(in_input)
 
-func handle_controller_jump_input() -> void:
+func handle_controller_jump_input(in_pressed: bool) -> void:
 	if character_movement:
-		character_movement.apply_jump_input()
+		character_movement.apply_jump_input(1.0 if in_pressed else 0.0)
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level

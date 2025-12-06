@@ -13,8 +13,10 @@ static func try_get_from(in_node: Node) -> PlayerController:
 @export_category("Pawn")
 @export var default_pawn_scene_path: String
 
-@export_category("Inventory")
-@export var default_item_containers: Array[PackedScene]
+@export_category("Input")
+@export var input_movement: Array[StringName] = [ &"move_left", &"move_right", &"move_up", &"move_down" ]
+@export var input_actions: Array[StringName] = [ &"jump" ]
+@export var input_callables: Array[StringName] = [ &"handle_jump_input" ]
 
 var unique_name: String = "zana"
 
@@ -30,6 +32,9 @@ func _ready() -> void:
 	else:
 		assert(_camera)
 		assert(not get_new_pawn_scene_path().is_empty())
+		
+		assert(input_movement.size() == 4)
+		assert(input_actions.size() == input_callables.size())
 
 func _process(in_delta: float) -> void:
 	ProcessMovementInputs(in_delta)
@@ -128,7 +133,7 @@ func ProcessMovementInputs(in_delta: float) -> void:
 	if disable_movement_inputs or _camera.ShouldBlockMovementInputs():
 		movement_input = Vector2.ZERO
 	else:
-		movement_input = Input.get_vector(&"Left", &"Right", &"Up", &"Down")
+		movement_input = Input.get_vector(input_movement[0], input_movement[1], input_movement[2], input_movement[3])
 	
 	if controlled_pawn:
 		controlled_pawn.handle_controller_movement_input(movement_input)
@@ -142,12 +147,22 @@ func _unhandled_input(in_event: InputEvent) -> void:
 		else:
 			handle_tap_input(in_event.position, in_event.is_released())
 		get_viewport().set_input_as_handled()
-		
-	elif in_event is InputEventKey and (in_event.unicode > 0):
+		return
+	
+	if in_event is InputEventKey and (in_event.unicode > 0):
 		var event_char := char(in_event.unicode)
 		if "0" <= event_char and event_char <= "9": 
 			handle_number_input(int(event_char), in_event.is_pressed())
 			get_viewport().set_input_as_handled()
+			return
+	
+	for sample_index: int in range(input_actions.size()):
+		
+		if in_event.is_action(input_actions[sample_index]):
+			
+			call(input_callables[sample_index], in_event)
+			get_viewport().set_input_as_handled()
+			return
 
 var TapInputCallableArray: Array[Callable] = []
 
@@ -167,9 +182,8 @@ func handle_tap_input(in_screen_position: Vector2, in_released: bool) -> void:
 	
 	TapInputHandled.emit(in_screen_position, GlobalPosition, in_released, ConsumedByPawn)
 
-func handle_jump_input() -> void:
-	if controlled_pawn:
-		controlled_pawn.handle_controller_jump_input()
+func handle_jump_input(in_event: InputEvent) -> void:
+	if controlled_pawn: controlled_pawn.handle_controller_jump_input(in_event.is_pressed() or in_event.is_echo())
 
 func handle_number_input(in_number: int, in_pressed: bool) -> void:
 	#_Inventory.TryUseActiveArtifactByIndex(in_number - 1)

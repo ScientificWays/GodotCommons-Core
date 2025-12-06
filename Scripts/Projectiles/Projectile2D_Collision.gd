@@ -12,11 +12,10 @@ func _ready() -> void:
 	
 	assert(_owner)
 	
-	var size_mul := _owner.data.get_size_mul(_owner._level)
-	var scaled_size_mul := size_mul * _owner._power
+	var size_mul := _owner.data.get_size_mul(_owner)
 	
-	shape = ResourceGlobals.get_or_create_scaled_shape(shape, scaled_size_mul, 0.0)
-	position *= scaled_size_mul
+	shape = ResourceGlobals.get_or_create_scaled_shape(shape, size_mul, 0.0)
+	position *= size_mul
 	
 	var monitor_hits_start_delay := get_meta(monitor_hits_start_delay_meta, 0.0) as float
 	if monitor_hits_start_delay > 0.0:
@@ -71,5 +70,5 @@ func apply_impact_damage_to(in_target: Node) -> void:
 		var instigator_receiver := DamageReceiver.try_get_from(_owner._instigator)
 		if target_receiver != instigator_receiver:
 			
-			var target_damage := _owner.data.get_hit_damage(_owner._level)
+			var target_damage := _owner.data.get_hit_damage(_owner)
 			target_receiver.try_receive_damage(self, _owner._instigator, target_damage, DamageReceiver.DamageType_RangedHit, false)
