@@ -72,7 +72,7 @@ func calc_look_direction_vector(in_sprite: Pawn2D_Sprite) -> Vector2:
 	assert(false)
 	return Vector2.ZERO
 
-func GetNewDirectionForLookAtTarget(in_sprite: Pawn2D_Sprite) -> Direction:
+func get_new_direction_for_look_at_target(in_sprite: Pawn2D_Sprite) -> Direction:
 	var TargetVector := in_sprite.look_at_target.global_position - in_sprite.global_position
 	return UtilGetNewDirectionForVector(TargetVector, in_sprite.current_move_direction)
 
@@ -99,81 +99,86 @@ func UtilGetNewDirectionForVector(InVector: Vector2, InDefault: Direction) -> Di
 	return NewDirection
 
 @export_category("Idle")
-@export var IdleAnimationDefault: StringName = &"Idle"
+@export var idle_animation_default: StringName = &"idle"
+@export var idle_look_up_animation: StringName = &""
 
-@export var IdleAnimationDirectionDictionary: Dictionary = {
-	Direction.None: &"Idle",
-	Direction.Right: &"Idle",
-	Direction.Left: &"Idle",
-	Direction.Up: &"Idle_Up",
-	Direction.Down: &"Idle_Down"
+@export var idle_animation_direction_dictionary: Dictionary = {
+	Direction.None: &"idle",
+	Direction.Right: &"idle",
+	Direction.Left: &"idle",
+	Direction.Up: &"idle_up",
+	Direction.Down: &"idle_down"
 }
 
-func GetIdleAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return IdleAnimationDirectionDictionary.get(in_sprite.current_move_direction, IdleAnimationDefault)
+func get_idle_animation_name(in_sprite: Pawn2D_Sprite) -> StringName:
+	
+	if in_sprite.current_look_direction == LookDirection.Up and not idle_look_up_animation.is_empty():
+		return idle_look_up_animation
+	
+	return idle_animation_direction_dictionary.get(in_sprite.current_move_direction, idle_animation_default)
 
 @export_category("Move")
-@export var MoveAnimationDefault: StringName = &"Move"
+@export var move_animation_default: StringName = &"move"
 
-@export var MoveAnimationDirectionDictionary: Dictionary = {
-	Direction.None: &"Move",
-	Direction.Right: &"Move",
-	Direction.Left: &"Move",
-	Direction.Up: &"Move_Up",
-	Direction.Down: &"Move_Down"
+@export var move_animation_direction_dictionary: Dictionary = {
+	Direction.None: &"move",
+	Direction.Right: &"move",
+	Direction.Left: &"move",
+	Direction.Up: &"move_up",
+	Direction.Down: &"move_down"
 }
 
-func GetMoveAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return MoveAnimationDirectionDictionary.get(in_sprite.current_move_direction, MoveAnimationDefault)
+func get_move_animation_name(in_sprite: Pawn2D_Sprite) -> StringName:
+	return move_animation_direction_dictionary.get(in_sprite.current_move_direction, move_animation_default)
 
 @export_category("IdleToMove")
-@export var UseIdleToMoveTransition: bool = false
-@export var IdleToMoveAnimationDefault: StringName = &"IdleToMove"
+@export var use_idle_to_move_transition: bool = false
+@export var idle_to_Move_animation_default: StringName = &"idle_to_move"
 
-@export var IdleToMoveAnimationDirectionDictionary: Dictionary = {
-	Direction.None: &"IdleToMove",
-	Direction.Right: &"IdleToMove",
-	Direction.Left: &"IdleToMove",
-	Direction.Up: &"IdleToMove_Up",
-	Direction.Down: &"IdleToMove_Down"
+@export var idle_to_move_animation_direction_dictionary: Dictionary = {
+	Direction.None: &"idle_to_move",
+	Direction.Right: &"idle_to_move",
+	Direction.Left: &"idle_to_move",
+	Direction.Up: &"idle_to_move_up",
+	Direction.Down: &"idle_to_move_down"
 }
 
-func GetIdleToMoveAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return IdleToMoveAnimationDirectionDictionary.get(in_sprite.current_move_direction, IdleToMoveAnimationDefault)
+func get_idle_to_move_animation_name(in_sprite: Pawn2D_Sprite) -> StringName:
+	return idle_to_move_animation_direction_dictionary.get(in_sprite.current_move_direction, idle_to_Move_animation_default)
 
 @export_category("MoveToIdle")
-@export var UseMoveToIdleTransition: bool = false
-@export var MoveToIdleAnimationDefault: StringName = &"MoveToIdle"
+@export var use_move_to_idle_transition: bool = false
+@export var move_to_idle_animation_default: StringName = &"move_to_idle"
 
-@export var MoveToIdleAnimationDirectionDictionary: Dictionary = {
-	Direction.None: &"MoveToIdle",
-	Direction.Right: &"MoveToIdle",
-	Direction.Left: &"MoveToIdle",
-	Direction.Up: &"MoveToIdle_Up",
-	Direction.Down: &"MoveToIdle_Down"
+@export var move_to_idle_animation_direction_dictionary: Dictionary = {
+	Direction.None: &"move_to_idle",
+	Direction.Right: &"move_to_idle",
+	Direction.Left: &"move_to_idle",
+	Direction.Up: &"move_to_idle_up",
+	Direction.Down: &"move_to_idle_down"
 }
 
-func GetMoveToIdleAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
-	return MoveToIdleAnimationDirectionDictionary.get(in_sprite.current_move_direction, MoveToIdleAnimationDefault)
+func get_move_to_idle_animation_name(in_sprite: Pawn2D_Sprite) -> StringName:
+	return move_to_idle_animation_direction_dictionary.get(in_sprite.current_move_direction, move_to_idle_animation_default)
 
 @export_category("Death")
 
-const DeathAnimationPostfixMeta: StringName = &"DeathAnimationPostfix"
+const death_animation_postfix_meta: StringName = &"AnimationData2D_death_animation_postfix"
 
-@export var UseDeathAnimation: bool = true
-@export var DeathAnimationDefault: StringName = &"Death"
+@export var use_death_animation: bool = true
+@export var death_animation_default: StringName = &"death"
 
-@export var DeathAnimationDirectionDictionary: Dictionary = {
-	Direction.None: &"Death",
-	Direction.Right: &"Death",
-	Direction.Left: &"Death",
-	Direction.Up: &"Death_Up",
-	Direction.Down: &"Death_Down"
+@export var death_animation_direction_dictionary: Dictionary = {
+	Direction.None: &"death",
+	Direction.Right: &"death",
+	Direction.Left: &"death",
+	Direction.Up: &"death_up",
+	Direction.Down: &"death_down"
 }
 
-func GetDeathAnimationName(in_sprite: Pawn2D_Sprite) -> StringName:
+func get_death_animation_name(in_sprite: Pawn2D_Sprite) -> StringName:
 	
-	if in_sprite.has_meta(DeathAnimationPostfixMeta):
-		return DeathAnimationDirectionDictionary.get(in_sprite.current_move_direction, DeathAnimationDefault) + in_sprite.get_meta(DeathAnimationPostfixMeta)
+	if in_sprite.has_meta(death_animation_postfix_meta):
+		return death_animation_direction_dictionary.get(in_sprite.current_move_direction, death_animation_default) + in_sprite.get_meta(death_animation_postfix_meta)
 	else:
-		return DeathAnimationDirectionDictionary.get(in_sprite.current_move_direction, DeathAnimationDefault)
+		return death_animation_direction_dictionary.get(in_sprite.current_move_direction, death_animation_default)
