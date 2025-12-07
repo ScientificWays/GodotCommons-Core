@@ -47,6 +47,7 @@ enum DirectionUpdateSource
 @export var use_horizontal_directions: bool = true
 @export var use_horizontal_direction_flip: bool = true
 @export var use_vertical_directions: bool = false
+@export var use_look_vertical_directions: bool = false
 @export var direction_update_abs_threshold: float = 0.1
 @export var direction_update_axis_difference_threshold: float = 0.1
 
@@ -100,7 +101,7 @@ func UtilGetNewDirectionForVector(InVector: Vector2, InDefault: Direction) -> Di
 
 @export_category("Idle")
 @export var idle_animation_default: StringName = &"idle"
-@export var idle_look_up_animation: StringName = &""
+@export var idle_look_up_animation: StringName = &"idle_look_up"
 
 @export var idle_animation_direction_dictionary: Dictionary = {
 	Direction.None: &"idle",
@@ -112,8 +113,9 @@ func UtilGetNewDirectionForVector(InVector: Vector2, InDefault: Direction) -> Di
 
 func get_idle_animation_name(in_sprite: Pawn2D_Sprite) -> StringName:
 	
-	if in_sprite.current_look_direction == LookDirection.Up and not idle_look_up_animation.is_empty():
-		return idle_look_up_animation
+	if use_look_vertical_directions:
+		if in_sprite.current_look_direction == LookDirection.Up:
+			return idle_look_up_animation
 	
 	return idle_animation_direction_dictionary.get(in_sprite.current_move_direction, idle_animation_default)
 

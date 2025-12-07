@@ -15,8 +15,8 @@ static func try_get_from(in_node: Node) -> PlayerController:
 
 @export_category("Input")
 @export var input_movement: Array[StringName] = [ &"move_left", &"move_right", &"move_up", &"move_down" ]
-@export var input_actions: Array[StringName] = [ &"jump" ]
-@export var input_callables: Array[StringName] = [ &"handle_jump_input" ]
+@export var input_actions: Array[StringName] = [ ]
+@export var input_callables: Array[StringName] = [ ]
 
 var unique_name: String = "zana"
 
@@ -37,7 +37,7 @@ func _ready() -> void:
 		assert(input_actions.size() == input_callables.size())
 
 func _process(in_delta: float) -> void:
-	ProcessMovementInputs(in_delta)
+	_process_movement_input(in_delta)
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
@@ -54,6 +54,7 @@ var controlled_pawn: Pawn2D:
 	set(InPawn):
 		
 		if is_instance_valid(controlled_pawn):
+			
 			controlled_pawn.tree_exited.disconnect(_on_controlled_pawn_tree_exited)
 			controlled_pawn.died.disconnect(_on_controlled_pawn_died)
 			controlled_pawn.remove_meta(PlayerControllerMeta)
@@ -61,13 +62,20 @@ var controlled_pawn: Pawn2D:
 		controlled_pawn = InPawn
 		
 		if is_instance_valid(controlled_pawn):
+			
 			controlled_pawn.tree_exited.connect(_on_controlled_pawn_tree_exited)
 			controlled_pawn.died.connect(_on_controlled_pawn_died)
 			controlled_pawn.set_meta(PlayerControllerMeta, self)
+			
+			if controlled_pawn.is_node_ready():
+				controlled_pawn_changed_ready.emit()
+			else:
+				controlled_pawn.ready.connect(func(): controlled_pawn_changed_ready.emit())
 		
 		controlled_pawn_changed.emit()
 
 signal controlled_pawn_changed()
+signal controlled_pawn_changed_ready()
 signal ControlledPawnTeleport(in_reset_camera: bool)
 
 func _on_controlled_pawn_died(in_immediately: bool) -> void:
@@ -128,7 +136,7 @@ var disable_tap_inputs: bool = false
 
 var movement_input: Vector2
 
-func ProcessMovementInputs(in_delta: float) -> void:
+func _process_movement_input(in_delta: float) -> void:
 	
 	if disable_movement_inputs or _camera.ShouldBlockMovementInputs():
 		movement_input = Vector2.ZERO
@@ -163,6 +171,9 @@ func _unhandled_input(in_event: InputEvent) -> void:
 			call(input_callables[sample_index], in_event)
 			get_viewport().set_input_as_handled()
 			return
+	
+	if controlled_pawn:
+		controlled_pawn._unhandled_controller_input(in_event)
 
 var TapInputCallableArray: Array[Callable] = []
 

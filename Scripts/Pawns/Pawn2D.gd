@@ -34,12 +34,26 @@ enum Type
 @export var die_on_lethal_damage: bool = true
 @export var remove_on_death: bool = true
 
-@export_category("Movement")
-@export var character_movement: Pawn2D_CharacterMovement
+@export_category("Input")
+@export var pawn_input_actions: Array[StringName] = [
+	&"primary_attack",
+	&"secondary_attack",
+	&"special_attack",
+	&"jump",
+]
+@export var pawn_input_callables: Array[StringName] = [
+	&"handle_primary_attack_input",
+	&"handle_secondary_attack_input",
+	&"handle_special_attack_input",
+	&"handle_jump_input",
+]
 
 @export_category("AI")
 @export var bt_player: BTPlayer
 #@export var chase_target_var: StringName = &"chase_target"
+
+@export_category("Movement")
+@export var character_movement: Pawn2D_CharacterMovement
 
 @export_category("Audio")
 @export var sound_bank_label: String = "Pawn"
@@ -118,9 +132,9 @@ func _exit_tree() -> void:
 		if override_level_music:
 			WorldGlobals._level.remove_override_level_music_source(self, remove_override_level_music_delay)
 
-func handle_controller_tap_input(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool) -> void:
-	controller_tap_input.emit(in_screen_position, in_global_position, in_released)
-
+##
+## Input
+##
 var last_movement_input: Vector2 = Vector2.ZERO
 
 func handle_controller_movement_input(in_input: Vector2) -> void:
@@ -130,9 +144,31 @@ func handle_controller_movement_input(in_input: Vector2) -> void:
 	if character_movement:
 		character_movement.apply_movement_input(in_input)
 
-func handle_controller_jump_input(in_pressed: bool) -> void:
+func handle_controller_tap_input(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool) -> void:
+	controller_tap_input.emit(in_screen_position, in_global_position, in_released)
+
+func _unhandled_controller_input(in_event: InputEvent) -> void:
+	
+	for sample_index: int in range(pawn_input_actions.size()):
+		
+		if in_event.is_action(pawn_input_actions[sample_index]):
+			
+			call(pawn_input_callables[sample_index], in_event)
+			get_viewport().set_input_as_handled()
+			return
+
+func handle_primary_attack_input(in_event: InputEvent) -> void:
+	pass
+
+func handle_secondary_attack_input(in_event: InputEvent) -> void:
+	pass
+
+func handle_special_attack_input(in_event: InputEvent) -> void:
+	pass
+
+func handle_jump_input(in_event: InputEvent) -> void:
 	if character_movement:
-		character_movement.apply_jump_input(1.0 if in_pressed else 0.0)
+		character_movement.apply_jump_input(1.0 if in_event.is_pressed() else 0.0)
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level
