@@ -28,6 +28,8 @@ var cached_gravity_velocity: Vector2
 @export_category("Input")
 @export var input_velocity_mul: Vector2 = Vector2.ONE
 
+signal landed()
+
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
@@ -146,6 +148,7 @@ func _physics_process(in_delta: float):
 		if pending_launch_velocity.length_squared() < (launch_velocity_reset_threshold * launch_velocity_reset_threshold):
 			pending_launch_velocity = Vector2.ZERO
 	
+	var was_on_floor = owner_body.is_on_floor()
 	owner_body.velocity = movement_velocity + external_velocity
 	
 	if should_bounce:
@@ -157,3 +160,6 @@ func _physics_process(in_delta: float):
 	else:
 		owner_body.move_and_slide()
 		owner_sprite.linear_velocity = owner_body.get_real_velocity()
+	
+	if not was_on_floor and owner_body.is_on_floor():
+		landed.emit()

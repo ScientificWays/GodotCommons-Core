@@ -193,9 +193,6 @@ func handle_tap_input(in_screen_position: Vector2, in_released: bool) -> void:
 	
 	TapInputHandled.emit(in_screen_position, GlobalPosition, in_released, ConsumedByPawn)
 
-func handle_jump_input(in_event: InputEvent) -> void:
-	if controlled_pawn: controlled_pawn.handle_controller_jump_input(in_event.is_pressed() or in_event.is_echo())
-
 func handle_number_input(in_number: int, in_pressed: bool) -> void:
 	#_Inventory.TryUseActiveArtifactByIndex(in_number - 1)
 	pass

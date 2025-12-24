@@ -19,6 +19,9 @@ enum Type
 @export var size_scale_image: float = 1.0
 #@export var is_flying: bool = false
 
+@export_category("Abilities")
+@export var asc: AbilitySystemComponent
+
 @export_category("Attributes")
 @export var attribute_set: AttributeSet
 @export var max_health: float = 100.0
@@ -36,10 +39,10 @@ enum Type
 
 @export_category("Input")
 @export var pawn_input_actions: Array[StringName] = [
-	&"primary_attack",
-	&"secondary_attack",
-	&"special_attack",
-	&"jump",
+	CommonActions.primary_attack,
+	CommonActions.secondary_attack,
+	CommonActions.special_attack,
+	CommonActions.jump,
 ]
 @export var pawn_input_callables: Array[StringName] = [
 	&"handle_primary_attack_input",
@@ -88,6 +91,8 @@ signal controller_tap_input(in_tap_screen_position: Vector2, in_tap_global_posit
 
 signal died(in_immediately: bool)
 
+signal input_action_handled(in_action_event: InputEvent)
+
 var is_alive: bool = true
 
 var modifiers: Array[Pawn2D_ModifierBase]
@@ -95,6 +100,8 @@ var modifiers: Array[Pawn2D_ModifierBase]
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
+		if not asc:
+			asc = find_child("*bility*ystem*") as AbilitySystemComponent
 		if not attribute_set:
 			attribute_set = find_child("*ttribute*et*") as AttributeSet
 		if not damage_receiver:
@@ -155,6 +162,7 @@ func _unhandled_controller_input(in_event: InputEvent) -> void:
 			
 			call(pawn_input_callables[sample_index], in_event)
 			get_viewport().set_input_as_handled()
+			input_action_handled.emit(in_event)
 			return
 
 func handle_primary_attack_input(in_event: InputEvent) -> void:
@@ -167,8 +175,8 @@ func handle_special_attack_input(in_event: InputEvent) -> void:
 	pass
 
 func handle_jump_input(in_event: InputEvent) -> void:
-	if character_movement:
-		character_movement.apply_jump_input(1.0 if in_event.is_pressed() else 0.0)
+	if in_event.is_pressed() and not in_event.is_echo():
+		asc.try_activate_abilities_by_tag(CommonTags.jump_ability)
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level

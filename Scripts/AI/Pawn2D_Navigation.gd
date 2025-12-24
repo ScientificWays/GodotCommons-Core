@@ -52,7 +52,8 @@ func _physics_process(in_delta: float) -> void:
 		
 		if jump_on_vertical_path:
 			if move_direction.y < jump_vertical_y_threshold:
-				owner_pawn.handle_controller_jump_input(true)
+				var owner_asc = AbilitySystemComponent.try_get_from(owner_pawn)
+				owner_asc.try_activate_abilities_by_tag(CommonTags.jump_ability)
 		
 		movement_input = move_direction
 	
