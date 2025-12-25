@@ -41,7 +41,7 @@ func _tick(in_delta: float) -> Status:
 		check_cooldown_time_left = check_cooldown_time
 	
 	var from = blackboard.get_var(from_var) if blackboard.has_var(from_var) else agent
-	if not is_instance_valid(from):
+	if from == null:
 		abort()
 		return Status.FAILURE
 	
@@ -49,7 +49,7 @@ func _tick(in_delta: float) -> Status:
 		from = from.global_position
 	
 	var to = blackboard.get_var(to_var)
-	if not is_instance_valid(to):
+	if to == null:
 		abort()
 		return Status.FAILURE
 	
