@@ -82,7 +82,7 @@ func _handle_damage_initial_delay(in_target: Node2D) -> void:
 	
 	if valid_targets_num == 1:
 		if use_individual_cooldowns:
-			individual_cooldown_time_dictionary[in_target] = maxf(individual_cooldown_time_dictionary.get(in_target, 0.0), damage_initial_delay)
+			individual_cooldown_time_dictionary[in_target.get_instance_id()] = maxf(individual_cooldown_time_dictionary.get(in_target.get_instance_id(), 0.0), damage_initial_delay)
 		else:
 			common_cooldown_time_left = maxf(common_cooldown_time_left, damage_initial_delay)
 
@@ -105,33 +105,33 @@ func process_cooldowns_common(in_delta: float) -> void:
 		if implact_applied:
 			common_cooldown_time_left = damage_cooldown_time
 
-var individual_cooldown_time_dictionary: Dictionary[Node2D, float] = {}
+var individual_cooldown_time_dictionary: Dictionary[int, float] = {}
 
 func process_cooldowns_individual(in_delta: float) -> void:
 	
 	for sample_target: Node2D in get_overlapping_bodies():
 		
-		if individual_cooldown_time_dictionary.get(sample_target, 0.0) > 0.0:
+		if individual_cooldown_time_dictionary.get(sample_target.get_instance_id(), 0.0) > 0.0:
 			continue
 		
 		if not is_valid_target(sample_target):
 			continue
 		
 		apply_impact_to(sample_target)
-		individual_cooldown_time_dictionary[sample_target] = damage_cooldown_time
+		individual_cooldown_time_dictionary[sample_target.get_instance_id()] = damage_cooldown_time
 	
-	for sample_target: Node2D in individual_cooldown_time_dictionary.keys():
+	for sample_target_id: int in individual_cooldown_time_dictionary.keys():
 		
-		if is_instance_valid(sample_target):
+		if is_instance_id_valid(sample_target_id):
 			
-			individual_cooldown_time_dictionary[sample_target] -= in_delta
+			individual_cooldown_time_dictionary[sample_target_id] -= in_delta
 			
-			if individual_cooldown_time_dictionary[sample_target] > 0.0:
+			if individual_cooldown_time_dictionary[sample_target_id] > 0.0:
 				pass
 			else:
-				individual_cooldown_time_dictionary.erase(sample_target)
+				individual_cooldown_time_dictionary.erase(sample_target_id)
 		else:
-			individual_cooldown_time_dictionary.erase(sample_target)
+			individual_cooldown_time_dictionary.erase(sample_target_id)
 
 signal post_apply_impact_to(in_target: Node2D)
 
@@ -147,7 +147,7 @@ func _on_owner_movement_bounce(in_bounce_collision: KinematicCollision2D) -> voi
 		var collider_target := in_bounce_collision.get_collider() as Node2D
 		
 		if use_individual_cooldowns:
-			if individual_cooldown_time_dictionary.get(collider_target, 0.0) > 0.0:
+			if individual_cooldown_time_dictionary.get(collider_target.get_instance_id(), 0.0) > 0.0:
 				return
 		else:
 			if common_cooldown_time_left > 0.0:
@@ -160,7 +160,7 @@ func _on_owner_movement_bounce(in_bounce_collision: KinematicCollision2D) -> voi
 			if use_individual_cooldowns:
 				common_cooldown_time_left = damage_cooldown_time
 			else:
-				individual_cooldown_time_dictionary[collider_target] = common_cooldown_time_left
+				individual_cooldown_time_dictionary[collider_target.get_instance_id()] = common_cooldown_time_left
 
 func apply_impulse_to(in_target: Node2D):
 	
