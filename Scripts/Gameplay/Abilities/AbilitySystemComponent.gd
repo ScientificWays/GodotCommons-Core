@@ -8,7 +8,7 @@ static func try_get_from(in_node: Node) -> AbilitySystemComponent:
 @export var owner_pawn: Pawn2D
 
 @export_category("Tags")
-@export var tag_container: TagContainer
+@export var tags_container: TagsContainer
 
 signal gameplay_event(in_tag: StringName)
 
@@ -17,7 +17,7 @@ var _abilities_instances: Array[GameplayAbility]
 func _ready() -> void:
 	
 	assert(owner_pawn)
-	assert(tag_container)
+	assert(tags_container)
 	
 	_update_abilities_list()
 

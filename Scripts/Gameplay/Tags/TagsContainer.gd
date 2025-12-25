@@ -1,5 +1,5 @@
 extends Node
-class_name TagContainer
+class_name TagsContainer
 
 @export_category("Tags")
 @export var _current_tags_num: Dictionary[StringName, int]

@@ -74,10 +74,10 @@ func can_activate() -> bool:
 	#if required_pawn_to_activate and owner_asc.owner_pawn == null:
 	#	return false
 	
-	if owner_asc.tag_container.has_any_tag(owner_must_not_have_tags):
+	if owner_asc.tags_container.has_any_tag(owner_must_not_have_tags):
 		return false
 	
-	if not owner_asc.tag_container.has_all_tags(owner_must_have_tags):
+	if not owner_asc.tags_container.has_all_tags(owner_must_have_tags):
 		return false
 	
 	return true
@@ -117,7 +117,7 @@ func cancel_ability() -> void:
 	end_ability(true)
 
 func apply_owner_tags() -> void:
-	owner_asc.tag_container.apply_tags(owner_granted_tags)
+	owner_asc.tags_container.apply_tags(owner_granted_tags)
 
 func remove_owner_tags() -> void:
-	owner_asc.tag_container.remove_tags(owner_granted_tags)
+	owner_asc.tags_container.remove_tags(owner_granted_tags)
