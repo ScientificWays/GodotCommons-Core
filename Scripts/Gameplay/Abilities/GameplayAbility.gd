@@ -63,6 +63,12 @@ func handle_removed(in_asc: AbilitySystemComponent) -> void:
 #	if should_cancel_on_pawn_changed:
 #		cancel_ability()
 
+func get_owner_pawn() -> Pawn2D:
+	return owner_asc.owner_pawn
+
+func get_owner_body() -> CharacterBody2D:
+	return owner_asc.owner_pawn as Node as CharacterBody2D
+
 func has_tag(in_tag: StringName) -> bool:
 	return ability_tags.has(in_tag)
 
@@ -85,6 +91,8 @@ func can_activate() -> bool:
 func try_activate() -> bool:
 	
 	if not _is_active and can_activate():
+		
+		print("Activated ability %s" % self)
 		
 		_is_active = true
 		activated.emit()
@@ -109,9 +117,14 @@ func commit_ability() -> void
 func on_ability_ended(in_was_cancelled: bool) -> void:
 	pass
 
-func end_ability(in_was_cancelled: bool = false) -> void:
+func end_ability(in_was_cancelled: bool = false) -> bool:
+	
+	if not _is_active:
+		return false
+	
 	_is_active = false
 	on_ability_ended(in_was_cancelled)
+	return true
 
 func cancel_ability() -> void:
 	end_ability(true)

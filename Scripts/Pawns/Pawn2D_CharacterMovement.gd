@@ -22,7 +22,6 @@ var cached_gravity_velocity: Vector2
 @export_category("Velocity")
 @export var move_speed: float = 32.0
 @export var sync_with_sprite_move_animation_base_speed: bool = true
-@export var jump_impulse_magnitude: float = 320.0
 @export var launch_velocity_damp: float = 4.0
 
 @export_category("Input")
@@ -91,20 +90,6 @@ var pending_input: Vector2 = Vector2.ZERO
 func apply_movement_input(in_input: Vector2) -> void:
 	pending_input = in_input
 
-func apply_jump_input(in_value: float) -> void:
-	if in_value > 0.0:
-		try_jump()
-
-func can_jump() -> bool:
-	return owner_body.is_on_floor()
-
-func try_jump() -> bool:
-	
-	if can_jump():
-		launch(jump_impulse_magnitude * owner_body.up_direction)
-		return true
-	return false
-
 signal bounce(in_bounce_collision: KinematicCollision2D)
 
 func launch(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool = false) -> bool:
@@ -156,10 +141,8 @@ func _physics_process(in_delta: float):
 		if collision_info:
 			pending_launch_velocity = pending_launch_velocity.bounce(collision_info.get_normal())
 			bounce.emit(collision_info)
-		owner_sprite.linear_velocity = owner_body.velocity
 	else:
 		owner_body.move_and_slide()
-		owner_sprite.linear_velocity = owner_body.get_real_velocity()
 	
 	if not was_on_floor and owner_body.is_on_floor():
 		landed.emit()
