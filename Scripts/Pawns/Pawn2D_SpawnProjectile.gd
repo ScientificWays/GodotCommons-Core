@@ -2,7 +2,7 @@ extends Node2D
 class_name Pawn2D_SpawnProjectile
 
 @export_category("Owner")
-@export var owner_body: Node2D
+@export var owner_pawn: Pawn2D
 @export var owner_sprite: Pawn2D_Sprite
 @export var owner_bt_player: BTPlayer
 @export var owner_target_blackboard_var: StringName = &"chase_target"
@@ -13,7 +13,7 @@ class_name Pawn2D_SpawnProjectile
 
 func _ready() -> void:
 	
-	assert(owner_body)
+	assert(owner_pawn)
 	assert(owner_sprite)
 	assert(owner_bt_player)
 
@@ -33,12 +33,12 @@ func spawn_projectile() -> Projectile2D:
 	if target_position == Vector2.INF:
 		return null
 	
-	if owner_sprite.current_move_direction == AnimationData2D.Direction.Left:
+	if owner_pawn.aim_direction.x > 0.0:
 		position.x = absf(position.x)
 	else:
 		position.x = -absf(position.x)
 	
 	var spawn_position := global_position
 	var spawn_rotation := spawn_position.angle_to_point(target_position)
-	var new_projectile := Projectile2D.spawn(Transform2D(spawn_rotation, spawn_position), projectile_data, projectile_level, owner_body)
+	var new_projectile := Projectile2D.spawn(Transform2D(spawn_rotation, spawn_position), projectile_data, projectile_level, owner_pawn)
 	return new_projectile

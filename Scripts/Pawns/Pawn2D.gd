@@ -51,10 +51,6 @@ enum Type
 	&"handle_jump_input",
 ]
 
-@export_category("AI")
-@export var bt_player: BTPlayer
-#@export var chase_target_var: StringName = &"chase_target"
-
 @export_category("Movement")
 @export var character_movement: Pawn2D_CharacterMovement
 
@@ -108,10 +104,6 @@ func _ready() -> void:
 			damage_receiver = find_child("*amage*eceiver*") as DamageReceiver
 		if not character_movement:
 			character_movement = find_child("*arachter*ovement*") as Pawn2D_CharacterMovement
-		if not bt_player:
-			bt_player = find_child("???layer") as BTPlayer ## "for BTPlayer-like"
-		if not bt_player:
-			bt_player = find_child("??_?layer") as BTPlayer ## "for bt_player-like"
 	else:
 		if damage_receiver:
 			damage_receiver.receive_damage.connect(_on_receive_damage)
@@ -138,6 +130,50 @@ func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
 		if override_level_music:
 			WorldGlobals._level.remove_override_level_music_source(self, remove_override_level_music_delay)
+
+##
+## Transforms
+##
+@export_category("Transforms")
+@export var sync_aim_with_body_direction: bool = true
+@export var sync_body_with_aim_direction: bool = true
+
+var body_direction: Vector2 = Vector2.RIGHT:
+	set(in_direction):
+		
+		in_direction = adjust_body_direction(in_direction)
+		
+		if not in_direction.is_equal_approx(body_direction):
+			body_direction = in_direction
+			body_direction_changed.emit()
+			if sync_aim_with_body_direction: aim_direction = body_direction
+signal body_direction_changed()
+
+func adjust_body_direction(in_direction: Vector2) -> Vector2:
+	return in_direction
+
+var aim_direction: Vector2 = Vector2.RIGHT:
+	set(in_direction):
+		
+		if asc.tags_container.has_tag(CommonTags.lock_aim_direction):
+			return
+		
+		in_direction = adjust_aim_direction(in_direction)
+		
+		if not in_direction.is_equal_approx(aim_direction):
+			aim_direction = in_direction
+			aim_direction_changed.emit()
+			if sync_body_with_aim_direction: body_direction = aim_direction
+signal aim_direction_changed()
+
+func adjust_aim_direction(in_direction: Vector2) -> Vector2:
+	return in_direction
+
+func turn_to_target(in_target: Node2D) -> void:
+	body_direction = (global_position - in_target.global_position).normalized()
+
+func aim_at_target(in_target: Node2D) -> void:
+	aim_direction = (global_position - in_target.global_position).normalized()
 
 ##
 ## Input
@@ -264,11 +300,6 @@ func teleport_to(in_position: Vector2, in_rotation: float = global_rotation, in_
 	if controller:
 		controller.ControlledPawnTeleport.emit(in_reset_camera)
 	return true
-
-#func override_chase_target(in_target: Node2D) -> void:
-#	
-#	assert(bt_player)
-#	bt_player.blackboard.set_var(chase_target_var, in_target)
 
 func has_modifier(in_modifier_script: Script) -> bool:
 	for sample_modifier: Pawn2D_ModifierBase in modifiers:

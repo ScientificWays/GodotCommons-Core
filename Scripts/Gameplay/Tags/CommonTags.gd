@@ -18,3 +18,5 @@ const crouch_fail_event: StringName = &"crouch_fail_event"
 const state_crouching: StringName = &"state_crouching"
 
 const block_input_movement: StringName = &"block_input_movement"
+
+const lock_aim_direction: StringName = &"lock_aim_direction"

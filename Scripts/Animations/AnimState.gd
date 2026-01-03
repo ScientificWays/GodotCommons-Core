@@ -22,6 +22,9 @@ func get_sprite() -> AnimatedSprite2D:
 func get_body() -> CharacterBody2D:
 	return owner_state_machine.owner_body
 
+func get_pawn() -> Pawn2D:
+	return owner_state_machine.owner_body as Node
+
 func get_tags_container() -> TagsContainer:
 	return owner_state_machine.owner_tags_container
 

@@ -8,7 +8,6 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 @export_category("Owner")
 @export var owner_pawn: Pawn2D
 @export var owner_body: CharacterBody2D
-@export var owner_sprite: Pawn2D_Sprite
 @export var owner_attribute_set: AttributeSet
 
 @export_category("Physics")
@@ -21,11 +20,13 @@ var cached_gravity_velocity: Vector2
 
 @export_category("Velocity")
 @export var move_speed: float = 32.0
-@export var sync_with_sprite_move_animation_base_speed: bool = true
 @export var launch_velocity_damp: float = 4.0
 
+@export_category("Rotation")
+@export var rotate_body_to_movement: bool = true
+
 @export_category("Input")
-@export var input_velocity_mul: Vector2 = Vector2.ONE
+@export var input_vector_mul: Vector2 = Vector2.ONE
 
 signal landed()
 
@@ -40,9 +41,7 @@ func _ready() -> void:
 		if not owner_body:
 			owner_body = get_parent() as CharacterBody2D
 		if owner_pawn:
-			if not owner_sprite:
-				owner_sprite = owner_pawn.find_child("*prite*") as Pawn2D_Sprite
-			if not owner_sprite:
+			if not owner_attribute_set:
 				owner_attribute_set = owner_pawn.find_child("*ttribute*et*") as AttributeSet
 	else:
 		
@@ -53,10 +52,6 @@ func _ready() -> void:
 			cached_gravity_velocity = ProjectSettings.get_setting("physics/2d/default_gravity_vector") * ProjectSettings.get_setting("physics/2d/default_gravity")
 		
 		mass *= owner_pawn.get_size_scale()
-		
-		if sync_with_sprite_move_animation_base_speed:
-			assert(owner_sprite)
-			owner_sprite.move_animation_base_speed = move_speed
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
@@ -70,10 +65,14 @@ var pending_launch_velocity: Vector2 = Vector2.ZERO
 
 var movement_velocity: Vector2 = Vector2.ZERO:
 	set(in_velocity):
+		
 		assert(in_velocity.is_finite())
 		movement_velocity = in_velocity
+		
+		if rotate_body_to_movement and not movement_velocity.is_zero_approx():
+			owner_pawn.body_direction = movement_velocity.normalized()
 
-func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool):
+func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool) -> void:
 	
 	if in_scale_by_movement_speed_mul and owner_attribute_set:
 		movement_velocity = in_velocity * owner_attribute_set.get_attribute_current_value(AttributeSet.MoveSpeedMul)
@@ -102,7 +101,7 @@ func launch(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool = false) 
 	return true
 
 func launch_forward(in_magnitude: float, in_scale_by_movement_speed_mul: bool = false) -> bool:
-	var velocity := owner_sprite.get_current_forward_direction() * in_magnitude
+	var velocity := owner_pawn.body_direction * in_magnitude
 	return launch(velocity, in_scale_by_movement_speed_mul)
 
 var prev_velocity: Vector2 = Vector2.ZERO
@@ -111,7 +110,7 @@ func _physics_process(in_delta: float):
 	
 	prev_velocity = owner_body.get_real_velocity()
 	
-	movement_velocity = move_speed * pending_input.normalized() * input_velocity_mul
+	movement_velocity = move_speed * (pending_input * input_vector_mul).normalized()
 	pending_input = Vector2.ZERO
 	
 	var external_velocity := pending_force

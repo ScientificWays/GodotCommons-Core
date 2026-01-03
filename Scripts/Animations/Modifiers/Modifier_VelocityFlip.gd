@@ -13,5 +13,6 @@ func _modify(in_state: AnimState, in_delta: float) -> void:
 	if absf(real_velocity.x) < flip_threshold:
 		pass
 	else:
+		var pawn := in_state.get_pawn()
 		var sprite := in_state.get_sprite()
 		sprite.flip_h = ((real_velocity.x <= flip_threshold) != flip_reverse)
