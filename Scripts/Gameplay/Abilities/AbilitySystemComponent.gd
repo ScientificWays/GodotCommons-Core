@@ -44,17 +44,22 @@ func _update_abilities_list() -> void:
 			_abilities_instances.append(sample_child)
 			sample_child.handle_added(self)
 
-func give_ability(in_script: GDScript) -> void:
+func give_ability(in_script: GDScript) -> GameplayAbility:
 	var new_ability_instance := in_script.new()
 	add_child(new_ability_instance)
+	return new_ability_instance
 
-func try_activate_abilities_by_tag(in_tag: StringName) -> bool:
+func remove_ability(in_ability: GameplayAbility) -> void:
+	assert(in_ability.owner_asc == self)
+	in_ability.queue_free()
+
+func try_activate_abilities_by_tag(in_tag: StringName, in_payload: Variant = null) -> bool:
 	
 	var out_success := false
 	
 	for sample_ability: GameplayAbility in _abilities_instances:
 		if sample_ability.has_tag(in_tag):
-			var sample_activated := sample_ability.try_activate()
+			var sample_activated := sample_ability.try_activate(in_payload)
 			out_success = (out_success or sample_activated)
 	return out_success
 

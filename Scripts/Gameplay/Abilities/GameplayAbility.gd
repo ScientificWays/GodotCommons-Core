@@ -31,6 +31,8 @@ var _is_active: bool = false:
 			if _is_active: apply_owner_tags()
 			else: remove_owner_tags()
 
+var current_payload: Variant = null
+
 signal activated()
 signal activation_failed()
 
@@ -38,6 +40,12 @@ var cooldown_time_left: float = 0.0
 
 func _ready() -> void:
 	pass
+
+func _enter_tree() -> void:
+	pass
+
+func _exit_tree() -> void:
+	handle_removed(owner_asc)
 
 func _process(in_delta: float) -> void:
 	
@@ -72,7 +80,7 @@ func get_owner_body() -> CharacterBody2D:
 func has_tag(in_tag: StringName) -> bool:
 	return ability_tags.has(in_tag)
 
-func can_activate() -> bool:
+func can_activate(in_payload: Variant) -> bool:
 	
 	if cooldown_time_left > 0.0:
 		return false
@@ -88,13 +96,15 @@ func can_activate() -> bool:
 	
 	return true
 
-func try_activate() -> bool:
+func try_activate(in_payload: Variant = null) -> bool:
 	
-	if not _is_active and can_activate():
+	if not _is_active and can_activate(in_payload):
 		
-		print("Activated ability %s" % self)
+		#print("Activated ability %s" % self)
 		
 		_is_active = true
+		current_payload = in_payload
+		
 		activated.emit()
 		
 		apply_cost()
@@ -114,8 +124,8 @@ func apply_cooldown() -> void:
 @abstract
 func commit_ability() -> void
 
-func on_ability_ended(in_was_cancelled: bool) -> void:
-	pass
+@abstract
+func on_ability_ended(in_was_cancelled: bool) -> void
 
 func end_ability(in_was_cancelled: bool = false) -> bool:
 	
@@ -123,6 +133,7 @@ func end_ability(in_was_cancelled: bool = false) -> bool:
 		return false
 	
 	_is_active = false
+	current_payload = null
 	on_ability_ended(in_was_cancelled)
 	return true
 
@@ -134,3 +145,6 @@ func apply_owner_tags() -> void:
 
 func remove_owner_tags() -> void:
 	owner_asc.tags_container.remove_tags(owner_granted_tags)
+
+func is_input_action_pressed(in_action: StringName) -> bool:
+	return owner_asc.owner_pawn.is_input_action_pressed(in_action)

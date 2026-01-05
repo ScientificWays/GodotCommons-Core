@@ -1,5 +1,5 @@
 extends Object
-class_name CommonActions
+class_name CommonInputActions
 
 const primary_attack: StringName = &"primary_attack"
 const secondary_attack: StringName = &"secondary_attack"

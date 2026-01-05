@@ -39,10 +39,10 @@ enum Type
 
 @export_category("Input")
 @export var pawn_input_actions: Array[StringName] = [
-	CommonActions.primary_attack,
-	CommonActions.secondary_attack,
-	CommonActions.special_attack,
-	CommonActions.jump,
+	CommonInputActions.primary_attack,
+	CommonInputActions.secondary_attack,
+	CommonInputActions.special_attack,
+	CommonInputActions.jump,
 ]
 @export var pawn_input_callables: Array[StringName] = [
 	&"handle_primary_attack_input",
@@ -179,6 +179,10 @@ func aim_at_target(in_target: Node2D) -> void:
 ## Input
 ##
 var last_movement_input: Vector2 = Vector2.ZERO
+var last_input_action_events: Dictionary[StringName, InputEvent] = {}
+
+func is_input_action_pressed(in_action: StringName) -> bool:
+	return last_input_action_events[in_action].is_pressed() if last_input_action_events.has(in_action) else false
 
 func handle_controller_movement_input(in_input: Vector2) -> void:
 	
@@ -192,14 +196,18 @@ func handle_controller_tap_input(in_screen_position: Vector2, in_global_position
 
 func _unhandled_controller_input(in_event: InputEvent) -> void:
 	
-	for sample_index: int in range(pawn_input_actions.size()):
+	if in_event is InputEventAction:
 		
-		if in_event.is_action(pawn_input_actions[sample_index]):
+		last_input_action_events[in_event.action] = in_event
+		
+		for sample_index: int in range(pawn_input_actions.size()):
 			
-			call(pawn_input_callables[sample_index], in_event)
-			get_viewport().set_input_as_handled()
-			input_action_handled.emit(in_event)
-			return
+			if in_event.is_action(pawn_input_actions[sample_index]):
+				
+				call(pawn_input_callables[sample_index], in_event)
+				get_viewport().set_input_as_handled()
+				input_action_handled.emit(in_event)
+				return
 
 func handle_primary_attack_input(in_event: InputEvent) -> void:
 	pass
