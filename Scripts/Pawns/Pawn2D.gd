@@ -170,10 +170,10 @@ func adjust_aim_direction(in_direction: Vector2) -> Vector2:
 	return in_direction
 
 func turn_to_target(in_target: Node2D) -> void:
-	body_direction = (global_position - in_target.global_position).normalized()
+	body_direction = (in_target.global_position - global_position).normalized()
 
 func aim_at_target(in_target: Node2D) -> void:
-	aim_direction = (global_position - in_target.global_position).normalized()
+	aim_direction = (in_target.global_position - global_position).normalized()
 
 ##
 ## Input

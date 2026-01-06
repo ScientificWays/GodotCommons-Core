@@ -71,13 +71,13 @@ func _ready() -> void:
 
 func _enter_tree():
 	if not Engine.is_editor_hint():
-		ModularGlobals.init_modular_node(self)
-		ModularGlobals.init_modular_node(self, owner_player_controller)
+		ModularGlobals.init_modular_node(self, HUDUI)
+		ModularGlobals.init_modular_node(self, HUDUI, owner_player_controller)
 
 func _exit_tree():
 	if not Engine.is_editor_hint():
-		ModularGlobals.deinit_modular_node(self)
-		ModularGlobals.deinit_modular_node(self, owner_player_controller)
+		ModularGlobals.deinit_modular_node(self, HUDUI)
+		ModularGlobals.deinit_modular_node(self, HUDUI, owner_player_controller)
 
 func _on_change_level_transition_begin(in_change_level: ChangeLevel) -> void:
 	if TransitionBackground:

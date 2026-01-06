@@ -23,7 +23,8 @@ func _ready() -> void:
 	assert(tags_container)
 	
 	if animation_player:
-		animation_player.remove_animation_library(&"")
+		if animation_player.has_animation_library(&""):
+			animation_player.remove_animation_library(&"")
 	else:
 		animation_player = AnimationPlayer.new()
 		add_child(animation_player)
@@ -31,10 +32,10 @@ func _ready() -> void:
 	#_update_abilities_list()
 
 func _enter_tree() -> void:
-	ModularGlobals.init_modular_node(self)
+	ModularGlobals.init_modular_node(self, AbilitySystemComponent)
 
 func _exit_tree() -> void:
-	ModularGlobals.deinit_modular_node(self)
+	ModularGlobals.deinit_modular_node(self, AbilitySystemComponent)
 
 func _notification(in_what: int) -> void:
 	

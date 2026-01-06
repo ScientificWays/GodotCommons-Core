@@ -23,10 +23,12 @@ var cached_gravity_velocity: Vector2
 @export var launch_velocity_damp: float = 4.0
 
 @export_category("Rotation")
-@export var rotate_body_to_movement: bool = true
+@export var rotate_body_to_movement_x: bool = true
+@export var rotate_body_to_movement_x_threshold: float = 2.0
 
 @export_category("Input")
 @export var input_vector_mul: Vector2 = Vector2.ONE
+@export var input_threshold: float = 0.3
 
 signal landed()
 
@@ -69,7 +71,7 @@ var movement_velocity: Vector2 = Vector2.ZERO:
 		assert(in_velocity.is_finite())
 		movement_velocity = in_velocity
 		
-		if rotate_body_to_movement and not movement_velocity.is_zero_approx():
+		if rotate_body_to_movement_x and absf(movement_velocity.x) >= rotate_body_to_movement_x_threshold:
 			owner_pawn.body_direction = movement_velocity.normalized()
 
 func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul: bool) -> void:
@@ -110,8 +112,13 @@ func _physics_process(in_delta: float):
 	
 	prev_velocity = owner_body.get_real_velocity()
 	
-	movement_velocity = move_speed * (pending_input * input_vector_mul).normalized()
+	var final_input := pending_input * input_vector_mul
 	pending_input = Vector2.ZERO
+	
+	if final_input.length_squared() < (input_threshold * input_threshold):
+		movement_velocity = Vector2.ZERO
+	else:
+		movement_velocity = move_speed * final_input.normalized()
 	
 	var external_velocity := pending_force
 	pending_force = Vector2.ZERO

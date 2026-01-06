@@ -1,6 +1,9 @@
 extends Node
 class_name AttributeSet
 
+static func try_get_from(in_node: Node) -> AttributeSet:
+	return ModularGlobals.try_get_from(in_node, AttributeSet)
+
 const Health: StringName = &"Health"
 const MaxHealth: StringName = &"MaxHealth"
 const MoveSpeedMul: StringName = &"MoveSpeedMul"
@@ -10,9 +13,6 @@ const HighDamageResistance: StringName = &"HighDamageResistance"
 const FireDamageMul: StringName = &"FireDamageMul"
 const PoisonDamageMul: StringName = &"PoisonDamageMul"
 const RollSpeedAdditive: StringName = &"RollSpeedAdditive"
-
-static func try_get_from(in_node: Node) -> AttributeSet:
-	return ModularGlobals.try_get_from(in_node, AttributeSet)
 
 class AttributeData:
 	
@@ -36,6 +36,7 @@ class AttributeData:
 	func reset() -> void:
 		current_value = base_value
 
+var owner_asc: AbilitySystemComponent
 var attributes_dictionary: Dictionary[StringName, AttributeData] = {}
 
 signal base_value_set()
@@ -43,11 +44,19 @@ signal base_value_set()
 func _ready() -> void:
 	pass
 
-func _enter_tree():
-	ModularGlobals.init_modular_node(self)
+func _enter_tree() -> void:
+	
+	owner_asc = get_parent()
+	
+	ModularGlobals.init_modular_node(self, AttributeSet)
+	ModularGlobals.init_modular_node(self, AttributeSet, owner_asc.owner_pawn)
 
-func _exit_tree():
-	ModularGlobals.deinit_modular_node(self)
+func _exit_tree() -> void:
+	
+	ModularGlobals.deinit_modular_node(self, AttributeSet)
+	ModularGlobals.deinit_modular_node(self, AttributeSet, owner_asc.owner_pawn)
+	
+	owner_asc = null
 
 func has_attribute(in_name: StringName):
 	return attributes_dictionary.has(in_name)

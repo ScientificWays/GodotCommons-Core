@@ -15,7 +15,6 @@ enum DistanceType
 @export var check_fail_result: Status = Status.FAILURE
 
 @export var check_cooldown_time: float = 0.2
-@export var cooldown_time_status: Status = Status.RUNNING
 var check_cooldown_time_left: float = 0.0
 
 var prev_check_result: bool = false

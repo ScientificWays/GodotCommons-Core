@@ -30,10 +30,10 @@ func _notification(in_what: int) -> void:
 		fall_target = null
 
 func _enter_tree() -> void:
-	ModularGlobals.init_modular_node(self, fall_target)
+	ModularGlobals.init_modular_node(self, FallTriggerTile_Sequence, fall_target)
 
 func _exit_tree() -> void:
-	ModularGlobals.deinit_modular_node(self, fall_target)
+	ModularGlobals.deinit_modular_node(self, FallTriggerTile_Sequence, fall_target)
 
 func try_trigger_sequence(in_source: Node) -> bool:
 	

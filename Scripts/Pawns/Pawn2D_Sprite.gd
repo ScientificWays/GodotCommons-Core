@@ -9,6 +9,9 @@ static func try_get_from(in_node: Node) -> Pawn2D_Sprite:
 @export var owner_pawn: Pawn2D
 @export var status_effect_particles_radius: float = 16.0
 
+@export_category("State Machine")
+@export var state_machine: AnimStateMachine
+
 @export_category("Transforms")
 @export var flip_transform_targets: Array[Node2D]
 @export var z_index_offset: int = 0
@@ -24,6 +27,8 @@ func _ready() -> void:
 		set_process(false)
 		if not owner_pawn:
 			owner_pawn = get_parent() as Pawn2D
+		if not state_machine:
+			state_machine = find_child("ASC") as AnimStateMachine
 		if not allow_different_z_index:
 			z_index = GameGlobals_Class.PAWN_2D_SPRITE_DEFAULT_Z_INDEX + z_index_offset
 			z_as_relative = false
@@ -67,6 +72,14 @@ func _handle_body_direction_changed() -> void:
 ##
 ## Animations
 ##
+func play_override_animation(in_name: StringName, in_custom_speed: float = 1.0, in_from_end: bool = false, in_should_reset_on_finish: bool = true) -> void:
+	
+	if state_machine:
+		state_machine.play_override_animation(in_name, in_custom_speed, in_from_end, in_should_reset_on_finish)
+	else:
+		play(in_name, in_custom_speed, in_from_end)
+		#push_warning("Trying to play override animation %s for %s without state_machine!" % [ in_name, self ])
+
 func try_play_death_animation() -> bool:
 	#if animation_data.use_death_animation:
 	#	play(animation_data.get_death_animation_name(self))
