@@ -9,10 +9,12 @@ static func try_get_from(in_node: Node) -> Pawn2D_Sprite:
 @export var owner_pawn: Pawn2D
 @export var status_effect_particles_radius: float = 16.0
 
-var particles_pivot: ParticlesPivot
-
+@export_category("Transforms")
+@export var flip_transform_targets: Array[Node2D]
 @export var z_index_offset: int = 0
 @export var allow_different_z_index: bool = false
+
+var particles_pivot: ParticlesPivot
 
 var status_effect_modulate_array: Array[Color] = []
 
@@ -54,6 +56,13 @@ func _handle_body_direction_changed() -> void:
 		flip_h = false
 	elif owner_pawn.body_direction.x < 0.0:
 		flip_h = true
+	
+	for sample_target: Node2D in flip_transform_targets:
+		
+		if flip_h:
+			sample_target.position.x = -absf(sample_target.position.x)
+		else:
+			sample_target.position.x = absf(sample_target.position.x)
 
 ##
 ## Animations
