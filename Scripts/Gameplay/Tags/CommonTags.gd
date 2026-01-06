@@ -20,3 +20,10 @@ const state_crouching: StringName = &"state_crouching"
 const block_input_movement: StringName = &"block_input_movement"
 
 const lock_aim_direction: StringName = &"lock_aim_direction"
+
+##
+## Items
+##
+const weapon_use_ability: StringName = &"weapon_use_ability"
+
+const state_using_weapon: StringName = &"state_using_weapon"

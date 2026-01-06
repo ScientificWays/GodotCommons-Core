@@ -196,31 +196,30 @@ func handle_controller_tap_input(in_screen_position: Vector2, in_global_position
 
 func _unhandled_controller_input(in_event: InputEvent) -> void:
 	
-	if in_event is InputEventAction:
+	for sample_index: int in range(pawn_input_actions.size()):
 		
-		last_input_action_events[in_event.action] = in_event
-		
-		for sample_index: int in range(pawn_input_actions.size()):
+		if in_event.is_action(pawn_input_actions[sample_index]):
 			
-			if in_event.is_action(pawn_input_actions[sample_index]):
-				
-				call(pawn_input_callables[sample_index], in_event)
+			last_input_action_events[pawn_input_actions[sample_index]] = in_event
+			
+			if call(pawn_input_callables[sample_index], in_event):
 				get_viewport().set_input_as_handled()
 				input_action_handled.emit(in_event)
-				return
+				break
 
-func handle_primary_attack_input(in_event: InputEvent) -> void:
-	pass
+func handle_primary_attack_input(in_event: InputEvent) -> bool:
+	return false
 
-func handle_secondary_attack_input(in_event: InputEvent) -> void:
-	pass
+func handle_secondary_attack_input(in_event: InputEvent) -> bool:
+	return false
 
-func handle_special_attack_input(in_event: InputEvent) -> void:
-	pass
+func handle_special_attack_input(in_event: InputEvent) -> bool:
+	return false
 
-func handle_jump_input(in_event: InputEvent) -> void:
+func handle_jump_input(in_event: InputEvent) -> bool:
 	if in_event.is_pressed() and not in_event.is_echo():
-		asc.try_activate_abilities_by_tag(CommonTags.jump_ability)
+		return asc.try_activate_abilities_by_tag(CommonTags.jump_ability)
+	return false
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level

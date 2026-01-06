@@ -37,15 +37,20 @@ signal activated()
 signal activation_failed()
 
 var cooldown_time_left: float = 0.0
+signal cooldown_finished()
 
 func _ready() -> void:
-	pass
+	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		pass
 
 func _enter_tree() -> void:
-	pass
+	owner_asc = get_parent()
 
 func _exit_tree() -> void:
-	handle_removed(owner_asc)
+	owner_asc = null
 
 func _process(in_delta: float) -> void:
 	
@@ -53,18 +58,19 @@ func _process(in_delta: float) -> void:
 		cooldown_time_left -= in_delta
 	else:
 		cooldown_time_left = 0.0
+		cooldown_finished.emit()
 
-func handle_added(in_asc: AbilitySystemComponent) -> void:
-	
-	owner_asc = in_asc
-	#owner_asc.owner_controller.controlled_pawn_changed.connect(_handle_owner_pawn_changed)
+#func handle_added(in_asc: AbilitySystemComponent) -> void:
+#	
+#	owner_asc = in_asc
+#	#owner_asc.owner_controller.controlled_pawn_changed.connect(_handle_owner_pawn_changed)
 
-func handle_removed(in_asc: AbilitySystemComponent) -> void:
-	
-	assert(in_asc == owner_asc)
-	
-	#owner_asc.owner_controller.controlled_pawn_changed.disconnect(_handle_owner_pawn_changed)
-	owner_asc = null
+#func handle_removed(in_asc: AbilitySystemComponent) -> void:
+#	
+#	assert(in_asc == owner_asc)
+#	
+#	#owner_asc.owner_controller.controlled_pawn_changed.disconnect(_handle_owner_pawn_changed)
+#	owner_asc = null
 
 #func _handle_owner_pawn_changed() -> void:
 #	
@@ -80,21 +86,18 @@ func get_owner_body() -> CharacterBody2D:
 func has_tag(in_tag: StringName) -> bool:
 	return ability_tags.has(in_tag)
 
-func can_activate(in_payload: Variant) -> bool:
-	
-	if cooldown_time_left > 0.0:
-		return false
-	
-	#if required_pawn_to_activate and owner_asc.owner_pawn == null:
-	#	return false
-	
-	if owner_asc.tags_container.has_any_tag(owner_must_not_have_tags):
-		return false
-	
-	if not owner_asc.tags_container.has_all_tags(owner_must_have_tags):
-		return false
-	
+func check_cooldown(in_payload: Variant) -> bool:
+	return cooldown_time_left <= 0.0
+
+func check_cost(in_payload: Variant) -> bool:
 	return true
+
+func check_tags(in_payload: Variant) -> bool:
+	return not owner_asc.tags_container.has_any_tag(owner_must_not_have_tags) \
+		and owner_asc.tags_container.has_all_tags(owner_must_have_tags)
+
+func can_activate(in_payload: Variant) -> bool:
+	return check_cooldown(in_payload) and check_cost(in_payload) and check_tags(in_payload)
 
 func try_activate(in_payload: Variant = null) -> bool:
 	

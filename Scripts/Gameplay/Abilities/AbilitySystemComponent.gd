@@ -10,6 +10,9 @@ static func try_get_from(in_node: Node) -> AbilitySystemComponent:
 @export_category("Tags")
 @export var tags_container: TagsContainer
 
+@export_category("Animations")
+@export var animation_player: AnimationPlayer
+
 signal gameplay_event(in_tag: StringName)
 
 var _abilities_instances: Array[GameplayAbility]
@@ -19,7 +22,13 @@ func _ready() -> void:
 	assert(owner_pawn)
 	assert(tags_container)
 	
-	_update_abilities_list()
+	if animation_player:
+		animation_player.remove_animation_library(&"")
+	else:
+		animation_player = AnimationPlayer.new()
+		add_child(animation_player)
+	
+	#_update_abilities_list()
 
 func _enter_tree() -> void:
 	ModularGlobals.init_modular_node(self)
@@ -34,15 +43,11 @@ func _notification(in_what: int) -> void:
 
 func _update_abilities_list() -> void:
 	
-	for sample_ability: GameplayAbility in _abilities_instances:
-		sample_ability.handle_removed(self)
 	_abilities_instances.clear()
 	
 	for sample_child: Node in get_children():
-		
 		if sample_child is GameplayAbility:
 			_abilities_instances.append(sample_child)
-			sample_child.handle_added(self)
 
 func give_ability(in_script: GDScript) -> GameplayAbility:
 	var new_ability_instance := in_script.new()

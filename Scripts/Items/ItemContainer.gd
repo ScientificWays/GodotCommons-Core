@@ -11,6 +11,9 @@ static func get_all_containers_in_owner(in_owner: Node) -> Array[ItemContainer]:
 			out_array.append(sample_child)
 	return out_array
 
+@export_category("Initialize")
+@export var initial_items_num: Dictionary[ItemData, int]
+
 var _items_num_dictionary: Dictionary[ItemData, int]
 @export var _slots_num_max: int = 100
 
@@ -19,7 +22,11 @@ signal item_added(in_item_data: ItemData, in_added_num: int)
 signal item_removed(in_item_data: ItemData, in_removed_num: int)
 
 func _ready() -> void:
-	pass
+	set_initial_items()
+
+func set_initial_items() -> void:
+	for sample_item_data: ItemData in initial_items_num:
+		set_item_num(sample_item_data, initial_items_num[sample_item_data])
 
 func _enter_tree():
 	ModularGlobals.init_modular_node(self)
