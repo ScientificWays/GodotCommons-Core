@@ -77,6 +77,9 @@ func _process(in_delta: float) -> void:
 #	if should_cancel_on_pawn_changed:
 #		cancel_ability()
 
+func is_active() -> bool:
+	return _is_active
+
 func get_owner_pawn() -> Pawn2D:
 	return owner_asc.owner_pawn
 
@@ -107,6 +110,8 @@ func try_activate(in_payload: Variant = null) -> bool:
 		
 		_is_active = true
 		current_payload = in_payload
+		
+		last_input_since_activaion = AbilityInput.None
 		
 		activated.emit()
 		
@@ -151,3 +156,18 @@ func remove_owner_tags() -> void:
 
 func is_input_action_pressed(in_action: StringName) -> bool:
 	return owner_asc.owner_pawn.is_input_action_pressed(in_action)
+
+@export_category("Input")
+enum AbilityInput
+{
+	None = 0,
+	Press = 1,
+	Release = 2
+}
+var last_input_since_activaion: AbilityInput = AbilityInput.None
+
+signal received_input(in_type: AbilityInput)
+
+func send_ability_input(in_type: AbilityInput) -> void:
+	last_input_since_activaion = in_type
+	received_input.emit(in_type)

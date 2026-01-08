@@ -78,3 +78,13 @@ func try_end_abilities_by_tag(in_tag: StringName, in_cancel: bool = false) -> bo
 			var sample_ended := sample_ability.end_ability(in_cancel)
 			out_success = (out_success or sample_ended)
 	return out_success
+
+func try_send_input_to_abilities_by_tag(in_tag: StringName, in_input: GameplayAbility.AbilityInput) -> bool:
+	
+	var out_success := false
+	
+	for sample_ability: GameplayAbility in _abilities_instances:
+		if sample_ability.has_tag(in_tag):
+			sample_ability.send_ability_input(in_input)
+			out_success = true
+	return out_success

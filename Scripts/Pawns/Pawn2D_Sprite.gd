@@ -66,8 +66,10 @@ func _handle_body_direction_changed() -> void:
 		
 		if flip_h:
 			sample_target.position.x = -absf(sample_target.position.x)
+			sample_target.scale.x = -absf(sample_target.scale.x)
 		else:
 			sample_target.position.x = absf(sample_target.position.x)
+			sample_target.scale.x = absf(sample_target.scale.x)
 
 ##
 ## Animations

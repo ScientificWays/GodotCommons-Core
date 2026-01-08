@@ -1,3 +1,4 @@
+@tool
 extends Area2D
 class_name Pawn2D_Perception
 
@@ -20,28 +21,40 @@ var default_sight_shape: Shape2D
 
 func _ready() -> void:
 	
-	area_entered.connect(_on_target_entered)
-	body_entered.connect(_on_target_entered)
-	
-	area_exited.connect(_on_target_exited)
-	body_exited.connect(_on_target_exited)
-	
-	_sort_sight_targets_timer = GameGlobals.spawn_regular_timer_for(self, _sort_sight_targets, 1.0)
-	
-	assert(sight_collision)
-	assert(sight_collision.shape)
-	default_sight_shape = sight_collision.shape
-	
-	sight_targets_changed.connect(_sort_sight_targets)
-	
-	sight_targets_changed.connect(_update_sight_collision_shape, Object.CONNECT_DEFERRED)
-	_update_sight_collision_shape.call_deferred()
+	if Engine.is_editor_hint():
+		pass
+	else:
+		area_entered.connect(_on_target_entered)
+		body_entered.connect(_on_target_entered)
+		
+		area_exited.connect(_on_target_exited)
+		body_exited.connect(_on_target_exited)
+		
+		_sort_sight_targets_timer = GameGlobals.spawn_regular_timer_for(self, _sort_sight_targets, 1.0)
+		
+		assert(sight_collision)
+		assert(sight_collision.shape)
+		default_sight_shape = sight_collision.shape
+		
+		sight_targets_changed.connect(_sort_sight_targets)
+		
+		sight_targets_changed.connect(_update_sight_collision_shape, Object.CONNECT_DEFERRED)
+		_update_sight_collision_shape.call_deferred()
 
 func _enter_tree():
-	ModularGlobals.init_modular_node(self)
+	
+	if Engine.is_editor_hint():
+		if get_tree().edited_scene_root is LevelBase2D:
+			visible = false
+	else:
+		ModularGlobals.init_modular_node(self)
 
 func _exit_tree():
-	ModularGlobals.deinit_modular_node(self)
+	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		ModularGlobals.deinit_modular_node(self)
 
 func _on_target_entered(in_target: Node2D) -> void:
 	
