@@ -17,6 +17,11 @@ signal gameplay_event(in_tag: StringName)
 
 var _abilities_instances: Array[GameplayAbility]
 
+signal ability_activated(in_ability: GameplayAbility)
+signal ability_activation_failed(in_ability: GameplayAbility)
+
+signal ability_ended(in_ability: GameplayAbility, in_was_cancelled: bool)
+
 func _ready() -> void:
 	
 	assert(owner_pawn)

@@ -36,13 +36,15 @@ var current_payload: Variant = null
 signal activated()
 signal activation_failed()
 
+signal ended(in_was_cancelled: bool)
+
 var cooldown_time_left: float = 0.0
 signal cooldown_finished()
 
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
-		pass
+		set_process(false)
 	else:
 		pass
 
@@ -114,6 +116,7 @@ func try_activate(in_payload: Variant = null) -> bool:
 		last_input_since_activaion = AbilityInput.None
 		
 		activated.emit()
+		owner_asc.ability_activated.emit(self)
 		
 		apply_cost()
 		apply_cooldown()
@@ -121,6 +124,7 @@ func try_activate(in_payload: Variant = null) -> bool:
 		commit_ability()
 		return true
 	activation_failed.emit()
+	owner_asc.ability_activation_failed.emit(self)
 	return false
 
 func apply_cost() -> void:
@@ -143,6 +147,9 @@ func end_ability(in_was_cancelled: bool = false) -> bool:
 	_is_active = false
 	current_payload = null
 	on_ability_ended(in_was_cancelled)
+	
+	ended.emit(in_was_cancelled)
+	owner_asc.ability_ended.emit(self, in_was_cancelled)
 	return true
 
 func cancel_ability() -> void:
