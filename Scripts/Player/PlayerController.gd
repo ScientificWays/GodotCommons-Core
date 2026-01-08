@@ -110,17 +110,18 @@ func get_new_pawn_scene_path() -> String:
 
 func restart(in_initial_restart: bool = false) -> void:
 	
-	var _level := WorldGlobals._level as LevelBase2D
-	var RestartPosition := _level.get_player_spawn_position(self)
+	var new_pawn := (load(get_new_pawn_scene_path()) as PackedScene).instantiate()
+	init_new_pawn(new_pawn)
 	
-	controlled_pawn = (load(get_new_pawn_scene_path()) as PackedScene).instantiate()
-	controlled_pawn.position = RestartPosition
-	controlled_pawn.controller = self
-	
-	_level._y_sorted.add_child.call_deferred(controlled_pawn)
+	controlled_pawn = new_pawn
+	WorldGlobals._level._y_sorted.add_child.call_deferred(controlled_pawn)
 	
 	if not in_initial_restart:
 		WorldGlobals._game_state.current_restarts_num += 1
+
+func init_new_pawn(in_new_pawn: Pawn2D) -> void:
+	in_new_pawn.position = WorldGlobals._level.get_player_spawn_position(self)
+	in_new_pawn.controller = self
 
 func GetControlledPawnLinearVelocity() -> Vector2:
 	

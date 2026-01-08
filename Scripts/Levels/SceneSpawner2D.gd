@@ -6,13 +6,21 @@ const init_instance_method_name: StringName = &"SceneSpawner2D_init_instance"
 
 @export_category("Scenes")
 @export var weighted_variants: Dictionary[PackedScene, float]
+@export var spawn_on_ready: bool = false
 @export var deferred_spawn: bool = true
 
 signal spawned()
 signal spawned_verbose(in_instance: Node)
 
 func _ready() -> void:
+	
 	super()
+	
+	if Engine.is_editor_hint():
+		pass
+	else:
+		if spawn_on_ready:
+			try_spawn()
 
 func try_spawn() -> Node:
 	

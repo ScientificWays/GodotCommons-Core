@@ -8,13 +8,13 @@ class_name PlayerCamera2D
 @export var TriggerLagOnPawnChanged: bool = true
 @export var TriggerLagOnPawnTeleport: bool = true
 
-@export_category("Camera")
-@export var CameraAnimationPlayer: AnimationPlayer
+@export_category("Movement")
+@export var movement_zoom_mul: float = 0.9
+@export var movement_zoom_velocity_threshold: float = 64.0
+
+@export_category("Pending Zoom")
 @export var DefaultPendingZoomLerpSpeed: float = 2.0
 @onready var DefaultSmoothingSpeed = position_smoothing_speed
-
-var ConstantOffset: Vector2 = Vector2.ZERO
-var ConstantRotation: float = 0.0
 
 var PendingOffset: Vector2 = Vector2.ZERO
 var PendingRotation: float = 0.0
@@ -22,11 +22,20 @@ var PendingRotation: float = 0.0
 var PendingZoom: Vector2 = Vector2.ONE
 @onready var PendingZoomLerpSpeed: float = DefaultPendingZoomLerpSpeed
 
-var OverrideTarget: Node2D = null
+signal ReachedPendingZoom()
+
+@export_category("Override Target")
 @export var OverrideTargetBlocksMovementInputs: bool = true
 @export var OverrideTargetBlocksTapInputs: bool = true
 
-signal ReachedPendingZoom()
+var OverrideTarget: Node2D = null
+
+@export_category("Animations")
+@export var CameraAnimationPlayer: AnimationPlayer
+
+@export_category("Constant Bases")
+var ConstantOffset: Vector2 = Vector2.ZERO
+var ConstantRotation: float = 0.0
 
 func _ready() -> void:
 	
@@ -44,8 +53,8 @@ func _ready() -> void:
 		
 		OnViewportSizeChanged()
 		
-		owner_player_controller.controlled_pawn_changed.connect(OnOwnercontrolled_pawn_changed)
-		OnOwnercontrolled_pawn_changed()
+		owner_player_controller.controlled_pawn_changed.connect(_on_owner_controlled_pawn_changed)
+		_on_owner_controlled_pawn_changed()
 		
 		owner_player_controller.ControlledPawnTeleport.connect(OnOwnerControlledPawnTeleport)
 		OnOwnerControlledPawnTeleport(true)
@@ -80,8 +89,9 @@ func OnViewportSizeChanged() -> void:
 	
 	if is_node_ready():
 		pass
+	
 
-func OnOwnercontrolled_pawn_changed() -> void:
+func _on_owner_controlled_pawn_changed() -> void:
 	if TriggerLagOnPawnChanged:
 		TriggerLag()
 
@@ -104,6 +114,7 @@ func ResetSmoothingSpeed() -> void:
 
 func TriggerLag(InDurationMul: float = 1.0) -> void:
 	CameraAnimationPlayer.play(&"Lag", -1.0, 1.0 / InDurationMul)
+	CameraAnimationPlayer.advance(0.0)
 
 ##
 ## Zoom
@@ -125,9 +136,9 @@ func ResetZoom() -> void:
 
 func GetMovementZoomMul() -> float:
 	
-	if owner_player_controller.GetControlledPawnLinearVelocity().length() > 64.0 \
+	if owner_player_controller.GetControlledPawnLinearVelocity().length() > movement_zoom_velocity_threshold \
 	and not owner_player_controller.movement_input.is_zero_approx():
-		return 0.9
+		return movement_zoom_mul
 	else:
 		return 1.0
 
@@ -145,13 +156,13 @@ func ShouldBlockTapInputs() -> bool:
 ##
 func set_camera_limits(in_center: Vector2, in_extents: Vector2, in_smoothed: bool = true) -> void:
 	
+	limit_enabled = true
+	limit_smoothed = in_smoothed
+	
 	limit_right = in_center.x + in_extents.x
 	limit_left = in_center.x - in_extents.x
 	limit_top = in_center.y - in_extents.y
 	limit_bottom = in_center.y + in_extents.y
-	
-	limit_smoothed = in_smoothed
-	limit_enabled = true
 	
 	TriggerLag()
 
