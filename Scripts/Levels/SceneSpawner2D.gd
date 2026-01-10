@@ -8,6 +8,7 @@ const init_instance_method_name: StringName = &"SceneSpawner2D_init_instance"
 @export var weighted_variants: Dictionary[PackedScene, float]
 @export var spawn_on_ready: bool = false
 @export var deferred_spawn: bool = true
+@export var remove_after_spawn: bool = true
 
 signal spawned()
 signal spawned_verbose(in_instance: Node)
@@ -52,4 +53,7 @@ func try_spawn() -> Node:
 	
 	spawned.emit()
 	spawned_verbose.emit(new_instance)
+	
+	if remove_after_spawn:
+		queue_free.call_deferred()
 	return new_instance

@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://caysdihjcphyy"]
+
+[ext_resource type="Script" uid="uid://bjuwcewnhicu2" path="res://addons/GodotCommons-Core/Scripts/Player/PlayerCameraBounds.gd" id="1_ranl6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ranl6"]
+size = Vector2(8, 311.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nvh5w"]
+size = Vector2(8, 311.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r4xqd"]
+size = Vector2(621, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gpe65"]
+size = Vector2(621, 8)
+
+[node name="PlayerCameraBounds" type="Area2D"]
+collision_layer = 256
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_ranl6")
+
+[node name="Left" type="CollisionShape2D" parent="."]
+position = Vector2(-1242, 0)
+shape = SubResource("RectangleShape2D_ranl6")
+
+[node name="Right" type="CollisionShape2D" parent="."]
+position = Vector2(1242, 0)
+shape = SubResource("RectangleShape2D_nvh5w")
+
+[node name="Top" type="CollisionShape2D" parent="."]
+position = Vector2(0, -623)
+shape = SubResource("RectangleShape2D_r4xqd")
+
+[node name="Down" type="CollisionShape2D" parent="."]
+position = Vector2(0, 623)
+shape = SubResource("RectangleShape2D_gpe65")

@@ -25,7 +25,9 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
-text = "Spawner"
+pivot_offset = Vector2(34, 37.5)
+text = "Pawn
+Spawner"
 label_settings = SubResource("LabelSettings_o8huq")
 horizontal_alignment = 1
 vertical_alignment = 1

@@ -37,6 +37,8 @@ var OverrideTarget: Node2D = null
 var ConstantOffset: Vector2 = Vector2.ZERO
 var ConstantRotation: float = 0.0
 
+signal zoom_changed()
+
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
@@ -51,7 +53,7 @@ func _ready() -> void:
 		PlayerGlobals.default_camera_zoom_changed.connect(ResetZoom)
 		ResetZoom()
 		
-		OnViewportSizeChanged()
+		_on_viewport_size_changed()
 		
 		owner_player_controller.controlled_pawn_changed.connect(_on_owner_controlled_pawn_changed)
 		_on_owner_controlled_pawn_changed()
@@ -60,10 +62,10 @@ func _ready() -> void:
 		OnOwnerControlledPawnTeleport(true)
 
 func _enter_tree() -> void:
-	get_viewport().size_changed.connect(OnViewportSizeChanged)
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 
 func _exit_tree() -> void:
-	get_viewport().size_changed.disconnect(OnViewportSizeChanged)
+	get_viewport().size_changed.disconnect(_on_viewport_size_changed)
 
 func _physics_process(in_delta: float) -> void:
 	
@@ -84,10 +86,11 @@ func _physics_process(in_delta: float) -> void:
 		zoom = zoom.lerp(FinalZoom, PendingZoomLerpSpeed * in_delta)
 		if HasReachedZoom(FinalZoom):
 			zoom = FinalZoom
+		zoom_changed.emit()
 
-func OnViewportSizeChanged() -> void:
+func _on_viewport_size_changed() -> void:
 	
-	if is_node_ready():
+	if not is_node_ready():
 		pass
 	
 
@@ -106,8 +109,8 @@ func OnOwnerControlledPawnTeleport(in_reset_camera: bool) -> void:
 ##
 ## Lag
 ##
-func SetSmoothingSpeed(InSpeed: float) -> void:
-	position_smoothing_speed = InSpeed
+func SetSmoothingSpeed(in_speed: float) -> void:
+	position_smoothing_speed = in_speed
 
 func ResetSmoothingSpeed() -> void:
 	SetSmoothingSpeed(DefaultSmoothingSpeed)
@@ -122,8 +125,8 @@ func TriggerLag(InDurationMul: float = 1.0) -> void:
 func HasReachedZoom(InZoom: Vector2) -> bool:
 	return absf(InZoom.x - zoom.x) < 0.01 or absf(InZoom.y - zoom.y) < 0.01
 
-func SetPendingZoomLerpSpeed(InSpeed: float) -> void:
-	PendingZoomLerpSpeed = InSpeed
+func SetPendingZoomLerpSpeed(in_speed: float) -> void:
+	PendingZoomLerpSpeed = in_speed
 
 func ResetPendingZoomLerpSpeed() -> void:
 	SetPendingZoomLerpSpeed(DefaultPendingZoomLerpSpeed)
