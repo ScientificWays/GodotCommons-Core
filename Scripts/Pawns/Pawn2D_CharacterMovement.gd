@@ -83,6 +83,9 @@ func set_movement_velocity(in_velocity: Vector2, in_scale_by_movement_speed_mul:
 	else:
 		movement_velocity = in_velocity
 
+func is_on_floor() -> bool:
+	return owner_body.is_on_floor()
+
 var pending_force: Vector2 = Vector2.ZERO
 
 func apply_force(in_force: Vector2) -> void:
@@ -112,7 +115,7 @@ var prev_velocity: Vector2 = Vector2.ZERO
 
 func _physics_process(in_delta: float):
 	
-	var was_on_floor = owner_body.is_on_floor()
+	var was_on_floor = is_on_floor()
 	
 	prev_velocity = owner_body.get_real_velocity()
 	
