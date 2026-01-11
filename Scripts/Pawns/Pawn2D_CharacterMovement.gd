@@ -21,6 +21,8 @@ var cached_gravity_velocity: Vector2
 @export_category("Velocity")
 @export var move_speed: float = 32.0
 @export var launch_velocity_damp: float = 4.0
+@export var floor_acceleration: float = 512.0
+@export var air_control: float = 0.8
 
 @export_category("Rotation")
 @export var rotate_body_to_movement_x: bool = true
@@ -110,15 +112,27 @@ var prev_velocity: Vector2 = Vector2.ZERO
 
 func _physics_process(in_delta: float):
 	
+	var was_on_floor = owner_body.is_on_floor()
+	
 	prev_velocity = owner_body.get_real_velocity()
 	
 	var final_input := pending_input * input_vector_mul
 	pending_input = Vector2.ZERO
 	
+	var target_movement_velocity := Vector2.ZERO
+	
 	if final_input.length_squared() < (input_threshold * input_threshold):
-		movement_velocity = Vector2.ZERO
+		if was_on_floor:
+			pass
+		else:
+			target_movement_velocity = movement_velocity
 	else:
-		movement_velocity = move_speed * final_input.normalized()
+		target_movement_velocity = move_speed * final_input.normalized()
+	
+	if was_on_floor:
+		movement_velocity = movement_velocity.move_toward(target_movement_velocity, floor_acceleration * in_delta)
+	else:
+		movement_velocity = movement_velocity.move_toward(target_movement_velocity, floor_acceleration * air_control * in_delta)
 	
 	var external_velocity := pending_force
 	pending_force = Vector2.ZERO
@@ -139,7 +153,6 @@ func _physics_process(in_delta: float):
 		if pending_launch_velocity.length_squared() < (launch_velocity_reset_threshold * launch_velocity_reset_threshold):
 			pending_launch_velocity = Vector2.ZERO
 	
-	var was_on_floor = owner_body.is_on_floor()
 	owner_body.velocity = movement_velocity + external_velocity
 	
 	if should_bounce:
