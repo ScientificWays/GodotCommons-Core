@@ -118,14 +118,15 @@ func try_activate(in_payload: Variant = null) -> bool:
 		activated.emit()
 		owner_asc.ability_activated.emit(self)
 		
-		apply_cost()
-		apply_cooldown()
 		
-		commit_ability()
+		activate_ability()
 		return true
 	activation_failed.emit()
 	owner_asc.ability_activation_failed.emit(self)
 	return false
+
+@abstract
+func activate_ability() -> void
 
 func apply_cost() -> void:
 	pass
@@ -133,8 +134,13 @@ func apply_cost() -> void:
 func apply_cooldown() -> void:
 	cooldown_time_left = default_cooldown_time
 
-@abstract
-func commit_ability() -> void
+func commit_ability() -> bool:
+	
+	if check_cost(current_payload) and check_cooldown(current_payload):
+		apply_cost()
+		apply_cooldown()
+		return true
+	return false
 
 @abstract
 func on_ability_ended(in_was_cancelled: bool) -> void

@@ -7,7 +7,14 @@ class_name AnimStateMachine
 @export var owner_animated_target: Node2D
 @export var montage_player: AnimMontagePlayer
 
-var current_state: AnimState
+var current_state: AnimState:
+	set(in_state):
+		if in_state != current_state:
+			if current_state:
+				current_state.exit_state()
+			current_state = in_state
+			if current_state:
+				current_state.enter_state()
 
 func _ready() -> void:
 	
@@ -17,20 +24,21 @@ func _ready() -> void:
 	assert(owner_animated_target)
 	assert(montage_player)
 	
-	current_state = get_child(0)
+	init_state.call_deferred()
+
+func init_state() -> void:
+	
+	for sample_child: Node in get_children():
+		if sample_child is AnimState:
+			current_state = sample_child
+			break
 
 func _process(in_delta: float) -> void:
 	
 	if montage_player.is_playing_montage:
 		pass
 	else:
-		var new_state := current_state.get_next_state()
-		
-		if new_state != current_state:
-			current_state.exit_state()
-			current_state = new_state
-			current_state.enter_state()
-		
+		current_state = current_state.get_next_state()
 		current_state.tick_state(in_delta)
 
 func play_montage(in_name: StringName, in_custom_speed: float = 1.0, in_from_end: bool = false, in_should_reset_on_finish: bool = true) -> void:
