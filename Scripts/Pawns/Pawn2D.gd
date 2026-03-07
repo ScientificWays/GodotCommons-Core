@@ -37,20 +37,6 @@ enum Type
 @export var die_on_lethal_damage: bool = true
 @export var remove_on_death: bool = true
 
-@export_category("Input")
-@export var pawn_input_actions: Array[StringName] = [
-	CommonInputActions.primary_attack,
-	CommonInputActions.secondary_attack,
-	CommonInputActions.special_attack,
-	CommonInputActions.jump,
-]
-@export var pawn_input_callables: Array[StringName] = [
-	&"handle_primary_attack_input",
-	&"handle_secondary_attack_input",
-	&"handle_special_attack_input",
-	&"handle_jump_input",
-]
-
 @export_category("Movement")
 @export var character_movement: Pawn2D_CharacterMovement
 
@@ -87,8 +73,6 @@ signal controller_tap_input(in_tap_screen_position: Vector2, in_tap_global_posit
 
 signal died(in_immediately: bool)
 
-signal input_action_handled(in_action_event: InputEvent)
-
 var is_alive: bool = true
 
 var modifiers: Array[Pawn2D_ModifierBase]
@@ -96,6 +80,9 @@ var modifiers: Array[Pawn2D_ModifierBase]
 func _ready() -> void:
 	
 	if Engine.is_editor_hint():
+		
+		set_process(false)
+		
 		if not asc:
 			asc = find_child("*bility*ystem*") as AbilitySystemComponent
 		if not attribute_set:
@@ -174,52 +161,6 @@ func turn_to_target(in_target: Node2D) -> void:
 
 func aim_at_target(in_target: Node2D) -> void:
 	aim_direction = (in_target.global_position - global_position).normalized()
-
-##
-## Input
-##
-var last_movement_input: Vector2 = Vector2.ZERO
-var last_input_action_events: Dictionary[StringName, InputEvent] = {}
-
-func is_input_action_pressed(in_action: StringName) -> bool:
-	return last_input_action_events[in_action].is_pressed() if last_input_action_events.has(in_action) else false
-
-func handle_controller_movement_input(in_input: Vector2) -> void:
-	
-	last_movement_input = in_input
-	
-	if character_movement:
-		character_movement.apply_movement_input(in_input)
-
-func handle_controller_tap_input(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool) -> void:
-	controller_tap_input.emit(in_screen_position, in_global_position, in_released)
-
-func _unhandled_controller_input(in_event: InputEvent) -> void:
-	
-	for sample_index: int in range(pawn_input_actions.size()):
-		
-		if in_event.is_action(pawn_input_actions[sample_index]):
-			
-			last_input_action_events[pawn_input_actions[sample_index]] = in_event
-			
-			if call(pawn_input_callables[sample_index], in_event):
-				get_viewport().set_input_as_handled()
-				input_action_handled.emit(in_event)
-				break
-
-func handle_primary_attack_input(in_event: InputEvent) -> bool:
-	return false
-
-func handle_secondary_attack_input(in_event: InputEvent) -> bool:
-	return false
-
-func handle_special_attack_input(in_event: InputEvent) -> bool:
-	return false
-
-func handle_jump_input(in_event: InputEvent) -> bool:
-	if in_event.is_pressed() and not in_event.is_echo():
-		return asc.try_activate_abilities_by_tag(CommonTags.jump_ability)
-	return false
 
 func get_size_scale() -> float:
 	return size_scale + size_scale_per_level_gain * _level

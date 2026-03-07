@@ -91,10 +91,12 @@ var pending_force: Vector2 = Vector2.ZERO
 func apply_force(in_force: Vector2) -> void:
 	pending_force += in_force
 
+var last_movement_input: Vector2 = Vector2.ZERO
 var pending_input: Vector2 = Vector2.ZERO
 
 func apply_movement_input(in_input: Vector2) -> void:
 	pending_input = in_input
+	last_movement_input = pending_input
 
 signal bounce(in_bounce_collision: KinematicCollision2D)
 

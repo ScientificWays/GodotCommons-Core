@@ -10,13 +10,11 @@ static func try_get_from(in_node: Node) -> PlayerController:
 @export_category("Camera")
 @export var _camera: PlayerCamera2D
 
+@export_category("Input")
+@export var input_component: InputComponent
+
 @export_category("Pawn")
 @export var default_pawn_scene_path: String
-
-@export_category("Input")
-@export var input_movement: Array[StringName] = [ &"move_left", &"move_right", &"move_up", &"move_down" ]
-@export var input_actions: Array[StringName] = [ ]
-@export var input_callables: Array[StringName] = [ ]
 
 var unique_name: String = "zana"
 
@@ -27,17 +25,13 @@ func _ready() -> void:
 	
 	if Engine.is_editor_hint():
 		if not _camera:
-			_camera = find_child("*?amera*")
+			_camera = find_child("*amera*")
+		if not input_component:
+			input_component = find_child("*nput*omponent")
 		set_process(false)
 	else:
 		assert(_camera)
 		assert(not get_new_pawn_scene_path().is_empty())
-		
-		assert(input_movement.size() == 4)
-		assert(input_actions.size() == input_callables.size())
-
-func _process(in_delta: float) -> void:
-	_process_movement_input(in_delta)
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
@@ -132,31 +126,7 @@ func GetControlledPawnLinearVelocity() -> Vector2:
 ##
 ## Inputs
 ##
-var disable_movement_inputs: bool = false
-var disable_tap_inputs: bool = false
-
-var movement_input: Vector2
-
-func _process_movement_input(in_delta: float) -> void:
-	
-	if disable_movement_inputs or _camera.ShouldBlockMovementInputs():
-		movement_input = Vector2.ZERO
-	else:
-		movement_input = Input.get_vector(input_movement[0], input_movement[1], input_movement[2], input_movement[3])
-	
-	if controlled_pawn:
-		controlled_pawn.handle_controller_movement_input(movement_input)
-
 func _unhandled_input(in_event: InputEvent) -> void:
-	
-	if in_event is InputEventScreenTouch:
-		
-		if disable_tap_inputs or _camera.ShouldBlockTapInputs():
-			pass
-		else:
-			handle_tap_input(in_event.position, in_event.is_released())
-		get_viewport().set_input_as_handled()
-		return
 	
 	if in_event is InputEventKey and (in_event.unicode > 0):
 		var event_char := char(in_event.unicode)
@@ -165,34 +135,26 @@ func _unhandled_input(in_event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	
-	for sample_index: int in range(input_actions.size()):
-		
-		if in_event.is_action(input_actions[sample_index]):
-			
-			call(input_callables[sample_index], in_event)
-			get_viewport().set_input_as_handled()
-			return
+	var handled := input_component.try_handle_input_event(in_event)
+	if handled:
+		return
 	
-	if controlled_pawn:
-		controlled_pawn._unhandled_controller_input(in_event)
+	if not controlled_pawn:
+		return
+	
+	var pawn_input_component := InputComponent.try_get_from(controlled_pawn)
+	if pawn_input_component:
+		pawn_input_component.try_handle_input_event(in_event)
 
-var TapInputCallableArray: Array[Callable] = []
-
-signal TapInputHandled(in_screen_position: Vector2, in_global_position: Vector2, in_released: bool, InConsumedByPawn: bool)
-
-func handle_tap_input(in_screen_position: Vector2, in_released: bool) -> void:
+func try_get_last_movement_input() -> Vector2:
 	
-	var GlobalPosition := get_viewport().get_canvas_transform().affine_inverse() * in_screen_position
-	#DamageNumberUI.spawn(GlobalPosition + Vector2(randf_range(-10.0, 10.0), 0.0), 1)
+	if not controlled_pawn:
+		return Vector2.ZERO
 	
-	var ConsumedByPawn := false
-	if GameGlobals.CallAllCancellable(TapInputCallableArray, [ self, GlobalPosition, in_released ]):
-		pass
-	elif is_instance_valid(controlled_pawn):
-		controlled_pawn.handle_controller_tap_input(in_screen_position, GlobalPosition, in_released)
-		ConsumedByPawn = true
-	
-	TapInputHandled.emit(in_screen_position, GlobalPosition, in_released, ConsumedByPawn)
+	var pawn_movement := Pawn2D_CharacterMovement.try_get_from(controlled_pawn)
+	if pawn_movement:
+		return pawn_movement.last_movement_input
+	return Vector2.ZERO
 
 func handle_number_input(in_number: int, in_pressed: bool) -> void:
 	#_Inventory.TryUseActiveArtifactByIndex(in_number - 1)
