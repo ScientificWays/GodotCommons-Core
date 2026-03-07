@@ -74,7 +74,7 @@ func _begin_dash(in_dash_variant: PawnDashVariantData2D, in_target_position: Vec
 	var target_vector := in_target_position - owner_movement.owner_body.global_position
 	var dash_impulse := target_vector.normalized() * calc_impulse()
 	
-	owner_sprite.play_override_animation(current_variant.animation_name, 1.0, false, current_variant.should_reset_animation_on_finish)
+	owner_sprite.play_montage(current_variant.animation_name, 1.0, false, current_variant.should_reset_animation_on_finish)
 	
 	if current_variant.launch_delay > 0.0:
 		await GameGlobals.spawn_await_timer(self, current_variant.launch_delay).timeout

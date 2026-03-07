@@ -1,27 +1,43 @@
 extends Node
 class_name AnimStateMachine
 
-@export var owner_sprite: AnimatedSprite2D
 @export var owner_body: CharacterBody2D
 @export var owner_tags_container: TagsContainer
+
+@export var owner_animated_target: Node2D
+@export var montage_player: AnimMontagePlayer
 
 var current_state: AnimState
 
 func _ready() -> void:
 	
-	assert(owner_sprite)
 	assert(owner_body)
 	assert(owner_tags_container)
+	
+	assert(owner_animated_target)
+	assert(montage_player)
 	
 	current_state = get_child(0)
 
 func _process(in_delta: float) -> void:
 	
-	if is_playing_override_animation:
+	if montage_player.is_playing_montage:
 		pass
 	else:
-		current_state = current_state.get_next_state()
-		current_state.process_state(in_delta)
+		var new_state := current_state.get_next_state()
+		
+		if new_state != current_state:
+			current_state.exit_state()
+			current_state = new_state
+			current_state.enter_state()
+		
+		current_state.tick_state(in_delta)
+
+func play_montage(in_name: StringName, in_custom_speed: float = 1.0, in_from_end: bool = false, in_should_reset_on_finish: bool = true) -> void:
+	montage_player.play_montage(in_name, in_custom_speed, in_from_end, in_should_reset_on_finish)
+
+func cancel_montage(in_specific_animation_name: StringName = &"") -> void:
+	montage_player.cancel_montage(in_specific_animation_name)
 
 func stop_for_duration(in_duration: float) -> void:
 	
@@ -33,35 +49,3 @@ func stop_for_duration(in_duration: float) -> void:
 
 func resume_from_stop() -> void:
 	set_process(true)
-
-@export_category("Override Animations")
-var is_playing_override_animation: bool = false
-
-func play_override_animation(in_name: StringName, in_custom_speed: float = 1.0, in_from_end: bool = false, in_should_reset_on_finish: bool = true) -> void:
-	
-	assert(owner_sprite.sprite_frames.has_animation(in_name))
-	
-	is_playing_override_animation = true
-	owner_sprite.play(in_name, in_custom_speed, in_from_end)
-	
-	if in_should_reset_on_finish:
-		if not owner_sprite.animation_finished.is_connected(_handle_override_animation_reset):
-			owner_sprite.animation_finished.connect(_handle_override_animation_reset, Object.CONNECT_ONE_SHOT)
-	else:
-		if owner_sprite.animation_finished.is_connected(_handle_override_animation_reset):
-			owner_sprite.animation_finished.disconnect(_handle_override_animation_reset)
-
-func cancel_override_animation(in_specific_animation_name: StringName = &""):
-	
-	assert(in_specific_animation_name.is_empty() or owner_sprite.sprite_frames.has_animation(in_specific_animation_name))
-	
-	if owner_sprite.animation == in_specific_animation_name or is_playing_override_animation:
-		
-		owner_sprite.stop()
-		
-		if owner_sprite.animation_finished.is_connected(_handle_override_animation_reset):
-			owner_sprite.animation_finished.disconnect(_handle_override_animation_reset)
-			_handle_override_animation_reset()
-
-func _handle_override_animation_reset():
-	is_playing_override_animation = false

@@ -74,10 +74,10 @@ func _handle_body_direction_changed() -> void:
 ##
 ## Animations
 ##
-func play_override_animation(in_name: StringName, in_custom_speed: float = 1.0, in_from_end: bool = false, in_should_reset_on_finish: bool = true) -> void:
+func play_montage(in_name: StringName, in_custom_speed: float = 1.0, in_from_end: bool = false, in_should_reset_on_finish: bool = true) -> void:
 	
 	if state_machine:
-		state_machine.play_override_animation(in_name, in_custom_speed, in_from_end, in_should_reset_on_finish)
+		state_machine.play_montage(in_name, in_custom_speed, in_from_end, in_should_reset_on_finish)
 	else:
 		play(in_name, in_custom_speed, in_from_end)
 		#push_warning("Trying to play override animation %s for %s without state_machine!" % [ in_name, self ])

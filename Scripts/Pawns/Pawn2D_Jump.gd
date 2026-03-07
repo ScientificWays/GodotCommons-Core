@@ -74,7 +74,7 @@ func _begin_jump(in_jump_variant: PawnJumpVariantData2D, in_target_position: Vec
 	if not owner_sprite.frame_changed.is_connected(_on_owner_sprite_frame_changed):
 		owner_sprite.frame_changed.connect(_on_owner_sprite_frame_changed)
 	
-	owner_sprite.play_override_animation(current_variant.animation_name, 1.0, false, current_variant.should_reset_animation_on_finish)
+	owner_sprite.play_montage(current_variant.animation_name, 1.0, false, current_variant.should_reset_animation_on_finish)
 	
 	if not owner_sprite.animation_changed.is_connected(_on_owner_sprite_animation_changed):
 		owner_sprite.animation_changed.connect(_on_owner_sprite_animation_changed, Object.CONNECT_ONE_SHOT)
