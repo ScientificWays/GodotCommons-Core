@@ -10,6 +10,12 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 @export var owner_body: CharacterBody2D
 @export var owner_attribute_set: AttributeSet
 
+@export_category("Tags")
+@export var owner_tags_container: TagsContainer
+@export var ignore_movement_input_tags: Array[StringName] = [
+	CommonTags.input_ignore_movement
+]
+
 @export_category("Physics")
 @export var apply_gravity: bool = true
 @export var mass: float = 1.0
@@ -47,6 +53,9 @@ func _ready() -> void:
 		if owner_pawn:
 			if not owner_attribute_set:
 				owner_attribute_set = owner_pawn.find_child("*ttribute*et*") as AttributeSet
+		if owner_pawn:
+			if not owner_tags_container:
+				owner_tags_container = owner_pawn.find_child("*ag*ontainer*") as TagsContainer
 	else:
 		
 		if apply_gravity == (owner_body.motion_mode == CharacterBody2D.MotionMode.MOTION_MODE_FLOATING):
@@ -94,9 +103,15 @@ func apply_force(in_force: Vector2) -> void:
 var last_movement_input: Vector2 = Vector2.ZERO
 var pending_input: Vector2 = Vector2.ZERO
 
+func should_ignore_movement_input() -> bool:
+	return owner_tags_container.has_any_tag(ignore_movement_input_tags)
+
 func apply_movement_input(in_input: Vector2) -> void:
-	pending_input = in_input
-	last_movement_input = pending_input
+	
+	last_movement_input = in_input
+	
+	if not should_ignore_movement_input():
+		pending_input = last_movement_input
 
 signal bounce(in_bounce_collision: KinematicCollision2D)
 

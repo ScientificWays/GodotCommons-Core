@@ -52,6 +52,12 @@ enum Type
 @export var death_drop_scene: PackedScene# = preload("res://Scenes/Items/Experience001.tscn")
 @export var death_drop_num_min_max: Vector2i = Vector2i.ONE
 
+@export_category("Debug")
+@export var draw_debug: bool = false:
+	set(in_draw):
+		assert(not is_node_ready() or Engine.is_editor_hint())
+		draw_debug = in_draw
+
 var _level: int = 0
 
 var last_controller: PlayerController
@@ -106,6 +112,10 @@ func _ready() -> void:
 		if override_level_music and set_override_level_music_on_spawn:
 			WorldGlobals._level.set_override_level_music(override_level_music)
 		
+		if draw_debug:
+			aim_direction_changed.connect(queue_redraw)
+			body_direction_changed.connect(queue_redraw)
+		
 		PawnGlobals.pawn_spawned.emit(self)
 
 func _enter_tree() -> void:
@@ -117,6 +127,12 @@ func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
 		if override_level_music:
 			WorldGlobals._level.remove_override_level_music_source(self, remove_override_level_music_delay)
+
+func _draw() -> void:
+	
+	if draw_debug:
+		draw_dashed_line(Vector2.ZERO, body_direction * 32.0, Color.FIREBRICK, 1.0)
+		draw_dashed_line(Vector2.ZERO, aim_direction * 32.0, Color.CYAN, 0.7)
 
 ##
 ## Transforms

@@ -1,5 +1,5 @@
 [gd_resource type="InputEventAction" format=3 uid="uid://dg16mvb6r002k"]
 
 [resource]
-action = &"Accept"
+action = &"common_accept"
 pressed = true

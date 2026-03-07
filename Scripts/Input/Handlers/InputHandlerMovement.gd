@@ -9,7 +9,7 @@ class_name InputHandlerMovement
 	&"move_down"
 ]
 @export var block_input_tags: Array[StringName] = [
-	CommonTags.block_input_movement
+	CommonTags.input_block_movement
 ]
 
 func get_action_name() -> StringName:
