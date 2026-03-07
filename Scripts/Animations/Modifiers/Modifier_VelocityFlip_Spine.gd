@@ -20,6 +20,7 @@ func _tick_state(in_state: AnimState, in_delta: float) -> void:
 		pass
 	else:
 		var spine := in_state.get_animated_target() as SpineSprite
-		var sign := -1.0 if ((real_velocity.x <= flip_threshold) != flip_reverse) else 1*.0
+		var sign := -1.0 if ((real_velocity.x <= flip_threshold) != flip_reverse) else 1.0
 		
 		spine.scale.x = absf(spine.scale.x) * sign
+		assert(spine.scale.x != 0.0)
