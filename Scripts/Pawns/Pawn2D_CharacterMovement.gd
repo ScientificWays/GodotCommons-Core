@@ -13,7 +13,7 @@ static func try_get_from(in_node: Node) -> Pawn2D_CharacterMovement:
 @export_category("Tags")
 @export var owner_tags_container: TagsContainer
 @export var ignore_movement_input_tags: Array[StringName] = [
-	CommonTags.input_ignore_movement
+	CommonTags.movement_input_ignore
 ]
 
 @export_category("Physics")

@@ -15,16 +15,25 @@ const crouch_begin_event: StringName = &"crouch_begin_event"
 const crouch_end_event: StringName = &"crouch_end_event"
 const crouch_fail_event: StringName = &"crouch_fail_event"
 
-const state_crouching: StringName = &"state_crouching"
-
-const input_block_movement: StringName = &"input_block_movement"
-const input_ignore_movement: StringName = &"input_ignore_movement"
-
 const lock_aim_direction: StringName = &"lock_aim_direction"
 
 ##
-## Items
+## Input
+##
+const input_block_movement: StringName = &"input_block_movement"
+
+##
+## States
+##
+const state_crouching: StringName = &"state_crouching"
+const state_using_weapon: StringName = &"state_using_weapon"
+
+##
+## Movement
+##
+const movement_input_ignore: StringName = &"movement_input_ignore"
+
+##
+## Weapons
 ##
 const weapon_use_ability: StringName = &"weapon_use_ability"
-
-const state_using_weapon: StringName = &"state_using_weapon"
