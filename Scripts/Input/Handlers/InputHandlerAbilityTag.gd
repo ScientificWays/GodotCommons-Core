@@ -2,7 +2,7 @@ extends InputHandlerBase
 class_name InputHandlerAbilityTag
 
 @export_category("Ability")
-@export var action_name: StringName
+@export var trigger_events: Shortcut
 @export var ability_tag: StringName
 @export var payload_mode: int = 0
 
@@ -11,12 +11,20 @@ class_name InputHandlerAbilityTag
 @export var activate_on_hold: bool = false
 @export var end_on_release: bool = true
 
-func get_action_name() -> StringName:
-	return action_name
+@export_category("Repeats")
+@export var press_repeats: int = 1
+@export var repeats_reset_time: float = 0.4
 
 func try_handle_event(in_owner: InputComponent, in_event: InputEvent) -> bool:
 	
-	if in_event.is_action(action_name):
+	if trigger_events.matches_event(in_event):
+		
+		if press_repeats > 1:
+			var current_repeats := in_owner.push_repeat_for(self, repeats_reset_time)
+			if current_repeats < press_repeats:
+				return false
+			else:
+				in_owner.reset_repeat_for(self)
 		
 		var asc := AbilitySystemComponent.try_get_from(in_owner.get_parent())
 		assert(asc)

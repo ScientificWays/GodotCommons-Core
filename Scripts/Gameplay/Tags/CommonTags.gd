@@ -7,6 +7,8 @@ const jump_begin_event: StringName = &"jump_begin_event"
 const jump_end_event: StringName = &"jump_end_event"
 const jump_fail_event: StringName = &"jump_fail_event"
 
+const dash_ability: StringName = &"dash_ability"
+
 const state_jumping: StringName = &"state_jumping"
 
 const crouch_ability: StringName = &"crouch_ability"
@@ -25,6 +27,7 @@ const input_block_movement: StringName = &"input_block_movement"
 ##
 ## States
 ##
+const state_dashing: StringName = &"state_dashing"
 const state_crouching: StringName = &"state_crouching"
 const state_using_weapon: StringName = &"state_using_weapon"
 
