@@ -4,6 +4,7 @@ class_name InputHandlerAbilityTag
 @export_category("Ability")
 @export var action_name: StringName
 @export var ability_tag: StringName
+@export var payload_mode: int = 0
 
 @export_category("Triggers")
 @export var activate_on_press: bool = true
@@ -25,7 +26,7 @@ func try_handle_event(in_owner: InputComponent, in_event: InputEvent) -> bool:
 		var released := in_event.is_released()
 		
 		if (just_pressed and activate_on_press) or (holding and activate_on_hold):
-			return asc.try_activate_abilities_by_tag(ability_tag)
+			return asc.try_activate_abilities_by_tag(ability_tag, payload_mode)
 		elif released and end_on_release:
 			return asc.try_end_abilities_by_tag(ability_tag)
 	return false

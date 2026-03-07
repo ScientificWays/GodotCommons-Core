@@ -57,7 +57,7 @@ func _physics_process(in_delta: float) -> void:
 		movement_input = move_direction
 	
 	velocity = owner_movement.movement_velocity ## Last frame velocity
-	owner_pawn.handle_controller_movement_input(movement_input)
+	owner_movement.apply_movement_input(movement_input)
 
 func _on_target_reached() -> void:
 	pass

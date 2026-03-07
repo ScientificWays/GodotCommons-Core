@@ -10,6 +10,9 @@ class_name AnimStateTransitionCondition
 var owner_state: AnimState
 
 func _ready() -> void:
+	
+	assert(go_to_state)
+	
 	owner_state = get_parent()
 
 func get_sprite() -> AnimatedSprite2D:

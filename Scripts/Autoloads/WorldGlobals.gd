@@ -31,6 +31,8 @@ func load_scene_by_path(in_path: String, in_async: bool = true) -> void:
 		else:
 			packed_scene = ResourceLoader.load(in_path)
 		await load_scene_by_packed(packed_scene)
+	else:
+		push_error("Invalid scene path \"%s\"" % in_path)
 
 func load_scene_by_packed(in_packed: PackedScene) -> void:
 	

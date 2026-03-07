@@ -118,7 +118,6 @@ func try_activate(in_payload: Variant = null) -> bool:
 		activated.emit()
 		owner_asc.ability_activated.emit(self)
 		
-		
 		activate_ability()
 		return true
 	activation_failed.emit()
@@ -136,7 +135,7 @@ func apply_cooldown() -> void:
 
 func commit_ability() -> bool:
 	
-	if check_cost(current_payload) and check_cooldown(current_payload):
+	if can_activate(current_payload):
 		apply_cost()
 		apply_cooldown()
 		return true
