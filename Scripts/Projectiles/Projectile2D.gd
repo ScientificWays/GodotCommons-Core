@@ -13,7 +13,7 @@ static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level
 	out_projectile.data = in_data
 	out_projectile._level = in_level
 	out_projectile._instigator = in_instigator
-	out_projectile.transform = in_transform
+	out_projectile.transform = in_transform.translated_local(in_data.spawn_local_offset)
 	in_parent.add_child.call_deferred(out_projectile)
 	return out_projectile
 

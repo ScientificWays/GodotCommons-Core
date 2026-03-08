@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://8b0jckg41k61"]
 
-[ext_resource type="Script" uid="uid://bkyrummrept71" path="res://addons/GodotCommons-Core/Scripts/Levels/LevelHint2D.gd" id="1_m4msj"]
+[ext_resource type="Script" uid="uid://bkyrummrept71" path="res://addons/GodotCommons-Core/Scripts/World/Levels/LevelHint2D.gd" id="1_m4msj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_eq6sr"]
 

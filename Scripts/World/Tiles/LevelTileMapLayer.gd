@@ -6,7 +6,7 @@ const InvalidCell: Vector2i = Vector2i.MAX
 
 @export var terrain_data_array: Array[LevelTileSet_TerrainData]
 @export_tool_button("Try Regenerate TileSet") var try_regenerate_tile_set_action: Callable = try_regenerate_tile_set
-@export var generated_tile_set_script: GDScript = preload("res://addons/GodotCommons-Core/Scripts/Tiles/TileSets/LevelTileSet_AutoWalls.gd")
+@export var generated_tile_set_script: GDScript = preload("res://addons/GodotCommons-Core/Scripts/World/Tiles/TileSets/LevelTileSet_AutoWalls.gd")
 
 @export_flags_2d_physics var TilePlaceBlockCollisionMask: int = 1 + 2 + 8 + 16 + 128
 

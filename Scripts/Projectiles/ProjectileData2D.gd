@@ -3,6 +3,7 @@ class_name ProjectileData2D
 
 @export_category("Init")
 @export var scene: PackedScene
+@export var spawn_local_offset: Vector2 = Vector2.ZERO
 
 func custom_init(in_projectile: Projectile2D) -> void:
 	pass

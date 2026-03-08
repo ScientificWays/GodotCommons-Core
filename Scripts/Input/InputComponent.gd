@@ -34,16 +34,18 @@ func _process(in_delta: float) -> void:
 			if sample_handler.consume_on_handled:
 				break
 	
-	var pending_removes: Array[RepeatData] = []
-	
-	for sample_repeat_data: RepeatData in pending_repeats_data:
-		if sample_repeat_data.time_left > in_delta:
-			sample_repeat_data.time_left -= in_delta
-		else:
-			pending_removes.append(sample_repeat_data)
-	
-	for sample_repeat_data: RepeatData in pending_removes:
-		pending_repeats_data.erase(sample_repeat_data)
+	if not pending_repeats_data.is_empty():
+		
+		var pending_removes: Array[RepeatData] = []
+		
+		for sample_repeat_data: RepeatData in pending_repeats_data:
+			if sample_repeat_data.time_left > in_delta:
+				sample_repeat_data.time_left -= in_delta
+			else:
+				pending_removes.append(sample_repeat_data)
+		
+		for sample_repeat_data: RepeatData in pending_removes:
+			pending_repeats_data.erase(sample_repeat_data)
 
 func _enter_tree() -> void:
 	ModularGlobals.init_modular_node(self)
