@@ -1,5 +1,5 @@
 extends BTDecorator
-class_name BTD_CheckVar
+class_name BTD_CompareVar
 
 @export var variable: StringName = &"chase_target"
 @export var check_type: LimboUtility.CheckType = LimboUtility.CheckType.CHECK_NOT_EQUAL
