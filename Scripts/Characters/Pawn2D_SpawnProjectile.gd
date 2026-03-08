@@ -40,5 +40,5 @@ func spawn_projectile() -> Projectile2D:
 	
 	var spawn_position := global_position
 	var spawn_rotation := spawn_position.angle_to_point(target_position)
-	var new_projectile := Projectile2D.spawn(Transform2D(spawn_rotation, spawn_position), projectile_data, projectile_level, owner_pawn)
+	var new_projectile := Projectile2D.spawn(Transform2D(spawn_rotation, spawn_position), projectile_data, projectile_level, owner_pawn, self)
 	return new_projectile

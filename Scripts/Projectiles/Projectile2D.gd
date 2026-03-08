@@ -2,7 +2,7 @@
 extends RigidBody2D
 class_name Projectile2D
 
-static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level: int, in_instigator: Node, in_parent: Node = WorldGlobals._level) -> Projectile2D:
+static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level: int, in_instigator: Node, in_source: Node, in_parent: Node = WorldGlobals._level) -> Projectile2D:
 	
 	assert(in_data)
 	assert(in_data.scene)
@@ -13,6 +13,7 @@ static func spawn(in_transform: Transform2D, in_data: ProjectileData2D, in_level
 	out_projectile.data = in_data
 	out_projectile._level = in_level
 	out_projectile._instigator = in_instigator
+	out_projectile._source = in_source
 	out_projectile.transform = in_transform.translated_local(in_data.spawn_local_offset)
 	in_parent.add_child.call_deferred(out_projectile)
 	return out_projectile
@@ -28,17 +29,26 @@ var data: ProjectileData2D
 ##
 var _instigator: Node:
 	set(in_instigator):
-		
 		if _instigator:
 			_instigator.tree_exited.disconnect(_on_instigator_tree_exited)
-		
 		_instigator = in_instigator
-		
 		if _instigator:
 			_instigator.tree_exited.connect(_on_instigator_tree_exited)
-
 func _on_instigator_tree_exited():
 	_instigator = null
+
+##
+## Source
+##
+var _source: Node:
+	set(in_source):
+		if _source:
+			_source.tree_exited.disconnect(_on_source_tree_exited)
+		_source = in_source
+		if _source:
+			_source.tree_exited.connect(_on_source_tree_exited)
+func _on_source_tree_exited():
+	_source = null
 
 var _level: int = 0
 var _power: float = 1.0

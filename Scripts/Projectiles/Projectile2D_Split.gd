@@ -58,7 +58,7 @@ func handle_split() -> void:
 		var spawn_offset := Vector2.from_angle(spawn_rotation) * split_spawn_offset
 		var spawn_transform := Transform2D(spawn_rotation, spawn_origin + spawn_offset)
 		
-		var new_projectile := Projectile2D.spawn(spawn_transform, projectile_data, owner_projectile._level, owner_projectile._instigator) as Projectile2D
+		var new_projectile := Projectile2D.spawn(spawn_transform, projectile_data, owner_projectile._level, owner_projectile._instigator, self) as Projectile2D
 		assert(not new_projectile.is_node_ready())
 		
 		new_projectile.set_meta(is_owner_from_split_meta, true)
