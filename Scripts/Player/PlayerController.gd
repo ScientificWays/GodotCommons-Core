@@ -45,7 +45,7 @@ func _exit_tree() -> void:
 ## Pawn
 ##
 var controlled_pawn: Pawn2D:
-	set(InPawn):
+	set(in_pawn):
 		
 		if is_instance_valid(controlled_pawn):
 			
@@ -53,7 +53,7 @@ var controlled_pawn: Pawn2D:
 			controlled_pawn.died.disconnect(_on_controlled_pawn_died)
 			controlled_pawn.remove_meta(PlayerControllerMeta)
 		
-		controlled_pawn = InPawn
+		controlled_pawn = in_pawn
 		
 		if is_instance_valid(controlled_pawn):
 			
